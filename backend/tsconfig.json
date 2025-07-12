@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "module": "es2022",
+    "sourceMap": true,
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*", "tests/**/*"]
+}
