@@ -1,12 +1,11 @@
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "@/lib/db/connection";
-import { UserSchema } from "@/types/user";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { prisma } from "@/lib/db/prisma";
 
 export const authOptions: NextAuthOptions = {
-  // Use MongoDB adapter to store users, accounts, sessions
-  adapter: MongoDBAdapter(clientPromise),
+  // Use Prisma adapter - much cleaner!
+  adapter: PrismaAdapter(prisma),
 
   // Configure GitHub OAuth
   providers: [
@@ -16,7 +15,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // Custom pages (we'll create these next)
+  // Custom pages
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
@@ -24,32 +23,17 @@ export const authOptions: NextAuthOptions = {
 
   // Callbacks to customize the auth flow
   callbacks: {
-    // Called whenever a user signs in
-    async signIn({ user, account, profile }) {
-      // Allow sign in
-      return true;
-    },
-
     // Called whenever a session is checked
     async session({ session, user }) {
       // Add user id and role to the session
       if (session.user && user) {
         session.user.id = user.id;
-        // Cast user to our type to access custom fields
+        // Cast user to access our custom fields
         const userWithRole = user as any;
         session.user.role = userWithRole.role || "CLIENT";
         session.user.isActive = userWithRole.isActive ?? true;
       }
       return session;
-    },
-
-    // Called when user is created for the first time
-    async jwt({ token, user, account }) {
-      if (user) {
-        token.role = (user as any).role || "CLIENT";
-        token.isActive = (user as any).isActive ?? true;
-      }
-      return token;
     },
   },
 
@@ -58,7 +42,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, isNewUser }) {
       if (isNewUser) {
         console.log(`New user signed up: ${user.email}`);
-        // Here we could send welcome emails, set up default data, etc.
+        // Here we could set default role, send welcome emails, etc.
       }
     },
 
@@ -69,7 +53,7 @@ export const authOptions: NextAuthOptions = {
 
   // Session configuration
   session: {
-    strategy: "database", // Store sessions in MongoDB
+    strategy: "database", // Store sessions in MongoDB via Prisma
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
