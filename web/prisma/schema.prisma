@@ -35,9 +35,8 @@ model User {
   phone     String?
 
   // Trainer-specific fields
-  businessName   String?
-  bio            String?
-  certifications String[]
+  businessName String?
+  bio          String?
 
   // Client-specific fields
   trainerId String? @db.ObjectId
@@ -50,6 +49,10 @@ model User {
   // NextAuth required fields
   accounts Account[]
   sessions Session[]
+
+  // Training program relations
+  clientPrograms  AssignedTrainingProgram[] @relation("ClientPrograms")
+  trainerPrograms AssignedTrainingProgram[] @relation("TrainerPrograms")
 
   @@map("users")
 }
@@ -100,3 +103,104 @@ enum UserRole {
   TRAINER
   CLIENT
 }
+
+// Assigned Training Program START //
+model AssignedTrainingProgram {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  clientId      String @db.ObjectId
+  trainerId     String @db.ObjectId
+  weeksDuration Int
+  days          Day[]
+
+  client  User @relation("ClientPrograms", fields: [clientId], references: [id], onDelete: Cascade)
+  trainer User @relation("TrainerPrograms", fields: [trainerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("assignedtrainingprograms")
+}
+
+type Day {
+  name      String
+  dayIndex  Int
+  exercises Exercise[]
+}
+
+type Exercise {
+  lifts     Lift[]
+  cardio    Cardio[]
+  stretches Stretch[]
+}
+
+type Lift {
+  muscleGroup String
+  name        String
+  liftIndex   Int
+  sets        LiftSet[]
+}
+
+type LiftSet {
+  setIndex     Int
+  minReps      Int
+  maxReps      Int
+  minRest      Int
+  maxRest      Int
+  minRir       Int
+  maxRir       Int
+  performances LiftPerformance[]
+}
+
+type LiftPerformance {
+  weekIndex Int
+  date      DateTime
+  weight    Float
+  reps      Int
+  rir       Int
+  notes     String?
+}
+
+type Cardio {
+  name        String
+  cardioIndex Int
+  sets        CardioSet[]
+}
+
+type CardioSet {
+  setIndex     Int
+  minSpeed     Float
+  maxSpeed     Float
+  minIncline   Float
+  maxIncline   Float
+  minTime      Int // minutes
+  maxTime      Int
+  performances CardioPerformance[]
+}
+
+type CardioPerformance {
+  weekIndex Int
+  date      DateTime // ← DateTime here too
+  speed     Float
+  incline   Float
+  time      Int // actual minutes
+  notes     String?
+}
+
+type Stretch {
+  name           String
+  stretchIndex   Int
+  targetReps     Int
+  minHoldSeconds Int
+  maxHoldSeconds Int?
+  performances   StretchPerformance[]
+}
+
+type StretchPerformance {
+  weekIndex   Int
+  date        DateTime // ← And here
+  reps        Int
+  holdSeconds Int
+  notes       String?
+}
+
+// Assigned Training Program End
