@@ -1,24 +1,23 @@
 "use client";
 
-import { signIn, getSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { FaGithub } from "react-icons/fa";
+import { useSignIn } from "@/lib/hooks/useSignIn";
+import { authProviders } from "@/lib/auth/providers";
+import { ProviderButton } from "@/components/ui/ProviderButton";
+import { AuthError } from "@/components/ui/AuthError";
 
 export default function SignInPage() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const error = searchParams.get("error");
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleGitHubSignIn = async () => {
-    setIsLoading(true);
-    try {
-      await signIn("github", { callbackUrl });
-    } catch (error) {
-      console.error("Sign in error:", error);
-      setIsLoading(false);
-    }
+  const signInMutation = useSignIn();
+
+  const handleProviderSignIn = (providerId: string) => {
+    signInMutation.mutate({
+      provider: providerId as "github" | "google",
+      callbackUrl,
+    });
   };
 
   return (
@@ -34,46 +33,22 @@ export default function SignInPage() {
         </div>
 
         <div className="mt-8 space-y-6">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-              <p className="text-sm">
-                {error === "OAuthSignin" && "Error occurred during sign in"}
-                {error === "OAuthCallback" &&
-                  "Error occurred during authentication"}
-                {error === "OAuthCreateAccount" && "Could not create account"}
-                {error === "EmailCreateAccount" && "Could not create account"}
-                {error === "Callback" && "Authentication error"}
-                {error === "OAuthAccountNotLinked" &&
-                  "Account already exists with different provider"}
-                {error === "EmailSignin" && "Check your email for sign in link"}
-                {error === "CredentialsSignin" && "Invalid credentials"}
-                {error === "SessionRequired" && "Please sign in to continue"}
-                {![
-                  "OAuthSignin",
-                  "OAuthCallback",
-                  "OAuthCreateAccount",
-                  "EmailCreateAccount",
-                  "Callback",
-                  "OAuthAccountNotLinked",
-                  "EmailSignin",
-                  "CredentialsSignin",
-                  "SessionRequired",
-                ].includes(error) && "An error occurred during authentication"}
-              </p>
-            </div>
-          )}
+          {error && <AuthError error={error} />}
 
-          <div>
-            <button
-              onClick={handleGitHubSignIn}
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out"
-            >
-              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <FaGithub className="h-5 w-5 text-gray-300 group-hover:text-gray-200" />
-              </span>
-              {isLoading ? "Signing in..." : "Sign in with GitHub"}
-            </button>
+          <div className="space-y-4">
+            {authProviders.map((provider) => (
+              <ProviderButton
+                key={provider.id}
+                onClick={() => handleProviderSignIn(provider.id)}
+                disabled={signInMutation.isPending}
+                icon={provider.icon}
+                variant={provider.variant}
+              >
+                {signInMutation.isPending
+                  ? "Signing in..."
+                  : `Sign in with ${provider.name}`}
+              </ProviderButton>
+            ))}
           </div>
 
           <div className="text-center">

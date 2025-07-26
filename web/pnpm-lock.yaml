@@ -26,6 +26,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.83.0
         version: 5.83.0(@tanstack/react-query@5.83.0(react@19.1.0))(react@19.1.0)
+      google:
+        specifier: link:next-auth/providers/google
+        version: link:next-auth/providers/google
       mongodb:
         specifier: ^6.18.0
         version: 6.18.0

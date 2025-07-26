@@ -41,20 +41,23 @@ export class UserService {
 
     // Business rule: Can't change role if user already has clients/trainer
     if (existingUser.role !== validatedData.role) {
-      if (existingUser.role === "TRAINER") {
+      if (existingUser.role === UserRole.TRAINER) {
         const clients = await userRepository.findClientsByTrainerId(userId);
         if (clients.length > 0) {
           throw new Error("Cannot change role: Trainer has active clients");
         }
       }
 
-      if (existingUser.role === "CLIENT" && existingUser.trainerId) {
+      if (existingUser.role === UserRole.CLIENT && existingUser.trainerId) {
         throw new Error("Cannot change role: Client is assigned to a trainer");
       }
     }
 
     // Business rule: Trainers must have business name
-    if (validatedData.role === "TRAINER" && !validatedData.businessName) {
+    if (
+      validatedData.role === UserRole.TRAINER &&
+      !validatedData.businessName
+    ) {
       throw new Error("Business name is required for trainers");
     }
 
@@ -72,7 +75,10 @@ export class UserService {
   /**
    * Assign a client to a trainer
    */
-  async assignClientToTrainer(assignmentData: AssignClient): Promise<User> {
+  async assignClientToTrainer(assignmentData: {
+    clientId: string;
+    trainerId: string;
+  }): Promise<User> {
     const validatedData = AssignClientSchema.parse(assignmentData);
 
     // Validate both users exist and have correct roles
@@ -84,8 +90,10 @@ export class UserService {
     if (!client) throw new Error("Client not found");
     if (!trainer) throw new Error("Trainer not found");
 
-    if (client.role !== "CLIENT") throw new Error("User is not a client");
-    if (trainer.role !== "TRAINER") throw new Error("User is not a trainer");
+    if (client.role !== UserRole.CLIENT)
+      throw new Error("User is not a client");
+    if (trainer.role !== UserRole.TRAINER)
+      throw new Error("User is not a trainer");
 
     // Business rule: Client can only have one trainer
     if (client.trainerId) {
@@ -111,7 +119,8 @@ export class UserService {
   async unassignClientFromTrainer(clientId: string): Promise<User> {
     const client = await userRepository.findById(clientId);
     if (!client) throw new Error("Client not found");
-    if (client.role !== "CLIENT") throw new Error("User is not a client");
+    if (client.role !== UserRole.CLIENT)
+      throw new Error("User is not a client");
     if (!client.trainerId)
       throw new Error("Client is not assigned to any trainer");
 
@@ -128,11 +137,12 @@ export class UserService {
   async getTrainerDashboard(trainerId: string) {
     const trainer = await userRepository.findById(trainerId);
     if (!trainer) throw new Error("Trainer not found");
-    if (trainer.role !== "TRAINER") throw new Error("User is not a trainer");
+    if (trainer.role !== UserRole.TRAINER)
+      throw new Error("User is not a trainer");
 
     const [clients, totalClients] = await Promise.all([
       userRepository.findClientsByTrainerId(trainerId),
-      userRepository.countByRole("CLIENT"),
+      userRepository.countByRole(UserRole.CLIENT),
     ]);
 
     return {
@@ -162,7 +172,7 @@ export class UserService {
    * Get all available trainers (for client to choose from)
    */
   async getAvailableTrainers(): Promise<Partial<User>[]> {
-    const trainers = await userRepository.findByRole("TRAINER");
+    const trainers = await userRepository.findByRole(UserRole.TRAINER);
 
     // Return only public information
     return trainers.map((trainer) => ({
@@ -191,7 +201,7 @@ export class UserService {
     if (!user) throw new Error("User not found");
 
     // Business rule: Trainers with active clients cannot deactivate
-    if (user.role === "TRAINER") {
+    if (user.role === UserRole.TRAINER) {
       const clients = await userRepository.findClientsByTrainerId(userId);
       if (clients.length > 0) {
         throw new Error(
