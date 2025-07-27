@@ -45,6 +45,12 @@
 
 :root {
   --radius: 0.625rem;
+  
+  /* Layout spacing variables */
+  --spacing-page: 1.5rem; /* 24px - standard page padding */
+  --spacing-page-mobile: 1rem; /* 16px - mobile page padding */
+  --spacing-container: 2rem; /* 32px - container padding */
+  --spacing-section: 3rem; /* 48px - section spacing */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -118,5 +124,72 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Page layout utilities */
+.page-padding {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .page-padding {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.page-container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-container.page-padding {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .page-container.page-padding {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-container.page-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.page-content {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .page-content {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
+.section-spacing > * + * {
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .section-spacing > * + * {
+    margin-top: 2rem;
   }
 }

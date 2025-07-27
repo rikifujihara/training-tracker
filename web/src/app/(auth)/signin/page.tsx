@@ -3,8 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import { useSignIn } from "@/lib/hooks/useSignIn";
 import { authProviders } from "@/lib/auth/providers";
-import { ProviderButton } from "@/components/ui/ProviderButton";
-import { AuthError } from "@/components/ui/AuthError";
+import { ProviderButton } from "@/components/ui/provider-button";
+import { AuthError } from "@/components/ui/auth-error";
 import Image from "next/image";
 import { Dumbbell } from "lucide-react";
 import { LoginForm } from "@/components/forms/login-form";

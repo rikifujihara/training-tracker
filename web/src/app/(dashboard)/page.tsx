@@ -2,29 +2,19 @@
 
 import { useSession } from "next-auth/react";
 import { UserRole } from "@prisma/client";
-import MainLayout from "@/components/layouts/MainLayout";
 import CompleteProfileForm from "@/components/forms/CompleteProfileForm";
-import TrainerDashboard from "@/components/ui/TrainerDashboard";
+import TrainerDashboard from "@/components/ui/trainer-dashboard";
 import { useCompleteProfile } from "@/lib/hooks/useUserQueries";
 import { useTrainerDashboard } from "@/lib/hooks/useTrainerQueries";
 import { useState } from "react";
 
 export default function HomePage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [showCompleteProfile, setShowCompleteProfile] = useState(false);
 
   const completeProfileMutation = useCompleteProfile();
   const { data: dashboardData, isLoading: isDashboardLoading } =
     useTrainerDashboard();
-
-  // Show loading while session is loading
-  if (status === "loading") {
-    return (
-      <MainLayout>
-        <div>Loading...</div>
-      </MainLayout>
-    );
-  }
 
   // Handle profile completion
   const handleCompleteProfile = async (data: any) => {
@@ -42,7 +32,7 @@ export default function HomePage() {
     session?.user && (!session.user.name || showCompleteProfile);
 
   return (
-    <MainLayout>
+    <div className="section-spacing">
       {needsProfileCompletion ? (
         <CompleteProfileForm
           onSubmit={handleCompleteProfile}
@@ -51,12 +41,12 @@ export default function HomePage() {
       ) : session?.user.role === UserRole.TRAINER ? (
         <div>
           <div className="mb-6 flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold">
               Trainer Dashboard
             </h1>
             <button
               onClick={() => setShowCompleteProfile(true)}
-              className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80"
             >
               Edit Profile
             </button>
@@ -80,17 +70,17 @@ export default function HomePage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Welcome to Trainer Admin
+          <h2 className="text-2xl font-bold mb-4">
+            Welcome to FitTrack
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             {session?.user.role === UserRole.CLIENT
               ? "Your client dashboard is coming soon!"
               : "Please complete your profile to get started."}
           </p>
           <button
             onClick={() => setShowCompleteProfile(true)}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
           >
             Complete Profile
           </button>
@@ -99,10 +89,10 @@ export default function HomePage() {
 
       {/* Show any error messages */}
       {completeProfileMutation.error && (
-        <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="fixed bottom-4 right-4 bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded">
           {completeProfileMutation.error.message}
         </div>
       )}
-    </MainLayout>
+    </div>
   );
 }
