@@ -26,7 +26,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-export default function EditProgramForm() {
+export default function AssignProgramForm() {
   const form = useForm<AssignTrainingProgramForm>({
     resolver: zodResolver(AssignTrainingProgramFormSchema),
     defaultValues: {
@@ -53,10 +53,10 @@ export default function EditProgramForm() {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="shadcn" {...field} />
+                        <Input placeholder="Program Name" {...field} />
                       </FormControl>
                       <FormDescription>
-                        This is your public display name.
+                        Name your program for future reference.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -64,8 +64,22 @@ export default function EditProgramForm() {
                 />
               </div>
               <div className="flex flex-col gap-1 ">
-                <span>Number of weeks</span>
-                <Input />
+                <FormField
+                  control={form.control}
+                  name="weeksDuration"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Weeks Duration</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Weeks" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        The intended duration of the program.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
           </CardContent>

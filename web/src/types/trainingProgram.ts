@@ -1,5 +1,6 @@
 import z from "zod";
 
+/* ASSIGN PROGRAM FORM */
 export const StretchSchema = z.object({
   name: z.string(),
   stretchIndex: z.number().int(),
@@ -34,4 +35,9 @@ export const AssignTrainingProgramFormSchema = z.object({
   clientId: z.string().nullable(),
   weeksDuration: z.number().int(),
   name: z.string(),
+  days: z.array(TrainingProgramDay),
 });
+
+export type AssignTrainingProgramForm = z.infer<
+  typeof AssignTrainingProgramFormSchema
+>;
