@@ -191,8 +191,12 @@ type CardioPerformance {
 }
 
 type Stretch {
-  name           String
-  stretchIndex   Int
+  name         String
+  stretchIndex Int
+}
+
+type StretchSet {
+  setIndex       Int
   targetReps     Int?
   minHoldSeconds Int?
   maxHoldSeconds Int?

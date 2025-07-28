@@ -265,12 +265,25 @@ export type CardioPerformance = z.infer<typeof CardioPerformanceSchema>
 export const StretchSchema = z.object({
   name: z.string(),
   stretchIndex: z.number().int(),
+})
+
+export type Stretch = z.infer<typeof StretchSchema>
+// STRETCH SET
+//------------------------------------------------------
+
+
+/////////////////////////////////////////
+// STRETCH SET SCHEMA
+/////////////////////////////////////////
+
+export const StretchSetSchema = z.object({
+  setIndex: z.number().int(),
   targetReps: z.number().int().nullable(),
   minHoldSeconds: z.number().int().nullable(),
   maxHoldSeconds: z.number().int().nullable(),
 })
 
-export type Stretch = z.infer<typeof StretchSchema>
+export type StretchSet = z.infer<typeof StretchSetSchema>
 // STRETCH PERFORMANCE
 //------------------------------------------------------
 

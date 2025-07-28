@@ -92,27 +92,29 @@ const AssignedTrainingProgram = {
         stretches: [
           {
             name: "worlds greatest stretch",
-            weight: "bw", // string | null (if bodyweight)
-            totalSeconds: "10 rep",
-            holdSeconds: { min: 2, max: null },
-            restSeconds: {
-              min: 0,
-              max: null,
+            sets: {
+              weight: "bw", // string | null (if bodyweight)
+              totalSeconds: "10 rep",
+              holdSeconds: { min: 2, max: null },
+              restSeconds: {
+                min: 0,
+                max: null,
+              },
+              performances: [
+                {
+                  weekIndex: 0,
+                  weight: "",
+                  reps: 10,
+                  rir: null,
+                },
+                {
+                  weekIndex: 1,
+                  weight: "",
+                  reps: 10,
+                  rir: null,
+                },
+              ],
             },
-            performances: [
-              {
-                weekIndex: 0,
-                weight: "",
-                reps: 10,
-                rir: null,
-              },
-              {
-                weekIndex: 1,
-                weight: "",
-                reps: 10,
-                rir: null,
-              },
-            ],
           },
         ],
       },
