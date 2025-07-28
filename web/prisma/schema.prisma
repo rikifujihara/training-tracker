@@ -51,8 +51,8 @@ model User {
   sessions Session[]
 
   // Training program relations
-  clientPrograms  AssignedTrainingProgram[] @relation("ClientPrograms")
-  trainerPrograms AssignedTrainingProgram[] @relation("TrainerPrograms")
+  clientPrograms  TrainingProgram[] @relation("ClientPrograms")
+  trainerPrograms TrainingProgram[] @relation("TrainerPrograms")
 
   @@map("users")
 }
@@ -104,30 +104,32 @@ enum UserRole {
   CLIENT
 }
 
-// Assigned Training Program START //
-model AssignedTrainingProgram {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  clientId      String @db.ObjectId
-  trainerId     String @db.ObjectId
+// Training Program START //
+model TrainingProgram {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  clientId      String? @db.ObjectId
+  trainerId     String  @db.ObjectId
+  isTemplate    Boolean @default(false)
   weeksDuration Int
+  name          String
   days          Day[]
 
-  client  User @relation("ClientPrograms", fields: [clientId], references: [id], onDelete: Cascade)
-  trainer User @relation("TrainerPrograms", fields: [trainerId], references: [id], onDelete: Cascade)
+  client  User? @relation("ClientPrograms", fields: [clientId], references: [id], onDelete: Cascade)
+  trainer User  @relation("TrainerPrograms", fields: [trainerId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("assignedtrainingprograms")
+  @@map("trainingprograms")
 }
 
 type Day {
   name      String
   dayIndex  Int
-  exercises Exercise[]
+  exercises Exercises
 }
 
-type Exercise {
+type Exercises {
   lifts     Lift[]
   cardio    Cardio[]
   stretches Stretch[]
@@ -144,10 +146,12 @@ type LiftSet {
   setIndex     Int
   minReps      Int
   maxReps      Int
-  minRest      Int
-  maxRest      Int
-  minRir       Int
-  maxRir       Int
+  minWeight    Int
+  maxWeight    Int
+  minRest      Int?
+  maxRest      Int?
+  minRir       Int?
+  maxRir       Int?
   performances LiftPerformance[]
 }
 
@@ -168,39 +172,39 @@ type Cardio {
 
 type CardioSet {
   setIndex     Int
-  minSpeed     Float
-  maxSpeed     Float
-  minIncline   Float
-  maxIncline   Float
-  minTime      Int // minutes
-  maxTime      Int
+  minSpeed     Float?
+  maxSpeed     Float?
+  minIncline   Float?
+  maxIncline   Float?
+  minTime      Int? // minutes
+  maxTime      Int?
   performances CardioPerformance[]
 }
 
 type CardioPerformance {
   weekIndex Int
   date      DateTime // ← DateTime here too
-  speed     Float
-  incline   Float
-  time      Int // actual minutes
+  speed     Float?
+  incline   Float?
+  time      Int? // actual minutes
   notes     String?
 }
 
 type Stretch {
   name           String
   stretchIndex   Int
-  targetReps     Int
-  minHoldSeconds Int
+  targetReps     Int?
+  minHoldSeconds Int?
   maxHoldSeconds Int?
   performances   StretchPerformance[]
 }
 
 type StretchPerformance {
   weekIndex   Int
-  date        DateTime // ← And here
-  reps        Int
-  holdSeconds Int
+  date        DateTime
+  reps        Int?
+  holdSeconds Int?
   notes       String?
 }
 
-// Assigned Training Program End
+// Training Program End

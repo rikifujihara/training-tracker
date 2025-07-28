@@ -18,7 +18,7 @@ export const SessionScalarFieldEnumSchema = z.enum(['id','sessionToken','userId'
 
 export const VerificationTokenScalarFieldEnumSchema = z.enum(['id','identifier','token','expires']);
 
-export const AssignedTrainingProgramScalarFieldEnumSchema = z.enum(['id','clientId','trainerId','weeksDuration','createdAt','updatedAt']);
+export const TrainingProgramScalarFieldEnumSchema = z.enum(['id','clientId','trainerId','isTemplate','weeksDuration','name','createdAt','updatedAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -104,19 +104,21 @@ export const VerificationTokenSchema = z.object({
 export type VerificationToken = z.infer<typeof VerificationTokenSchema>
 
 /////////////////////////////////////////
-// ASSIGNED TRAINING PROGRAM SCHEMA
+// TRAINING PROGRAM SCHEMA
 /////////////////////////////////////////
 
-export const AssignedTrainingProgramSchema = z.object({
+export const TrainingProgramSchema = z.object({
   id: z.string(),
-  clientId: z.string(),
+  clientId: z.string().nullable(),
   trainerId: z.string(),
+  isTemplate: z.boolean(),
   weeksDuration: z.number().int(),
+  name: z.string(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })
 
-export type AssignedTrainingProgram = z.infer<typeof AssignedTrainingProgramSchema>
+export type TrainingProgram = z.infer<typeof TrainingProgramSchema>
 
 /////////////////////////////////////////
 // COMPOSITE TYPES
@@ -135,18 +137,18 @@ export const DaySchema = z.object({
 })
 
 export type Day = z.infer<typeof DaySchema>
-// EXERCISE
+// EXERCISES
 //------------------------------------------------------
 
 
 /////////////////////////////////////////
-// EXERCISE SCHEMA
+// EXERCISES SCHEMA
 /////////////////////////////////////////
 
-export const ExerciseSchema = z.object({
+export const ExercisesSchema = z.object({
 })
 
-export type Exercise = z.infer<typeof ExerciseSchema>
+export type Exercises = z.infer<typeof ExercisesSchema>
 // LIFT
 //------------------------------------------------------
 
@@ -174,10 +176,12 @@ export const LiftSetSchema = z.object({
   setIndex: z.number().int(),
   minReps: z.number().int(),
   maxReps: z.number().int(),
-  minRest: z.number().int(),
-  maxRest: z.number().int(),
-  minRir: z.number().int(),
-  maxRir: z.number().int(),
+  minWeight: z.number().int(),
+  maxWeight: z.number().int(),
+  minRest: z.number().int().nullable(),
+  maxRest: z.number().int().nullable(),
+  minRir: z.number().int().nullable(),
+  maxRir: z.number().int().nullable(),
 })
 
 export type LiftSet = z.infer<typeof LiftSetSchema>
@@ -223,12 +227,12 @@ export type Cardio = z.infer<typeof CardioSchema>
 
 export const CardioSetSchema = z.object({
   setIndex: z.number().int(),
-  minSpeed: z.number(),
-  maxSpeed: z.number(),
-  minIncline: z.number(),
-  maxIncline: z.number(),
-  minTime: z.number().int(),
-  maxTime: z.number().int(),
+  minSpeed: z.number().nullable(),
+  maxSpeed: z.number().nullable(),
+  minIncline: z.number().nullable(),
+  maxIncline: z.number().nullable(),
+  minTime: z.number().int().nullable(),
+  maxTime: z.number().int().nullable(),
 })
 
 export type CardioSet = z.infer<typeof CardioSetSchema>
@@ -243,9 +247,9 @@ export type CardioSet = z.infer<typeof CardioSetSchema>
 export const CardioPerformanceSchema = z.object({
   weekIndex: z.number().int(),
   date: z.coerce.date(),
-  speed: z.number(),
-  incline: z.number(),
-  time: z.number().int(),
+  speed: z.number().nullable(),
+  incline: z.number().nullable(),
+  time: z.number().int().nullable(),
   notes: z.string().nullable(),
 })
 
@@ -261,8 +265,8 @@ export type CardioPerformance = z.infer<typeof CardioPerformanceSchema>
 export const StretchSchema = z.object({
   name: z.string(),
   stretchIndex: z.number().int(),
-  targetReps: z.number().int(),
-  minHoldSeconds: z.number().int(),
+  targetReps: z.number().int().nullable(),
+  minHoldSeconds: z.number().int().nullable(),
   maxHoldSeconds: z.number().int().nullable(),
 })
 
@@ -278,8 +282,8 @@ export type Stretch = z.infer<typeof StretchSchema>
 export const StretchPerformanceSchema = z.object({
   weekIndex: z.number().int(),
   date: z.coerce.date(),
-  reps: z.number().int(),
-  holdSeconds: z.number().int(),
+  reps: z.number().int().nullable(),
+  holdSeconds: z.number().int().nullable(),
   notes: z.string().nullable(),
 })
 

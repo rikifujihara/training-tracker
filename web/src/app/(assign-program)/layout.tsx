@@ -4,7 +4,7 @@ export default function ProgramLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#e5e7eb] w-full flex py-5 px-5">
+    <div className="min-h-screen bg-[#F9FAFB] w-full flex py-5 px-5">
       {children}
     </div>
   );
