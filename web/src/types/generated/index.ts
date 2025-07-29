@@ -137,18 +137,6 @@ export const DaySchema = z.object({
 })
 
 export type Day = z.infer<typeof DaySchema>
-// EXERCISES
-//------------------------------------------------------
-
-
-/////////////////////////////////////////
-// EXERCISES SCHEMA
-/////////////////////////////////////////
-
-export const ExercisesSchema = z.object({
-})
-
-export type Exercises = z.infer<typeof ExercisesSchema>
 // LIFT
 //------------------------------------------------------
 

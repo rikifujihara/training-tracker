@@ -1,44 +1,31 @@
 "use client";
-
-import { Form } from "@/components/ui/form";
-import { Table } from "@/components/ui/table";
+import { Form as FormProvider } from "@/components/ui/form";
 import {
   AssignTrainingProgramForm,
   AssignTrainingProgramFormSchema,
 } from "@/types/trainingProgram";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import ProgramDayTable from "./program-day";
-import AssignProgramFormLiftsHeaders from "./assign-program-lifts-headers";
 import ProgramDetails from "./program-details";
 import AssignProgramHeader from "./assign-program-page-header";
+import Days from "./days/days";
+import { defaultAssignFormValues } from "./form-utilities";
 
 export default function AssignProgramForm() {
   const form = useForm<AssignTrainingProgramForm>({
     resolver: zodResolver(AssignTrainingProgramFormSchema),
-    defaultValues: {
-      name: "12 Week Strength",
-      weeksDuration: 12,
-      clientId: "",
-    },
+    defaultValues: defaultAssignFormValues,
   });
-
-  function onSubmit(values: AssignTrainingProgramForm) {
-    console.log(values);
-  }
 
   return (
     <div className="w-full">
-      <Form {...form}>
-        <AssignProgramHeader />
-        <form className="space-y-8">
+      <FormProvider {...form}>
+        <form className="space-y-8 mt-5">
+          <AssignProgramHeader />
           <ProgramDetails />
-          <Table className="">
-            <AssignProgramFormLiftsHeaders />
-            <ProgramDayTable />
-          </Table>
+          <Days />
         </form>
-      </Form>
+      </FormProvider>
     </div>
   );
 }

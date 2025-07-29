@@ -29,3 +29,14 @@ export function onSubmitError(
     dirtyFields: form.formState.dirtyFields,
   });
 }
+
+export const defaultAssignFormValues = {
+  name: "12 Week Strength",
+  weeksDuration: 12,
+  clientId: "",
+  days: [
+    { name: "Push Day", lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { name: "Push Day", lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { name: "Push Day", lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+  ],
+};

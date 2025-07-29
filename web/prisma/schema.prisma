@@ -126,10 +126,6 @@ model TrainingProgram {
 type Day {
   name      String
   dayIndex  Int
-  exercises Exercises
-}
-
-type Exercises {
   lifts     Lift[]
   cardio    Cardio[]
   stretches Stretch[]

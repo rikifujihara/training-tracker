@@ -49,16 +49,12 @@ export const LiftSchema = z.object({
   sets: z.array(LiftSetSchema),
 });
 
-export const ExercisesSchema = z.object({
-  lifts: z.array(LiftSchema),
-  cardio: z.array(CardioSchema),
-  stretches: z.array(StretchSchema),
-});
-
 export const TrainingProgramDay = z.object({
   name: z.string(),
   dayIndex: z.number().int(),
-  exercises: ExercisesSchema,
+  lifts: z.array(LiftSchema),
+  cardio: z.array(CardioSchema),
+  stretches: z.array(StretchSchema),
 });
 
 export const AssignTrainingProgramFormSchema = z.object({
