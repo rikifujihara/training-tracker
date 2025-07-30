@@ -35,8 +35,12 @@ export const defaultAssignFormValues = {
   weeksDuration: 12,
   clientId: "",
   days: [
-    { name: "Push Day", lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
-    { name: "Push Day", lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
-    { name: "Push Day", lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
+    { lifts: [{ name: "Bench", sets: [{}, {}] }, {}] },
   ],
 };
