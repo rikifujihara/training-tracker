@@ -1,4 +1,4 @@
-import { AssignTrainingProgramForm } from "@/types/trainingProgram";
+import { AssignTrainingProgramForm } from "@/types/programs/trainingProgram";
 import { useFormContext } from "react-hook-form";
 import DayLifts from "./lifts/day-lifts";
 

@@ -1,5 +1,6 @@
+"use client";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { AssignTrainingProgramForm } from "@/types/trainingProgram";
+import { AssignTrainingProgramForm } from "@/types/programs/trainingProgram";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import AssignProgramFormLiftsHeaders from "./assign-program-lifts-headers";
 import Lift from "./lift";

@@ -67,3 +67,5 @@ export const AssignTrainingProgramFormSchema = z.object({
 export type AssignTrainingProgramForm = z.infer<
   typeof AssignTrainingProgramFormSchema
 >;
+
+export type LiftSet = z.infer<typeof LiftSetSchema>;

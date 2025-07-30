@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProgramDay from "./program-day";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { AssignTrainingProgramForm } from "@/types/trainingProgram";
+import { AssignTrainingProgramForm } from "@/types/programs/trainingProgram";
 
 export default function Days() {
   const { control } = useFormContext<AssignTrainingProgramForm>();
@@ -12,7 +12,7 @@ export default function Days() {
 
   return (
     <Tabs defaultValue="day-0" className="">
-      <TabsList>
+      <TabsList className="w-full">
         {fields.map((field, index) => (
           <TabsTrigger key={field.id} value={`day-${index}`}>
             Day {index + 1}

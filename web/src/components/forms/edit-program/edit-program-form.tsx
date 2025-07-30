@@ -22,7 +22,7 @@ import {
 import {
   AssignTrainingProgramForm,
   AssignTrainingProgramFormSchema,
-} from "@/types/trainingProgram";
+} from "@/types/programs/trainingProgram";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 

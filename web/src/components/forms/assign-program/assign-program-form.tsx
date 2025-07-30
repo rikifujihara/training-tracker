@@ -3,7 +3,7 @@ import { Form as FormProvider } from "@/components/ui/form";
 import {
   AssignTrainingProgramForm,
   AssignTrainingProgramFormSchema,
-} from "@/types/trainingProgram";
+} from "@/types/programs/trainingProgram";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import ProgramDetails from "./program-details";

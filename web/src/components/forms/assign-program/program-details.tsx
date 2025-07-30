@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AssignTrainingProgramForm } from "@/types/trainingProgram";
+import { AssignTrainingProgramForm } from "@/types/programs/trainingProgram";
 import { useFormContext } from "react-hook-form";
 
 export default function ProgramDetails() {
