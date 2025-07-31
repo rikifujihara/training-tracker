@@ -10,14 +10,16 @@ export default function AssignProgramFormLiftsHeaders() {
   return (
     <TableHeader>
       <TableRow>
+        <TableHead>Reorder</TableHead>
         <TableHead>Name</TableHead>
         <TableHead>Muscle</TableHead>
+        <TableHead className="text-center">Set</TableHead>
         <TableHead>Weight</TableHead>
-        <TableHead>Set</TableHead>
         <TableHead>Reps</TableHead>
         <TableHead>Rest (s)</TableHead>
         <TableHead>RIR</TableHead>
-        <TableHead>Delete</TableHead>
+        <TableHead>Add</TableHead>
+        <TableHead>Bin</TableHead>
       </TableRow>
     </TableHeader>
   );

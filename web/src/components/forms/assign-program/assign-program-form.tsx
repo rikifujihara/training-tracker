@@ -3,13 +3,13 @@ import { Form as FormProvider } from "@/components/ui/form";
 import {
   AssignTrainingProgramForm,
   AssignTrainingProgramFormSchema,
-} from "@/types/programs/trainingProgram";
+} from "@/types/programs/assignTrainingProgramForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import ProgramDetails from "./program-details";
 import AssignProgramHeader from "./assign-program-page-header";
 import Days from "./days/days";
-import { defaultAssignFormValues } from "./form-utilities";
+import { defaultAssignFormValues } from "@/types/programs/assignTrainingProgramForm";
 
 export default function AssignProgramForm() {
   const form = useForm<AssignTrainingProgramForm>({

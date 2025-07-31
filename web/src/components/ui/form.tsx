@@ -187,119 +187,12 @@ function TableInputField<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="w-[100px]">
+        <FormItem className="">
           <FormControl>
             <Input type={inputType} placeholder={placeholder} {...field} />
           </FormControl>
         </FormItem>
       )}
-    />
-  );
-}
-
-interface RangeInputProps<
-  TFormData extends FieldValues,
-  TFieldPath extends FieldPath<TFormData>
-> {
-  name: TFieldPath; // The base field path like "days.0.lifts.0.sets.0"
-  control: Control<TFormData>; // React Hook Form control
-  minField: ValidNumericField<LiftSet>; // Only allows valid numeric fields from LiftSet
-  maxField: ValidNumericField<LiftSet>; // Only allows valid numeric fields from LiftSet
-  placeholder?: string; // Optional placeholder text
-  className?: string; // Optional CSS classes
-}
-
-function RangeInput<
-  TFormData extends FieldValues,
-  TFieldPath extends FieldPath<TFormData>
->({
-  name,
-  control,
-  minField,
-  maxField,
-  placeholder = "10-15",
-  className,
-}: RangeInputProps<TFormData, TFieldPath>) {
-  // Step 4a: Construct the full field paths by combining base name with field names
-  const minFieldPath = `${name}.${String(minField)}` as FieldPath<TFormData>;
-  const maxFieldPath = `${name}.${String(maxField)}` as FieldPath<TFormData>;
-
-  const minController = useController({
-    name: minFieldPath,
-    control,
-  });
-
-  const maxController = useController({
-    name: maxFieldPath,
-    control,
-  });
-
-  const [inputValue, setInputValue] = React.useState<string>("");
-
-  React.useEffect(() => {
-    setInputValue(getDisplayValue());
-  }, [minController.field.value, maxController.field.value]);
-
-  const getDisplayValue = (): string => {
-    const minVal = minController.field.value;
-    const maxVal = maxController.field.value;
-
-    // Handle different combinations of min/max values
-    if (
-      minVal !== null &&
-      minVal !== undefined &&
-      maxVal !== null &&
-      maxVal !== undefined
-    ) {
-      // Both values exist: "10-15"
-      return `${minVal}-${maxVal}`;
-    } else if (minVal !== null && minVal !== undefined) {
-      // Only min value: "10"
-      return `${minVal}`;
-    } else if (maxVal !== null && maxVal !== undefined) {
-      // Only max value: "15"
-      return `${maxVal}`;
-    }
-    // No values: empty string
-    return "";
-  };
-
-  const handleChange = (inputValue: string): void => {
-    setInputValue(inputValue);
-    // Remove all whitespace for easier parsing
-    const cleaned = inputValue.replace(/\s/g, "");
-
-    // Match range patterns: "10-15", "10to15", "10:15", etc.
-    const rangeMatch = cleaned.match(/^(\d+)[-–—to:]+(\d+)$/i);
-
-    if (rangeMatch) {
-      // Range format detected: "10-15"
-      const min = parseInt(rangeMatch[1], 10);
-      const max = parseInt(rangeMatch[2], 10);
-
-      // Ensure min is not greater than max (optional validation)
-      if (min <= max) {
-        minController.field.onChange(min);
-        maxController.field.onChange(max);
-      }
-      // If min > max, we could swap them or just ignore the input
-    } else if (/^\d+$/.test(cleaned)) {
-      // Single number format: "10" -> use for both min and max
-      const value = parseInt(cleaned, 10);
-      minController.field.onChange(value);
-      maxController.field.onChange(value);
-    } else if (cleaned === "") {
-      // Empty input: clear both fields
-      minController.field.onChange(null);
-      maxController.field.onChange(null);
-    }
-  };
-  return (
-    <Input
-      value={inputValue}
-      onChange={(e) => handleChange(e.target.value)}
-      placeholder={placeholder}
-      className={className}
     />
   );
 }
@@ -314,5 +207,4 @@ export {
   FormMessage,
   FormField,
   TableInputField,
-  RangeInput,
 };

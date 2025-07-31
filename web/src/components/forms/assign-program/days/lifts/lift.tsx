@@ -1,11 +1,9 @@
 "use client";
-
-import { Button } from "@/components/ui/button";
 import { TableInputField } from "@/components/ui/form";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { AssignTrainingProgramForm } from "@/types/programs/trainingProgram";
+import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
+import { PlusCircle, X } from "lucide-react";
 import { Control, useFieldArray, useFormContext } from "react-hook-form";
-import { SetRangeInput } from "./sets/SetRange";
 
 function LiftSet({
   dayIndex,
@@ -22,84 +20,72 @@ function LiftSet({
 
   return (
     <TableRow>
+      {/* Reorder lift Name */}
+      <TableCell>{isFirstRow && <p>arrows here</p>}</TableCell>
+
       {/* Lift Name */}
       <TableCell>
-        <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.name`}
-          control={control}
-        />
+        {isFirstRow && (
+          <TableInputField
+            name={`days.${dayIndex}.lifts.${liftIndex}.name`}
+            control={control}
+          />
+        )}
       </TableCell>
 
       {/* Lift Muscle Group */}
       <TableCell>
+        {isFirstRow && (
+          <TableInputField
+            name={`days.${dayIndex}.lifts.${liftIndex}.muscleGroup`}
+            control={control}
+          />
+        )}
+      </TableCell>
+
+      {/* Set Number */}
+      <TableCell className="text-center">{setIndex + 1}</TableCell>
+
+      {/* Weight Range */}
+      <TableCell>
         <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.muscleGroup`}
+          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.weightRange`}
           control={control}
         />
       </TableCell>
 
       {/* Set Rep Range */}
       <TableCell>
-        <SetRangeInput
-          dayIndex={dayIndex}
-          setIndex={setIndex}
+        <TableInputField
+          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.repRange`}
           control={control}
-          minField="minReps"
-          maxField="maxReps"
-          liftIndex={liftIndex}
         />
       </TableCell>
 
-      {/* Max Reps */}
+      {/* Rest Range (nullable) */}
       <TableCell>
         <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.maxReps`}
-          inputType="number"
+          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.restRange`}
           control={control}
         />
       </TableCell>
 
-      {/* Min Rest (nullable) */}
+      {/* RIR range (nullable) */}
       <TableCell>
         <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.minRest`}
-          inputType="number"
+          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.rirRange`}
           control={control}
         />
       </TableCell>
 
-      {/* Max Rest (nullable) */}
+      {/* Add Set */}
       <TableCell>
-        <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.maxRest`}
-          inputType="number"
-          control={control}
-        />
+        <PlusCircle />
       </TableCell>
 
-      {/* Min RIR (nullable) */}
+      {/* Delete Set */}
       <TableCell>
-        <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.minRir`}
-          inputType="number"
-          control={control}
-        />
-      </TableCell>
-
-      {/* Max RIR (nullable) */}
-      <TableCell>
-        <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.maxRir`}
-          inputType="number"
-          control={control}
-        />
-      </TableCell>
-
-      {/* Delete button - you can add functionality here */}
-      <TableCell>
-        <Button variant="destructive" size="sm">
-          Delete
-        </Button>
+        <X />
       </TableCell>
     </TableRow>
   );
