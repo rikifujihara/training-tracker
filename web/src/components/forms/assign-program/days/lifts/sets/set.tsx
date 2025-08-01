@@ -41,6 +41,7 @@ export default function Set({
         <TableInputField
           name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.weightRange`}
           control={control}
+          placeholder="min-max"
         />
       </TableCell>
 
@@ -49,6 +50,7 @@ export default function Set({
         <TableInputField
           name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.repRange`}
           control={control}
+          placeholder="min-max"
         />
       </TableCell>
 
@@ -57,6 +59,7 @@ export default function Set({
         <TableInputField
           name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.restRange`}
           control={control}
+          placeholder="min-max"
         />
       </TableCell>
 
@@ -65,17 +68,24 @@ export default function Set({
         <TableInputField
           name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.rirRange`}
           control={control}
+          placeholder="min-max"
         />
       </TableCell>
 
       {/* Add Set */}
       <TableCell>
-        <PlusCircle onClick={onAddSet} />
+        <PlusCircle
+          onClick={onAddSet}
+          className="cursor-pointer hover:text-primary"
+        />
       </TableCell>
 
       {/* Delete Set */}
       <TableCell>
-        <X onClick={handleRemoveSet} />
+        <X
+          onClick={handleRemoveSet}
+          className="cursor-pointer hover:text-destructive"
+        />
       </TableCell>
     </>
   );

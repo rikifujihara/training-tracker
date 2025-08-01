@@ -139,132 +139,42 @@ export const defaultAssignFormValues = {
     {
       name: "Day 2",
       dayIndex: 1,
-      lifts: [
-        {
-          muscleGroup: "Back",
-          name: "Barbell Row",
-          liftIndex: 0,
-          sets: [
-            {
-              setIndex: 0,
-              repRange: "8-12",
-              weightRange: "115-135",
-              restRange: "60-90",
-              rirRange: "1-3",
-            },
-          ],
-        },
-      ],
+      lifts: [],
       cardio: [],
       stretches: [],
     },
     {
       name: "Day 3",
       dayIndex: 2,
-      lifts: [
-        {
-          muscleGroup: "Legs",
-          name: "Squat",
-          liftIndex: 0,
-          sets: [
-            {
-              setIndex: 0,
-              repRange: "8-12",
-              weightRange: "185-225",
-              restRange: "90-120",
-              rirRange: "1-3",
-            },
-          ],
-        },
-      ],
+      lifts: [],
       cardio: [],
       stretches: [],
     },
     {
       name: "Day 4",
       dayIndex: 3,
-      lifts: [
-        {
-          muscleGroup: "Shoulders",
-          name: "Overhead Press",
-          liftIndex: 0,
-          sets: [
-            {
-              setIndex: 0,
-              repRange: "8-12",
-              weightRange: "95-115",
-              restRange: "60-90",
-              rirRange: "1-3",
-            },
-          ],
-        },
-      ],
+      lifts: [],
       cardio: [],
       stretches: [],
     },
     {
       name: "Day 5",
       dayIndex: 4,
-      lifts: [
-        {
-          muscleGroup: "Arms",
-          name: "Barbell Curl",
-          liftIndex: 0,
-          sets: [
-            {
-              setIndex: 0,
-              repRange: "10-15",
-              weightRange: "65-85",
-              restRange: "45-60",
-              rirRange: "1-2",
-            },
-          ],
-        },
-      ],
+      lifts: [],
       cardio: [],
       stretches: [],
     },
     {
       name: "Day 6",
       dayIndex: 5,
-      lifts: [
-        {
-          muscleGroup: "Core",
-          name: "Plank",
-          liftIndex: 0,
-          sets: [
-            {
-              setIndex: 0,
-              repRange: "1-1",
-              weightRange: "0-0",
-              restRange: "30-45",
-              rirRange: "",
-            },
-          ],
-        },
-      ],
+      lifts: [],
       cardio: [],
       stretches: [],
     },
     {
       name: "Day 7",
       dayIndex: 6,
-      lifts: [
-        {
-          muscleGroup: "Full Body",
-          name: "Deadlift",
-          liftIndex: 0,
-          sets: [
-            {
-              setIndex: 0,
-              repRange: "5-8",
-              weightRange: "225-275",
-              restRange: "120-180",
-              rirRange: "1-3",
-            },
-          ],
-        },
-      ],
+      lifts: [],
       cardio: [],
       stretches: [],
     },
