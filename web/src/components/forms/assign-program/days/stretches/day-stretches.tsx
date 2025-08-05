@@ -2,85 +2,72 @@
 import { Table, TableBody } from "@/components/ui/table";
 import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import AssignProgramFormLiftsHeaders from "./assign-program-lifts-headers";
-import Lift from "./lift";
+import AssignProgramFormLiftsHeaders from "./assign-program-stretches-headers";
 import { Button } from "@/components/ui/button";
+import Stretch from "./stretch";
 
 interface DayLiftsProps {
   dayIndex: number;
 }
 
-export default function DayLifts({ dayIndex }: DayLiftsProps) {
+export default function DayStretches({ dayIndex }: DayLiftsProps) {
   const { control } = useFormContext<AssignTrainingProgramForm>();
 
   const {
-    fields: liftFields,
-    append: addLift,
-    remove: removeLift,
-    move: moveLift,
+    fields: stretchFields,
+    append: addStretch,
+    remove: removeStretch,
+    move: moveStretch,
   } = useFieldArray({
     control,
-    name: `days.${dayIndex}.lifts`,
+    name: `days.${dayIndex}.stretches`,
   });
 
   // Add a lift
   function handleAddLift() {
-    addLift({
-      muscleGroup: "",
-      name: "",
-      liftIndex: liftFields.length, // Auto-increment based on current number of lifts
-      sets: [
-        {
-          setIndex: 0,
-          repRange: "",
-          weightRange: "",
-          restRange: "",
-          rirRange: "",
-        },
-      ],
-    });
+    addStretch();
   }
 
   // Move lift up in the order
   function handleMoveUp(liftIndex: number) {
     if (liftIndex > 0) {
-      moveLift(liftIndex, liftIndex - 1);
+      moveStretch(liftIndex, liftIndex - 1);
     }
   }
 
   // Move lift down in the order
   function handleMoveDown(liftIndex: number) {
-    if (liftIndex < liftFields.length - 1) {
-      moveLift(liftIndex, liftIndex + 1);
+    if (liftIndex < stretchFields.length - 1) {
+      moveStretch(liftIndex, liftIndex + 1);
     }
   }
 
   // Remove a lift completely
-  function handleRemoveLift(liftIndex: number) {
-    removeLift(liftIndex);
+  function handleRemoveStretch(liftIndex: number) {
+    removeStretch(liftIndex);
   }
 
   return (
     <>
-      <Table className="">
+      <Table className="mt-20">
         <AssignProgramFormLiftsHeaders />
         <TableBody>
-          {liftFields.map((field, index) => (
-            <Lift
+          {stretchFields.map((field, index) => (
+            <Stretch
               key={field.id}
               dayIndex={dayIndex}
-              liftIndex={index}
+              stretchIndex={index}
               canMoveUp={index > 0}
-              canMoveDown={index < liftFields.length - 1}
+              canMoveDown={index < stretchFields.length - 1}
               onMoveUp={() => handleMoveUp(index)}
               onMoveDown={() => handleMoveDown(index)}
-              onRemoveLift={() => handleRemoveLift(index)}
+              onRemoveStretch={() => handleRemoveStretch(index)}
             />
           ))}
         </TableBody>
       </Table>
       <Button className="mt-2" type="button" onClick={handleAddLift}>
-        Add Lift
+        Add Stretch
       </Button>
     </>
   );

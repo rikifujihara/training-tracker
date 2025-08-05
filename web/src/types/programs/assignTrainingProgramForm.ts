@@ -34,8 +34,9 @@ const createOptionalRangeSchema = (fieldName: string) =>
 /* ASSIGN PROGRAM FORM */
 export const StretchSetSchema = z.object({
   stretchIndex: z.number().int(),
-  targetReps: z.number().int().nullable(),
-  holdRange: createOptionalRangeSchema("Hold duration"), // "30-60" seconds
+  weight: z.string().optional(),
+  totalSeconds: z.string().optional(),
+  restSeconds: z.number().int().optional(),
 });
 
 export const StretchSchema = z.object({
@@ -60,14 +61,14 @@ export const CardioSchema = z.object({
 export const LiftSetSchema = z.object({
   setIndex: z.number().int(),
   repRange: createRangeSchema("Reps"), // "8-12"
-  weightRange: createRangeSchema("Weight"), // "135-155"
+  weightRange: createOptionalRangeSchema("Weight"), // "135-155"
   restRange: createOptionalRangeSchema("Rest"), // "60-90" seconds
   rirRange: createOptionalRangeSchema("RIR"), // "1-3"
 });
 
 export const LiftSchema = z.object({
-  muscleGroup: z.string(),
-  name: z.string(),
+  muscleGroup: z.string().min(1, "Muscle group must be defined"),
+  name: z.string().min(1, "Exercise name must be defined"),
   liftIndex: z.number().int(),
   sets: z.array(LiftSetSchema),
 });
@@ -109,7 +110,7 @@ export const formatRange = (min: number, max: number): string => {
 
 // Changes to this is very important because it includes
 // default values which will determine the shape of the form which the user cannot change
-export const defaultAssignFormValues = {
+export const defaultAssignFormValues: AssignTrainingProgramForm = {
   name: "12 Week Strength",
   weeksDuration: 12,
   clientId: null,
@@ -134,7 +135,13 @@ export const defaultAssignFormValues = {
         },
       ],
       cardio: [],
-      stretches: [],
+      stretches: [
+        {
+          name: "Pigeon Stretch",
+          stretchIndex: 0,
+          sets: [{ stretchIndex: 0 }],
+        },
+      ],
     },
     {
       name: "Day 2",

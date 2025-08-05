@@ -2,32 +2,25 @@
 import { TableInputField } from "@/components/ui/form";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
-import {
-  ChevronDown,
-  ChevronDownCircle,
-  ChevronUp,
-  ChevronUpCircle,
-  PlusCircle,
-  X,
-} from "lucide-react";
-import { Control, useFieldArray, useFormContext } from "react-hook-form";
+import { ChevronDownCircle, ChevronUpCircle } from "lucide-react";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 import Set from "./sets/set";
 
-export default function Lift({
+export default function Stretch({
   dayIndex,
-  liftIndex,
+  stretchIndex,
   onMoveUp,
   onMoveDown,
-  onRemoveLift,
+  onRemoveStretch,
   canMoveUp,
   canMoveDown,
 }: {
-  liftIndex: number;
+  stretchIndex: number;
   dayIndex: number;
   onMoveUp: () => void;
   onMoveDown: () => void;
-  onRemoveLift: () => void;
+  onRemoveStretch: () => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
 }) {
@@ -39,7 +32,7 @@ export default function Lift({
     append: addSet,
   } = useFieldArray({
     control,
-    name: `days.${dayIndex}.lifts.${liftIndex}.sets`,
+    name: `days.${dayIndex}.stretches.${stretchIndex}.sets`,
   });
 
   function isFirstRow(index: number) {
@@ -47,7 +40,9 @@ export default function Lift({
   }
 
   function handleAddSet() {
-    const currentSets = getValues(`days.${dayIndex}.lifts.${liftIndex}.sets`);
+    const currentSets = getValues(
+      `days.${dayIndex}.stretches.${stretchIndex}.sets`
+    );
     const previousSet =
       currentSets && currentSets.length > 0
         ? currentSets[currentSets.length - 1]
@@ -66,7 +61,7 @@ export default function Lift({
     <>
       {setFields.map((field, index) => (
         <TableRow key={field.id}>
-          {/* Reorder Lifts */}
+          {/* Reorder Stretches */}
           <TableCell>
             {isFirstRow(index) && (
               <div className="flex justify-center">
@@ -82,16 +77,16 @@ export default function Lift({
             )}
           </TableCell>
 
-          {/* Lift Index */}
+          {/* Stretch Index */}
           <TableCell className="text-center">
-            {isFirstRow(index) && liftIndex + 1}
+            {isFirstRow(index) && stretchIndex + 1}
           </TableCell>
 
-          {/* Lift Name */}
+          {/* Stretch Name */}
           <TableCell>
             {isFirstRow(index) && (
               <TableInputField
-                name={`days.${dayIndex}.lifts.${liftIndex}.name`}
+                name={`days.${dayIndex}.stretches.${stretchIndex}.name`}
                 control={control}
               />
             )}
@@ -101,17 +96,16 @@ export default function Lift({
           <TableCell>
             {isFirstRow(index) && (
               <TableInputField
-                name={`days.${dayIndex}.lifts.${liftIndex}.muscleGroup`}
+                name={`days.${dayIndex}.stretches.${stretchIndex}.muscleGroup`}
                 control={control}
               />
             )}
           </TableCell>
           <Set
             dayIndex={dayIndex}
-            liftIndex={liftIndex}
             setIndex={index}
             control={control}
-            onRemoveLift={onRemoveLift}
+            onRemoveLift={onRemoveStretch}
             onAddSet={handleAddSet}
             onRemoveSet={() => removeSet(index)}
             isLastSet={index == setFields.length - 1}

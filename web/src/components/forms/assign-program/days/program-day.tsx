@@ -1,6 +1,7 @@
 import { AssignTrainingProgramForm } from "@/types/programs/trainingProgram";
 import { useFormContext } from "react-hook-form";
 import DayLifts from "./lifts/day-lifts";
+import DayStretches from "./stretches/day-stretches";
 
 interface ProgramDayProps {
   dayIndex: number;
@@ -13,6 +14,7 @@ export default function ProgramDay({ dayIndex }: ProgramDayProps) {
   return (
     <>
       <DayLifts dayIndex={dayIndex} />
+      <DayStretches dayIndex={dayIndex} />
     </>
   );
 }

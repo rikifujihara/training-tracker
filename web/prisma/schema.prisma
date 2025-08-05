@@ -189,22 +189,24 @@ type CardioPerformance {
 type Stretch {
   name         String
   stretchIndex Int
+  sets         StretchSet[]
 }
 
+// I'm not flattening the stretch set into the Stretch for now incase we want to introduce sets.
 type StretchSet {
-  setIndex       Int
-  targetReps     Int?
-  minHoldSeconds Int?
-  maxHoldSeconds Int?
-  performances   StretchPerformance[]
+  setIndex     Int
+  weight       String?
+  totalSeconds String?
+  holdSeconds  String?
+  restSeconds  Int?
+  performances StretchPerformance[]
 }
 
 type StretchPerformance {
-  weekIndex   Int
-  date        DateTime
-  reps        Int?
-  holdSeconds Int?
-  notes       String?
+  weekIndex Int
+  date      DateTime
+  completed Boolean
+  notes     String?
 }
 
 // Training Program End

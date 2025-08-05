@@ -266,9 +266,10 @@ export type Stretch = z.infer<typeof StretchSchema>
 
 export const StretchSetSchema = z.object({
   setIndex: z.number().int(),
-  targetReps: z.number().int().nullable(),
-  minHoldSeconds: z.number().int().nullable(),
-  maxHoldSeconds: z.number().int().nullable(),
+  weight: z.string().nullable(),
+  totalSeconds: z.string().nullable(),
+  holdSeconds: z.string().nullable(),
+  restSeconds: z.number().int().nullable(),
 })
 
 export type StretchSet = z.infer<typeof StretchSetSchema>
@@ -283,8 +284,7 @@ export type StretchSet = z.infer<typeof StretchSetSchema>
 export const StretchPerformanceSchema = z.object({
   weekIndex: z.number().int(),
   date: z.coerce.date(),
-  reps: z.number().int().nullable(),
-  holdSeconds: z.number().int().nullable(),
+  completed: z.boolean(),
   notes: z.string().nullable(),
 })
 
