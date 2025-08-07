@@ -10,10 +10,7 @@ export default function AssignProgramFormLiftsHeaders() {
   return (
     <TableHeader>
       <TableRow>
-        <TableHead>
-          <p className="text-lg text-ring w-program-first-col-width">Lifts</p>
-        </TableHead>
-        <TableHead></TableHead>
+        <TableHead>{/* Space for reordering */}</TableHead>
         <TableHead>Name</TableHead>
         <TableHead>Muscle</TableHead>
         <TableHead className="text-center">Set</TableHead>
@@ -21,8 +18,8 @@ export default function AssignProgramFormLiftsHeaders() {
         <TableHead>Reps</TableHead>
         <TableHead>Rest (s)</TableHead>
         <TableHead>RIR</TableHead>
-        <TableHead></TableHead>
-        <TableHead></TableHead>
+        <TableHead>{/* Space for add set button */}</TableHead>
+        <TableHead>{/* Space for delete set button */}</TableHead>
       </TableRow>
     </TableHeader>
   );

@@ -2,15 +2,8 @@
 import { TableInputField } from "@/components/ui/form";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
-import {
-  ChevronDown,
-  ChevronDownCircle,
-  ChevronUp,
-  ChevronUpCircle,
-  PlusCircle,
-  X,
-} from "lucide-react";
-import { Control, useFieldArray, useFormContext } from "react-hook-form";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 import Set from "./sets/set";
 
@@ -69,22 +62,17 @@ export default function Lift({
           {/* Reorder Lifts */}
           <TableCell>
             {isFirstRow(index) && (
-              <div className="flex justify-start">
-                <ChevronUpCircle
+              <div className="flex flex-col justify-start">
+                <ChevronUp
                   color="#808080"
                   onClick={canMoveUp ? onMoveUp : () => {}}
                 />
-                <ChevronDownCircle
+                <ChevronDown
                   color="#808080"
                   onClick={canMoveDown ? onMoveDown : () => {}}
                 />
               </div>
             )}
-          </TableCell>
-
-          {/* Lift Index */}
-          <TableCell className="text-center">
-            {isFirstRow(index) && liftIndex + 1}
           </TableCell>
 
           {/* Lift Name */}
