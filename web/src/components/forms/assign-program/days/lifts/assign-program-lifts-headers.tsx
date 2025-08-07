@@ -11,9 +11,9 @@ export default function AssignProgramFormLiftsHeaders() {
     <TableHeader>
       <TableRow>
         <TableHead>
-          <p className="text-lg text-ring">Lifts</p>
+          <p className="text-lg text-ring w-program-first-col-width">Lifts</p>
         </TableHead>
-        <TableHead>Exercise</TableHead>
+        <TableHead></TableHead>
         <TableHead>Name</TableHead>
         <TableHead>Muscle</TableHead>
         <TableHead className="text-center">Set</TableHead>

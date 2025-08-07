@@ -5,6 +5,7 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import AssignProgramFormLiftsHeaders from "./assign-program-stretches-headers";
 import { Button } from "@/components/ui/button";
 import Stretch from "./stretch";
+import { PlusCircle } from "lucide-react";
 
 interface DayLiftsProps {
   dayIndex: number;
@@ -67,7 +68,7 @@ export default function DayStretches({ dayIndex }: DayLiftsProps) {
         </TableBody>
       </Table>
       <Button className="mt-2" type="button" onClick={handleAddLift}>
-        Add Stretch
+        <PlusCircle /> Stretch
       </Button>
     </>
   );

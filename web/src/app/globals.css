@@ -41,6 +41,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Program Table Variables */
+  --spacing-program-first-col-width: var(--program-first-col-width);
 }
 
 :root {
@@ -51,6 +54,10 @@
   --spacing-page-mobile: 1rem; /* 16px - mobile page padding */
   --spacing-container: 2rem; /* 32px - container padding */
   --spacing-section: 3rem; /* 48px - section spacing */
+
+  /* Program spacing variables */
+  --program-first-col-width: 80px; 
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);

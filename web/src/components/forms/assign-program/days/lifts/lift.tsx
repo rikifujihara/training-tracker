@@ -69,7 +69,7 @@ export default function Lift({
           {/* Reorder Lifts */}
           <TableCell>
             {isFirstRow(index) && (
-              <div className="flex justify-center">
+              <div className="flex justify-start">
                 <ChevronUpCircle
                   color="#808080"
                   onClick={canMoveUp ? onMoveUp : () => {}}

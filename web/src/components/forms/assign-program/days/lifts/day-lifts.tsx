@@ -5,6 +5,7 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import AssignProgramFormLiftsHeaders from "./assign-program-lifts-headers";
 import Lift from "./lift";
 import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
 
 interface DayLiftsProps {
   dayIndex: number;
@@ -80,7 +81,7 @@ export default function DayLifts({ dayIndex }: DayLiftsProps) {
         </TableBody>
       </Table>
       <Button className="mt-2" type="button" onClick={handleAddLift}>
-        Add Lift
+        <PlusCircle /> Lift
       </Button>
     </>
   );

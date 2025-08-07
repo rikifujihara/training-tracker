@@ -6,7 +6,7 @@ export default function AssignProgramFormLiftsHeaders() {
         <TableHead>
           <p className="text-lg text-ring">Stretches</p>
         </TableHead>
-        <TableHead>Exercise</TableHead>
+        <TableHead></TableHead>
         <TableHead>Name</TableHead>
         <TableHead className="text-center">Set</TableHead>
         <TableHead>Weight</TableHead>

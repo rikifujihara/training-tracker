@@ -189,7 +189,12 @@ function TableInputField<T extends FieldValues>({
       render={({ field }) => (
         <FormItem className="">
           <FormControl>
-            <Input type={inputType} placeholder={placeholder} {...field} />
+            <Input
+              // variant="ghost"
+              type={inputType}
+              placeholder={placeholder}
+              {...field}
+            />
           </FormControl>
         </FormItem>
       )}
