@@ -12,9 +12,13 @@ export default function Days() {
 
   return (
     <Tabs defaultValue="day-0" className="">
-      <TabsList className="w-full">
+      <TabsList variant="underline">
         {fields.map((field, index) => (
-          <TabsTrigger key={field.id} value={`day-${index}`}>
+          <TabsTrigger
+            variant="underline"
+            key={field.id}
+            value={`day-${index}`}
+          >
             Day {index + 1}
           </TabsTrigger>
         ))}
