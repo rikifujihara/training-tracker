@@ -7,7 +7,6 @@ import {
   Control,
   Controller,
   FormProvider,
-  useController,
   useFormContext,
   useFormState,
   type ControllerProps,
@@ -17,17 +16,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./select";
-import { Textarea } from "./textarea";
 import { Input } from "./input";
-import { ValidNumericField } from "@/types/helpers";
-import { LiftSet } from "@/types/programs/trainingProgram";
 
 const Form = FormProvider;
 
@@ -190,7 +179,7 @@ function TableInputField<T extends FieldValues>({
         <FormItem className="">
           <FormControl>
             <Input
-              // variant="ghost"
+              className="rounded-xs font-medium"
               type={inputType}
               placeholder={placeholder}
               {...field}

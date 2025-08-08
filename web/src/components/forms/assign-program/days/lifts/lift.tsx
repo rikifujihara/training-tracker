@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 import Set from "./sets/set";
+import { Button } from "@/components/ui/button";
 
 export default function Lift({
   dayIndex,
@@ -63,14 +64,20 @@ export default function Lift({
           <TableCell>
             {isFirstRow(index) && (
               <div className="flex flex-col justify-start">
-                <ChevronUp
-                  color="#808080"
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={canMoveUp ? onMoveUp : () => {}}
-                />
-                <ChevronDown
-                  color="#808080"
+                >
+                  <ChevronUp size="16" color="#808080" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={canMoveDown ? onMoveDown : () => {}}
-                />
+                >
+                  <ChevronDown size="16" color="#808080" />
+                </Button>
               </div>
             )}
           </TableCell>
@@ -93,6 +100,12 @@ export default function Lift({
                 control={control}
               />
             )}
+          </TableCell>
+
+          {/* Set Number */}
+          <TableCell className="text-center">
+            {" "}
+            {isFirstRow(index) && setFields.length}
           </TableCell>
           <Set
             dayIndex={dayIndex}

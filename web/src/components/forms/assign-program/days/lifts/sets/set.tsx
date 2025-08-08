@@ -1,8 +1,9 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { TableInputField } from "@/components/ui/form";
 import { TableCell } from "@/components/ui/table";
 import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
-import { PlusCircle, X } from "lucide-react";
+import { Plus, PlusCircle, X } from "lucide-react";
 import { Control } from "react-hook-form";
 
 export default function Set({
@@ -35,8 +36,8 @@ export default function Set({
   }
   return (
     <>
-      {/* Set Number */}
-      <TableCell className="text-center">{setIndex + 1}</TableCell>
+      {/* Set Number
+      <TableCell className="text-center">{setIndex + 1}</TableCell> */}
 
       {/* Weight Range */}
       <TableCell>
@@ -77,19 +78,29 @@ export default function Set({
       {/* Add Set (only show for last set) */}
       <TableCell>
         {isLastSet && (
-          <PlusCircle
+          <Button
+            variant="ghost"
+            size="icon"
+            type="button"
             onClick={onAddSet}
-            className="cursor-pointer hover:text-primary"
-          />
+            className="cursor-pointer hover:text-chart-2"
+          >
+            <Plus className="cursor-pointer hover:text-primary" />
+          </Button>
         )}
       </TableCell>
 
       {/* Delete Set */}
       <TableCell>
-        <X
-          onClick={handleRemoveSet}
+        <Button
+          variant="ghost"
+          size="icon"
+          type="button"
           className="cursor-pointer hover:text-destructive"
-        />
+          onClick={handleRemoveSet}
+        >
+          <X />
+        </Button>
       </TableCell>
     </>
   );
