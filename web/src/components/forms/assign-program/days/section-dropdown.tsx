@@ -6,27 +6,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus } from "lucide-react";
-
-const sectionTypes = {
-  lifts: {
-    label: "Lifts",
-    icon: "🏋️",
-    color: "bg-blue-50 border-blue-200 text-blue-700",
-  },
-  stretches: {
-    label: "Stretches",
-    icon: "🧘",
-    color: "bg-green-50 border-green-200 text-green-700",
-  },
-  cardio: {
-    label: "Cardio",
-    icon: "🏃",
-    color: "bg-red-50 border-red-200 text-red-700",
-  },
-};
+import { SectionType, SECTION_CONFIGS } from "./section-badges";
 
 interface DaySectionDropDownProps {
-  handleAddSection: (section: string) => void;
+  handleAddSection: (section: SectionType) => void;
 }
 
 export function DaySectionDropDown({
@@ -43,27 +26,16 @@ export function DaySectionDropDown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[160px]" align="center">
-        <DropdownMenuItem
-          onClick={() => handleAddSection("lifts")}
-          className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
-        >
-          <span className="text-lg">🏋️</span>{" "}
-          <span className="font-medium">Lifts</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => handleAddSection("cardio")}
-          className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
-        >
-          <span className="text-lg">🏃</span>{" "}
-          <span className="font-medium">Cardio</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => handleAddSection("stretches")}
-          className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
-        >
-          <span className="text-lg">🧘</span>{" "}
-          <span className="font-medium">Stretches</span>
-        </DropdownMenuItem>
+        {Object.entries(SECTION_CONFIGS).map(([sectionType, config]) => (
+          <DropdownMenuItem
+            key={sectionType}
+            onClick={() => handleAddSection(sectionType as SectionType)}
+            className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
+          >
+            <span className="text-lg">{config.icon}</span>
+            <span className="font-medium">{config.label}</span>
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

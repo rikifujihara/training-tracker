@@ -7,11 +7,12 @@ import { Plus } from "lucide-react";
 import ProgramExerciseCard from "../program-exercise-card";
 import AssignProgramFormStretchesHeaders from "./assign-program-stretches-headers";
 
-interface DayLiftsProps {
+interface DayStretchesProps {
   dayIndex: number;
+  onRemoveSection: () => void;
 }
 
-export default function DayStretches({ dayIndex }: DayLiftsProps) {
+export default function DayStretches({ dayIndex, onRemoveSection }: DayStretchesProps) {
   const { control } = useFormContext<AssignTrainingProgramForm>();
 
   const {
@@ -60,8 +61,8 @@ export default function DayStretches({ dayIndex }: DayLiftsProps) {
     removeStretch(liftIndex);
   }
 
-  function handleRemoveSection() {
-    removeStretch();
+  function handleRemoveStretchesSection() {
+    onRemoveSection();
   }
 
   const tableBody = stretchFields.map((field, index) => (
@@ -83,7 +84,7 @@ export default function DayStretches({ dayIndex }: DayLiftsProps) {
       title="Stretches"
       tableHeaders={<AssignProgramFormStretchesHeaders />}
       tableBody={tableBody}
-      onDelete={handleRemoveSection}
+      onDelete={handleRemoveStretchesSection}
       addButton={{
         icon: <Plus />,
         text: "Stretch",

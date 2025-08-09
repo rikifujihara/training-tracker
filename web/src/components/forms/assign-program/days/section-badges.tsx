@@ -44,13 +44,6 @@ export default function SectionBadges({
         >
           <span>{SECTION_CONFIGS[sectionType].icon}</span>
           {SECTION_CONFIGS[sectionType].label}
-          <button
-            type="button"
-            onClick={() => onRemoveSection(sectionType)}
-            className="hover:bg-black hover:bg-opacity-10 rounded-full p-0.5 transition-colors"
-          >
-            <X size={12} />
-          </button>
         </div>
       ))}
     </div>

@@ -8,9 +8,10 @@ import ProgramExerciseCard from "../program-exercise-card";
 
 interface DayLiftsProps {
   dayIndex: number;
+  onRemoveSection: () => void;
 }
 
-export default function DayLifts({ dayIndex }: DayLiftsProps) {
+export default function DayLifts({ dayIndex, onRemoveSection }: DayLiftsProps) {
   const { control } = useFormContext<AssignTrainingProgramForm>();
 
   const {
@@ -61,8 +62,7 @@ export default function DayLifts({ dayIndex }: DayLiftsProps) {
   }
   // Handle deleting the entire lifts section
   function handleDeleteLiftsSection() {
-    // Implement your logic here - maybe remove all lifts or hide the section
-    removeLift();
+    onRemoveSection();
   }
 
   const tableBody = liftFields.map((field, index) => (

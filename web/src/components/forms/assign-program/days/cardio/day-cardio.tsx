@@ -8,9 +8,10 @@ import AssignProgramFormCardioHeaders from "./assign-program-cardio-headers";
 
 interface DayCardioProps {
   dayIndex: number;
+  onRemoveSection: () => void;
 }
 
-export default function DayCardio({ dayIndex }: DayCardioProps) {
+export default function DayCardio({ dayIndex, onRemoveSection }: DayCardioProps) {
   const { control } = useFormContext<AssignTrainingProgramForm>();
 
   const {
@@ -64,8 +65,8 @@ export default function DayCardio({ dayIndex }: DayCardioProps) {
     />
   ));
 
-  function handleRemoveSecion() {
-    removeCardio();
+  function handleRemoveCardioSection() {
+    onRemoveSection();
   }
 
   return (
@@ -74,7 +75,7 @@ export default function DayCardio({ dayIndex }: DayCardioProps) {
       title="Cardio"
       tableHeaders={<AssignProgramFormCardioHeaders />}
       tableBody={tableBody}
-      onDelete={handleRemoveSecion}
+      onDelete={handleRemoveCardioSection}
       addButton={{
         icon: <Plus />,
         text: "Cardio",
