@@ -11,7 +11,7 @@ export default function Days() {
   });
 
   return (
-    <Tabs defaultValue="day-0">
+    <Tabs className="space-y-2" defaultValue="day-0">
       <TabsList variant="underline" className="w-full">
         {fields.map((field, index) => (
           <TabsTrigger
