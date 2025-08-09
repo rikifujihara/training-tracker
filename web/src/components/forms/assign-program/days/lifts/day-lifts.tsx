@@ -1,11 +1,10 @@
 "use client";
-import { Table, TableBody } from "@/components/ui/table";
 import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import AssignProgramFormLiftsHeaders from "./assign-program-lifts-headers";
 import Lift from "./lift";
-import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Plus } from "lucide-react";
+import ProgramExerciseCard from "../ProgramExerciseCard";
 
 interface DayLiftsProps {
   dayIndex: number;
@@ -60,49 +59,41 @@ export default function DayLifts({ dayIndex }: DayLiftsProps) {
   function handleRemoveLift(liftIndex: number) {
     removeLift(liftIndex);
   }
+  // Handle deleting the entire lifts section
+  function handleDeleteLiftsSection() {
+    // Implement your logic here - maybe remove all lifts or hide the section
+    console.log("Delete lifts section");
+  }
+
+  const tableBody = (
+    <>
+      {liftFields.map((field, index) => (
+        <Lift
+          key={field.id}
+          dayIndex={dayIndex}
+          liftIndex={index}
+          canMoveUp={index > 0}
+          canMoveDown={index < liftFields.length - 1}
+          onMoveUp={() => handleMoveUp(index)}
+          onMoveDown={() => handleMoveDown(index)}
+          onRemoveLift={() => handleRemoveLift(index)}
+        />
+      ))}
+    </>
+  );
 
   return (
-    <>
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <span>🏋️</span>
-            <h3 className="text-lg font-semibold text-gray-900">Lifts</h3>
-          </div>
-          <button
-            onClick={() => {}}
-            className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-          >
-            <X size={16} />
-          </button>
-        </div>
-        <Table className="">
-          <AssignProgramFormLiftsHeaders />
-          <TableBody>
-            {liftFields.map((field, index) => (
-              <Lift
-                key={field.id}
-                dayIndex={dayIndex}
-                liftIndex={index}
-                canMoveUp={index > 0}
-                canMoveDown={index < liftFields.length - 1}
-                onMoveUp={() => handleMoveUp(index)}
-                onMoveDown={() => handleMoveDown(index)}
-                onRemoveLift={() => handleRemoveLift(index)}
-              />
-            ))}
-          </TableBody>
-        </Table>
-        <div className="p-4 border-t border-gray-100">
-          <Button
-            className="mt-2 rounded-xs"
-            type="button"
-            onClick={handleAddLift}
-          >
-            <Plus /> Lift
-          </Button>
-        </div>
-      </div>
-    </>
+    <ProgramExerciseCard
+      emoji="🏋️"
+      title="Lifts"
+      tableHeaders={<AssignProgramFormLiftsHeaders />}
+      tableBody={tableBody}
+      onDelete={handleDeleteLiftsSection}
+      addButton={{
+        icon: <Plus />,
+        text: "Lift",
+        onClick: handleAddLift,
+      }}
+    />
   );
 }

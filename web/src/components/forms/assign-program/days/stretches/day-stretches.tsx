@@ -5,7 +5,8 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import AssignProgramFormLiftsHeaders from "./assign-program-stretches-headers";
 import { Button } from "@/components/ui/button";
 import Stretch from "./stretch";
-import { PlusCircle } from "lucide-react";
+import { Plus, PlusCircle } from "lucide-react";
+import ProgramExerciseCard from "../ProgramExerciseCard";
 
 interface DayLiftsProps {
   dayIndex: number;
@@ -48,28 +49,31 @@ export default function DayStretches({ dayIndex }: DayLiftsProps) {
     removeStretch(liftIndex);
   }
 
+  const tableBody = stretchFields.map((field, index) => (
+    <Stretch
+      key={field.id}
+      dayIndex={dayIndex}
+      stretchIndex={index}
+      canMoveUp={index > 0}
+      canMoveDown={index < stretchFields.length - 1}
+      onMoveUp={() => handleMoveUp(index)}
+      onMoveDown={() => handleMoveDown(index)}
+      onRemoveStretch={() => handleRemoveStretch(index)}
+    />
+  ));
+
   return (
-    <>
-      <Table className="mt-20">
-        <AssignProgramFormLiftsHeaders />
-        <TableBody>
-          {stretchFields.map((field, index) => (
-            <Stretch
-              key={field.id}
-              dayIndex={dayIndex}
-              stretchIndex={index}
-              canMoveUp={index > 0}
-              canMoveDown={index < stretchFields.length - 1}
-              onMoveUp={() => handleMoveUp(index)}
-              onMoveDown={() => handleMoveDown(index)}
-              onRemoveStretch={() => handleRemoveStretch(index)}
-            />
-          ))}
-        </TableBody>
-      </Table>
-      <Button className="mt-2" type="button" onClick={handleAddLift}>
-        <PlusCircle /> Stretch
-      </Button>
-    </>
+    <ProgramExerciseCard
+      emoji="🏋️"
+      title="Lifts"
+      tableHeaders={<AssignProgramFormLiftsHeaders />}
+      tableBody={tableBody}
+      onDelete={() => {}}
+      addButton={{
+        icon: <Plus />,
+        text: "Lift",
+        onClick: handleAddLift,
+      }}
+    />
   );
 }
