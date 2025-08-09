@@ -4,7 +4,7 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import AssignProgramFormLiftsHeaders from "./assign-program-lifts-headers";
 import Lift from "./lift";
 import { Plus } from "lucide-react";
-import ProgramExerciseCard from "../ProgramExerciseCard";
+import ProgramExerciseCard from "../program-exercise-card";
 
 interface DayLiftsProps {
   dayIndex: number;
@@ -62,25 +62,21 @@ export default function DayLifts({ dayIndex }: DayLiftsProps) {
   // Handle deleting the entire lifts section
   function handleDeleteLiftsSection() {
     // Implement your logic here - maybe remove all lifts or hide the section
-    console.log("Delete lifts section");
+    removeLift();
   }
 
-  const tableBody = (
-    <>
-      {liftFields.map((field, index) => (
-        <Lift
-          key={field.id}
-          dayIndex={dayIndex}
-          liftIndex={index}
-          canMoveUp={index > 0}
-          canMoveDown={index < liftFields.length - 1}
-          onMoveUp={() => handleMoveUp(index)}
-          onMoveDown={() => handleMoveDown(index)}
-          onRemoveLift={() => handleRemoveLift(index)}
-        />
-      ))}
-    </>
-  );
+  const tableBody = liftFields.map((field, index) => (
+    <Lift
+      key={field.id}
+      dayIndex={dayIndex}
+      liftIndex={index}
+      canMoveUp={index > 0}
+      canMoveDown={index < liftFields.length - 1}
+      onMoveUp={() => handleMoveUp(index)}
+      onMoveDown={() => handleMoveDown(index)}
+      onRemoveLift={() => handleRemoveLift(index)}
+    />
+  ));
 
   return (
     <ProgramExerciseCard

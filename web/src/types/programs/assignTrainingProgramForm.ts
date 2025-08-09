@@ -33,14 +33,15 @@ const createOptionalRangeSchema = (fieldName: string) =>
 
 /* ASSIGN PROGRAM FORM */
 export const StretchSetSchema = z.object({
-  stretchIndex: z.number().int(),
+  setIndex: z.number().int(),
   weight: z.string().optional(),
   totalSeconds: z.string().optional(),
-  restSeconds: z.number().int().optional(),
+  holdSeconds: z.string().optional(),
+  restSeconds: z.string().optional(),
 });
 
 export const StretchSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, "Stretch name must be defined"),
   stretchIndex: z.number().int(),
   sets: z.array(StretchSetSchema),
 });
@@ -53,7 +54,7 @@ export const CardioSetSchema = z.object({
 });
 
 export const CardioSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, "Cardio name must be defined"),
   cardioIndex: z.number().int(),
   sets: z.array(CardioSetSchema),
 });
@@ -134,12 +135,28 @@ export const defaultAssignFormValues: AssignTrainingProgramForm = {
           ],
         },
       ],
-      cardio: [],
+      cardio: [
+        {
+          name: "",
+          cardioIndex: 0,
+          sets: [
+            { setIndex: 0, speedRange: "", inclineRange: "", timeRange: "" },
+          ],
+        },
+      ],
       stretches: [
         {
-          name: "Pigeon Stretch",
+          name: "",
           stretchIndex: 0,
-          sets: [{ stretchIndex: 0 }],
+          sets: [
+            {
+              setIndex: 0,
+              weight: "",
+              totalSeconds: "",
+              holdSeconds: "",
+              restSeconds: "",
+            },
+          ],
         },
       ],
     },

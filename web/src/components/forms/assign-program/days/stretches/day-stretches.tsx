@@ -1,12 +1,11 @@
 "use client";
-import { Table, TableBody } from "@/components/ui/table";
 import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import AssignProgramFormLiftsHeaders from "./assign-program-stretches-headers";
-import { Button } from "@/components/ui/button";
 import Stretch from "./stretch";
-import { Plus, PlusCircle } from "lucide-react";
-import ProgramExerciseCard from "../ProgramExerciseCard";
+import { Plus } from "lucide-react";
+import ProgramExerciseCard from "../program-exercise-card";
+import AssignProgramFormStretchesHeaders from "./assign-program-stretches-headers";
 
 interface DayLiftsProps {
   dayIndex: number;
@@ -25,9 +24,21 @@ export default function DayStretches({ dayIndex }: DayLiftsProps) {
     name: `days.${dayIndex}.stretches`,
   });
 
-  // Add a lift
-  function handleAddLift() {
-    addStretch();
+  // Add a stretch
+  function handleAddStretch() {
+    addStretch({
+      stretchIndex: stretchFields.length,
+      name: "",
+      sets: [
+        {
+          setIndex: 0,
+          weight: "",
+          totalSeconds: "",
+          holdSeconds: "",
+          restSeconds: "",
+        },
+      ],
+    });
   }
 
   // Move lift up in the order
@@ -49,6 +60,10 @@ export default function DayStretches({ dayIndex }: DayLiftsProps) {
     removeStretch(liftIndex);
   }
 
+  function handleRemoveSection() {
+    removeStretch();
+  }
+
   const tableBody = stretchFields.map((field, index) => (
     <Stretch
       key={field.id}
@@ -64,15 +79,15 @@ export default function DayStretches({ dayIndex }: DayLiftsProps) {
 
   return (
     <ProgramExerciseCard
-      emoji="🏋️"
-      title="Lifts"
-      tableHeaders={<AssignProgramFormLiftsHeaders />}
+      emoji="🧘"
+      title="Stretches"
+      tableHeaders={<AssignProgramFormStretchesHeaders />}
       tableBody={tableBody}
-      onDelete={() => {}}
+      onDelete={handleRemoveSection}
       addButton={{
         icon: <Plus />,
-        text: "Lift",
-        onClick: handleAddLift,
+        text: "Stretch",
+        onClick: handleAddStretch,
       }}
     />
   );

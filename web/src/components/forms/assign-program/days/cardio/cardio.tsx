@@ -5,62 +5,42 @@ import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgra
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
-import LiftSet from "./sets/lift-set";
+import CardioSet from "./sets/cardio-set";
 import { Button } from "@/components/ui/button";
 
-export default function Lift({
+export default function Cardio({
   dayIndex,
-  liftIndex,
+  cardioIndex,
   onMoveUp,
   onMoveDown,
-  onRemoveLift,
+  onRemoveCardio,
   canMoveUp,
   canMoveDown,
 }: {
-  liftIndex: number;
+  cardioIndex: number;
   dayIndex: number;
   onMoveUp: () => void;
   onMoveDown: () => void;
-  onRemoveLift: () => void;
+  onRemoveCardio: () => void;
   canMoveUp: boolean;
   canMoveDown: boolean;
 }) {
-  const { control, getValues } = useFormContext<AssignTrainingProgramForm>();
+  const { control } = useFormContext<AssignTrainingProgramForm>();
 
-  const {
-    fields: setFields,
-    remove: removeSet,
-    append: addSet,
-  } = useFieldArray({
+  const { fields: setFields, remove: removeSet } = useFieldArray({
     control,
-    name: `days.${dayIndex}.lifts.${liftIndex}.sets`,
+    name: `days.${dayIndex}.cardio.${cardioIndex}.sets`,
   });
 
   function isFirstRow(index: number) {
     return index === 0;
   }
 
-  function handleAddSet() {
-    const currentSets = getValues(`days.${dayIndex}.lifts.${liftIndex}.sets`);
-    const previousSet =
-      currentSets && currentSets.length > 0
-        ? currentSets[currentSets.length - 1]
-        : null;
-
-    addSet({
-      setIndex: setFields.length,
-      repRange: previousSet?.repRange || "",
-      weightRange: previousSet?.weightRange || "",
-      restRange: previousSet?.restRange || "",
-      rirRange: previousSet?.rirRange || "",
-    });
-  }
-
   return (
     <>
       {setFields.map((field, index) => (
         <TableRow key={field.id}>
-          {/* Reorder Lifts */}
+          {/* Reorder */}
           <TableCell>
             {isFirstRow(index) && (
               <div className="flex flex-col justify-start">
@@ -82,38 +62,22 @@ export default function Lift({
             )}
           </TableCell>
 
-          {/* Lift Name */}
+          {/* Name */}
           <TableCell>
             {isFirstRow(index) && (
               <TableInputField
-                name={`days.${dayIndex}.lifts.${liftIndex}.name`}
+                name={`days.${dayIndex}.cardio.${cardioIndex}.name`}
                 control={control}
               />
             )}
           </TableCell>
 
-          {/* Lift Muscle Group */}
-          <TableCell>
-            {isFirstRow(index) && (
-              <TableInputField
-                name={`days.${dayIndex}.lifts.${liftIndex}.muscleGroup`}
-                control={control}
-              />
-            )}
-          </TableCell>
-
-          {/* Set Number */}
-          <TableCell className="text-center">
-            {" "}
-            {isFirstRow(index) && setFields.length}
-          </TableCell>
-          <LiftSet
-            dayIndex={dayIndex}
-            liftIndex={liftIndex}
+          <CardioSet
             setIndex={index}
+            dayIndex={dayIndex}
+            cardioIndex={cardioIndex}
             control={control}
-            onRemoveLift={onRemoveLift}
-            onAddSet={handleAddSet}
+            onRemoveCardio={onRemoveCardio}
             onRemoveSet={() => removeSet(index)}
             isLastSet={index == setFields.length - 1}
             isOnlySet={index == setFields.length - 1 && setFields.length === 1}

@@ -3,46 +3,50 @@ import { Button } from "@/components/ui/button";
 import { TableInputField } from "@/components/ui/form";
 import { TableCell } from "@/components/ui/table";
 import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
-import { Plus, PlusCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Control } from "react-hook-form";
 
-export default function Set({
+export default function CardioSet({
   dayIndex,
-  liftIndex,
+  cardioIndex,
   setIndex,
   control,
-  onRemoveLift,
-  onAddSet,
+  onRemoveCardio,
   onRemoveSet,
   isOnlySet,
   isLastSet,
 }: {
   dayIndex: number;
-  liftIndex: number;
+  cardioIndex: number;
   setIndex: number;
   control: Control<AssignTrainingProgramForm>;
-  onRemoveLift: () => void;
-  onAddSet: () => void;
+  onRemoveCardio: () => void;
   onRemoveSet: () => void;
   isOnlySet: boolean;
   isLastSet: boolean;
 }) {
   function handleRemoveSet() {
     if (isOnlySet) {
-      onRemoveLift();
+      onRemoveCardio();
     } else {
       onRemoveSet();
     }
   }
   return (
     <>
-      {/* Set Number
-      <TableCell className="text-center">{setIndex + 1}</TableCell> */}
-
-      {/* Weight Range */}
+      {/* Speed */}
       <TableCell>
         <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.weightRange`}
+          name={`days.${dayIndex}.cardio.${cardioIndex}.sets.${setIndex}.speedRange`}
+          control={control}
+          placeholder="min-max"
+        />
+      </TableCell>
+
+      {/* Total (s) */}
+      <TableCell>
+        <TableInputField
+          name={`days.${dayIndex}.cardio.${cardioIndex}.sets.${setIndex}.inclineRange`}
           control={control}
           placeholder="min-max"
         />
@@ -51,46 +55,13 @@ export default function Set({
       {/* Set Rep Range */}
       <TableCell>
         <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.repRange`}
+          name={`days.${dayIndex}.cardio.${cardioIndex}.sets.${setIndex}.timeRange`}
           control={control}
           placeholder="min-max"
         />
       </TableCell>
 
-      {/* Rest Range (nullable) */}
-      <TableCell>
-        <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.restRange`}
-          control={control}
-          placeholder="min-max"
-        />
-      </TableCell>
-
-      {/* RIR range (nullable) */}
-      <TableCell>
-        <TableInputField
-          name={`days.${dayIndex}.lifts.${liftIndex}.sets.${setIndex}.rirRange`}
-          control={control}
-          placeholder="min-max"
-        />
-      </TableCell>
-
-      {/* Add Set (only show for last set) */}
-      <TableCell>
-        {isLastSet && (
-          <Button
-            variant="ghost"
-            size="icon"
-            type="button"
-            onClick={onAddSet}
-            className="cursor-pointer hover:text-chart-2"
-          >
-            <Plus className="cursor-pointer hover:text-primary" />
-          </Button>
-        )}
-      </TableCell>
-
-      {/* Delete Set */}
+      {/* Remove Set */}
       <TableCell>
         <Button
           variant="ghost"

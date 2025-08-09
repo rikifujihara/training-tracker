@@ -2,10 +2,10 @@
 import { TableInputField } from "@/components/ui/form";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AssignTrainingProgramForm } from "@/types/programs/assignTrainingProgramForm";
-import { ChevronDownCircle, ChevronUpCircle } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-
-import Set from "./sets/set";
+import StretchSet from "./sets/stretch-set";
+import { Button } from "@/components/ui/button";
 
 export default function Stretch({
   dayIndex,
@@ -26,35 +26,13 @@ export default function Stretch({
 }) {
   const { control, getValues } = useFormContext<AssignTrainingProgramForm>();
 
-  const {
-    fields: setFields,
-    remove: removeSet,
-    append: addSet,
-  } = useFieldArray({
+  const { fields: setFields, remove: removeSet } = useFieldArray({
     control,
     name: `days.${dayIndex}.stretches.${stretchIndex}.sets`,
   });
 
   function isFirstRow(index: number) {
     return index === 0;
-  }
-
-  function handleAddSet() {
-    const currentSets = getValues(
-      `days.${dayIndex}.stretches.${stretchIndex}.sets`
-    );
-    const previousSet =
-      currentSets && currentSets.length > 0
-        ? currentSets[currentSets.length - 1]
-        : null;
-
-    addSet({
-      setIndex: setFields.length,
-      repRange: previousSet?.repRange || "",
-      weightRange: previousSet?.weightRange || "",
-      restRange: previousSet?.restRange || "",
-      rirRange: previousSet?.rirRange || "",
-    });
   }
 
   return (
@@ -64,22 +42,23 @@ export default function Stretch({
           {/* Reorder Stretches */}
           <TableCell>
             {isFirstRow(index) && (
-              <div className="flex justify-center">
-                <ChevronUpCircle
-                  color="#808080"
+              <div className="flex flex-col justify-start">
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={canMoveUp ? onMoveUp : () => {}}
-                />
-                <ChevronDownCircle
-                  color="#808080"
+                >
+                  <ChevronUp size="16" color="#808080" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={canMoveDown ? onMoveDown : () => {}}
-                />
+                >
+                  <ChevronDown size="16" color="#808080" />
+                </Button>
               </div>
             )}
-          </TableCell>
-
-          {/* Stretch Index */}
-          <TableCell className="text-center">
-            {isFirstRow(index) && stretchIndex + 1}
           </TableCell>
 
           {/* Stretch Name */}
@@ -92,21 +71,12 @@ export default function Stretch({
             )}
           </TableCell>
 
-          {/* Lift Muscle Group */}
-          <TableCell>
-            {isFirstRow(index) && (
-              <TableInputField
-                name={`days.${dayIndex}.stretches.${stretchIndex}.muscleGroup`}
-                control={control}
-              />
-            )}
-          </TableCell>
-          <Set
+          <StretchSet
+            stretchIndex={stretchIndex}
             dayIndex={dayIndex}
             setIndex={index}
             control={control}
             onRemoveLift={onRemoveStretch}
-            onAddSet={handleAddSet}
             onRemoveSet={() => removeSet(index)}
             isLastSet={index == setFields.length - 1}
             isOnlySet={index == setFields.length - 1 && setFields.length === 1}
