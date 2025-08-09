@@ -9,13 +9,13 @@ import { onSubmit } from "./form-utilities";
 export default function AssignProgramHeader() {
   const form = useFormContext<AssignTrainingProgramForm>();
 
-  function onSubmitError(errors: any) {
+  function onSubmitError(errors: Record<string, { message?: string }>) {
     console.log("❌ Form validation errors:");
     console.log(errors);
 
     // More detailed error logging
     console.group("📋 Detailed Error Breakdown:");
-    Object.entries(errors).forEach(([fieldName, error]: [string, any]) => {
+    Object.entries(errors).forEach(([fieldName, error]) => {
       console.log(`${fieldName}:`, error.message || error);
     });
     console.groupEnd();

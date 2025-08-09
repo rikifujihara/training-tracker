@@ -1,7 +1,6 @@
 import DayLifts from "./lifts/day-lifts";
 import DayStretches from "./stretches/day-stretches";
 import DayCardio from "./cardio/day-cardio";
-import { useState } from "react";
 import { DaySectionDropDown } from "./section-dropdown";
 import SectionBadges, { SectionType } from "./section-badges";
 import NoSectionsAddedCard from "./no-sections-added";

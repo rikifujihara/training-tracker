@@ -1,5 +1,5 @@
 import { AssignTrainingProgramForm } from "@/types/programs/trainingProgram";
-import { useFormContext, UseFormReturn } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 
 export function onSubmit(formValues: AssignTrainingProgramForm) {
   console.log("submitted!");
@@ -7,7 +7,7 @@ export function onSubmit(formValues: AssignTrainingProgramForm) {
 }
 
 export function onSubmitError(
-  errors: any,
+  errors: Record<string, { message?: string }>,
   form: UseFormReturn<AssignTrainingProgramForm>
 ) {
   console.log("❌ Form validation errors:");
@@ -15,7 +15,7 @@ export function onSubmitError(
 
   // More detailed error logging
   console.group("📋 Detailed Error Breakdown:");
-  Object.entries(errors).forEach(([fieldName, error]: [string, any]) => {
+  Object.entries(errors).forEach(([fieldName, error]) => {
     console.log(`${fieldName}:`, error.message || error);
   });
   console.groupEnd();

@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 
 export type SectionType = "lifts" | "stretches" | "cardio";
 
