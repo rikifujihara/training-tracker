@@ -27,12 +27,10 @@ const sectionTypes = {
 
 interface DaySectionDropDownProps {
   handleAddSection: (section: string) => void;
-  handleRemoveSection: (section: string) => void;
 }
 
 export function DaySectionDropDown({
   handleAddSection,
-  handleRemoveSection,
 }: DaySectionDropDownProps) {
   return (
     <DropdownMenu>
