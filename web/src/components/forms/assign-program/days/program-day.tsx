@@ -38,7 +38,7 @@ export default function ProgramDay({
         onRemoveSection={handleRemoveSection}
       />
       <div className="flex flex-col gap-4">
-        {activeSections.length === 0 && <NoSectionsAddedCard />}
+        {activeSections.length === 0 && <NoSectionsAddedCard onAddSection={handleAddSection} />}
         {activeSections.includes("lifts") && (
           <DayLifts
             dayIndex={dayIndex}

@@ -31,10 +31,7 @@ interface SectionBadgesProps {
   onRemoveSection: (section: SectionType) => void;
 }
 
-export default function SectionBadges({
-  activeSections,
-  onRemoveSection,
-}: SectionBadgesProps) {
+export default function SectionBadges({ activeSections }: SectionBadgesProps) {
   return (
     <div className="space-x-2">
       {activeSections.map((sectionType) => (
