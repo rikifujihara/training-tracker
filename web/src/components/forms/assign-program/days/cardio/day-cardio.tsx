@@ -11,7 +11,10 @@ interface DayCardioProps {
   onRemoveSection: () => void;
 }
 
-export default function DayCardio({ dayIndex, onRemoveSection }: DayCardioProps) {
+export default function DayCardio({
+  dayIndex,
+  onRemoveSection,
+}: DayCardioProps) {
   const { control } = useFormContext<AssignTrainingProgramForm>();
 
   const {
@@ -75,6 +78,7 @@ export default function DayCardio({ dayIndex, onRemoveSection }: DayCardioProps)
       title="Cardio"
       tableHeaders={<AssignProgramFormCardioHeaders />}
       tableBody={tableBody}
+      showDeleteWarning={cardioFields.length > 0}
       onDelete={handleRemoveCardioSection}
       addButton={{
         icon: <Plus />,

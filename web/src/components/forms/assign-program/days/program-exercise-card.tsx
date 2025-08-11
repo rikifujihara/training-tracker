@@ -4,12 +4,24 @@ import * as React from "react";
 import { Table, TableBody } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ProgramExerciseCardProps {
   emoji: string;
   title: string;
   tableHeaders: React.ReactNode;
   tableBody: React.ReactNode;
+  showDeleteWarning: boolean;
   onDelete?: () => void;
   addButton: {
     icon: React.ReactNode;
@@ -24,6 +36,7 @@ export default function ProgramExerciseCard({
   title,
   tableHeaders,
   tableBody,
+  showDeleteWarning,
   onDelete,
   addButton,
   className = "",
@@ -36,13 +49,31 @@ export default function ProgramExerciseCard({
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         </div>
         {onDelete && (
-          <button
-            onClick={onDelete}
-            className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-            type="button"
-          >
-            <X size={16} />
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                type="button"
+                onClick={showDeleteWarning ? () => {} : onDelete}
+              >
+                <X size={16} />
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will delete the whole section.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={onDelete}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
 

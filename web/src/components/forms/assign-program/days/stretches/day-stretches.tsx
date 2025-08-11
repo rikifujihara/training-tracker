@@ -12,7 +12,10 @@ interface DayStretchesProps {
   onRemoveSection: () => void;
 }
 
-export default function DayStretches({ dayIndex, onRemoveSection }: DayStretchesProps) {
+export default function DayStretches({
+  dayIndex,
+  onRemoveSection,
+}: DayStretchesProps) {
   const { control } = useFormContext<AssignTrainingProgramForm>();
 
   const {
@@ -84,6 +87,7 @@ export default function DayStretches({ dayIndex, onRemoveSection }: DayStretches
       title="Stretches"
       tableHeaders={<AssignProgramFormStretchesHeaders />}
       tableBody={tableBody}
+      showDeleteWarning={stretchFields.length > 0}
       onDelete={handleRemoveStretchesSection}
       addButton={{
         icon: <Plus />,

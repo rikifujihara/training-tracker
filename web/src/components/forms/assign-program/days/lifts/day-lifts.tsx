@@ -84,6 +84,7 @@ export default function DayLifts({ dayIndex, onRemoveSection }: DayLiftsProps) {
       title="Lifts"
       tableHeaders={<AssignProgramFormLiftsHeaders />}
       tableBody={tableBody}
+      showDeleteWarning={liftFields.length > 0}
       onDelete={handleDeleteLiftsSection}
       addButton={{
         icon: <Plus />,
