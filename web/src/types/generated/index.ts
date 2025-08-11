@@ -10,6 +10,8 @@ import type { Prisma } from '@prisma/client';
 // ENUMS
 /////////////////////////////////////////
 
+export const InvitationScalarFieldEnumSchema = z.enum(['id','inviter','invitee','createdAt','updatedAt','status']);
+
 export const UserScalarFieldEnumSchema = z.enum(['id','email','name','image','emailVerified','role','createdAt','updatedAt','firstName','lastName','phone','businessName','bio','trainerId','isActive']);
 
 export const AccountScalarFieldEnumSchema = z.enum(['id','userId','type','provider','providerAccountId','refresh_token','access_token','expires_at','token_type','scope','id_token','session_state']);
@@ -24,6 +26,10 @@ export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const QueryModeSchema = z.enum(['default','insensitive']);
 
+export const InvitationStatusSchema = z.enum(['pending','accepted','declined']);
+
+export type InvitationStatusType = `${z.infer<typeof InvitationStatusSchema>}`
+
 export const UserRoleSchema = z.enum(['TRAINER','CLIENT']);
 
 export type UserRoleType = `${z.infer<typeof UserRoleSchema>}`
@@ -31,6 +37,21 @@ export type UserRoleType = `${z.infer<typeof UserRoleSchema>}`
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////
+
+/////////////////////////////////////////
+// INVITATION SCHEMA
+/////////////////////////////////////////
+
+export const InvitationSchema = z.object({
+  status: InvitationStatusSchema,
+  id: z.string(),
+  inviter: z.string(),
+  invitee: z.string(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+})
+
+export type Invitation = z.infer<typeof InvitationSchema>
 
 /////////////////////////////////////////
 // USER SCHEMA

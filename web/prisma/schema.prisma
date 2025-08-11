@@ -17,6 +17,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum InvitationStatus {
+  pending
+  accepted
+  declined
+}
+
+model Invitation {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  inviter   String           @db.ObjectId
+  invitee   String           @db.ObjectId
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  status    InvitationStatus @default(pending)
+}
+
 model User {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   email         String    @unique
