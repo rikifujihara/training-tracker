@@ -30,6 +30,9 @@ model Invitation {
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   status    InvitationStatus @default(pending)
+
+  inviterUser User @relation("InviterInvitations", fields: [inviter], references: [id], onDelete: Cascade)
+  inviteeUser User @relation("InviteeInvitations", fields: [invitee], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -68,6 +71,10 @@ model User {
   // Training program relations
   clientPrograms  TrainingProgram[] @relation("ClientPrograms")
   trainerPrograms TrainingProgram[] @relation("TrainerPrograms")
+
+  // Invitation relations
+  sentInvitations     Invitation[] @relation("InviterInvitations")
+  receivedInvitations Invitation[] @relation("InviteeInvitations")
 
   @@map("users")
 }

@@ -6,7 +6,13 @@ import { UserRoleType } from "@/types/generated";
 import { useUpdateUserRole } from "@/hooks";
 
 export default function ChooseRolePage() {
-  const updateUserRole = useUpdateUserRole();
+  const updateUserRole = useUpdateUserRole({
+    onSuccess: (_, variables) => {
+      // variables is the object passed to mutate
+      const role = variables.role.toLowerCase(); // "trainer" | "client"
+      window.location.href = `/dashboard/${role}/invitations`;
+    },
+  });
 
   const handleRoleSelect = (role: UserRoleType) => {
     updateUserRole.mutate({ role });
