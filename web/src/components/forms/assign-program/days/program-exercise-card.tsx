@@ -50,14 +50,12 @@ export default function ProgramExerciseCard({
         </div>
         {onDelete && (
           <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button
-                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-                type="button"
-                onClick={showDeleteWarning ? () => {} : onDelete}
-              >
-                <X size={16} />
-              </button>
+            <AlertDialogTrigger
+              className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+              type="button"
+              onClick={showDeleteWarning ? () => {} : onDelete}
+            >
+              <X size={16} />
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
