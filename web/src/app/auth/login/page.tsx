@@ -1,3 +1,4 @@
+"use client";
 import { Dumbbell } from "lucide-react";
 
 import { LoginForm } from "@/components/forms/login-form";

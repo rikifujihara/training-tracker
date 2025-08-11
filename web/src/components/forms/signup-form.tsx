@@ -1,5 +1,7 @@
+"use client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { signIn } from "next-auth/react";
 
 export function SignupForm({
   className,
@@ -14,7 +16,11 @@ export function SignupForm({
         </p>
       </div>
       <div className="grid gap-4">
-        <Button variant="outline" className="w-full">
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => signIn("google", { callbackUrl: "/" })}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
