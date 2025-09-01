@@ -56,6 +56,16 @@ export function SignUpForm({
     }
   };
 
+  const handleGoogleSignin = async () => {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -104,6 +114,14 @@ export function SignUpForm({
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating an account..." : "Sign up"}
+              </Button>
+              <Button
+                type="button"
+                onClick={handleGoogleSignin}
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating an account..." : "Sign up with Google"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

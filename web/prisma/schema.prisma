@@ -6,10 +6,43 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Add this User model to your existing schema.prisma
+
+model User {
+  id        String   @id // This will be the UUID from auth.users.id
+  email     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  displayName String?  @map("display_name")
+  avatarUrl   String?  @map("avatar_url")
+  role        UserRole @default(TRAINER)
+  isActive    Boolean  @default(true) @map("is_active")
+
+  // Optional: Additional profile fields
+  firstName String? @map("first_name")
+  lastName  String? @map("last_name")
+
+  // Future relationships (will uncomment later)
+  // workouts     Workout[]
+  // programs     Program[]
+  // clientBookings Booking[] @relation("ClientBookings")
+  // trainerBookings Booking[] @relation("TrainerBookings") 
+
+  @@map("users")
+}
+
+enum UserRole {
+  TRAINER
+  CLIENT
+
+  @@map("user_role")
 }
