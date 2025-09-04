@@ -31,6 +31,9 @@ model User {
   firstName String? @map("first_name")
   lastName  String? @map("last_name")
 
+  // Relationships
+  leads Lead[]
+
   // Future relationships (will uncomment later)
   // workouts     Workout[]
   // programs     Program[]
@@ -38,6 +41,35 @@ model User {
   // trainerBookings Booking[] @relation("TrainerBookings") 
 
   @@map("users")
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Lead fields
+  firstName   String?  @map("first_name")
+  lastName    String?  @map("last_name")
+  age         String?
+  birthday    String?
+  gender      String?
+  phoneNumber String?  @map("phone_number")
+  email       String?
+  goals       String?
+
+  // Import metadata
+  importedAt DateTime @default(now()) @map("imported_at")
+  source     String   @default("email_upload") // Track where lead came from
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([userId])
+  @@index([email])
+  @@map("leads")
 }
 
 enum UserRole {

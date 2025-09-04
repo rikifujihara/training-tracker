@@ -19,7 +19,7 @@ type Lead = {
 interface ConfirmationStepProps {
   leads: Lead[];
   onPrevious: () => void;
-  onConfirm: () => void;
+  onConfirm: (result: { success: boolean; imported?: number; error?: string }) => void;
 }
 
 export function ConfirmationStep({ leads, onPrevious, onConfirm }: ConfirmationStepProps) {
@@ -28,7 +28,33 @@ export function ConfirmationStep({ leads, onPrevious, onConfirm }: ConfirmationS
   const handleConfirm = async () => {
     setIsSubmitting(true);
     try {
-      await onConfirm();
+      const response = await fetch('/api/leads/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ leads }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        onConfirm({ 
+          success: true, 
+          imported: result.data.imported 
+        });
+      } else {
+        onConfirm({ 
+          success: false, 
+          error: result.error || 'Failed to import leads' 
+        });
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      onConfirm({ 
+        success: false, 
+        error: 'Network error occurred while uploading leads' 
+      });
     } finally {
       setIsSubmitting(false);
     }
