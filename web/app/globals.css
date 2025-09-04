@@ -42,6 +42,30 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  /* Figma mapped collection variables */
+  --color-icon-body: var(--icon-body);
+  --color-text-body: var(--text-body);
+  --color-icon-on-action: var(--icon-on-action);
+  --color-text-on-action: var(--text-on-action);
+  --color-surface-action: var(--surface-action);
+  --color-surface-action-hover: var(--surface-action-hover);
+  --color-surface-action-hover-2: var(--surface-action-hover-2);
+  --color-surface-action-secondary: var(--surface-action-secondary);
+  --color-surface-primary: var(--surface-primary);
+  
+  --fontsize-body-md: var(--fontsize-body-md);
+  --fontsize-body-sm: var(--fontsize-body-sm);
+  --line-height-body-md: var(--line-height-body-md);
+  --line-height-body-sm: var(--line-height-body-sm);
+  --paragraph-spacing-body-md: var(--paragraph-spacing-body-md);
+  --paragraph-spacing-body-sm: var(--paragraph-spacing-body-sm);
+  
+  --border-radius-round: var(--border-radius-round);
+  --border-radius-md: var(--border-radius-md);
+  
+  --font-weight-semibold: var(--type-font-weight-semibold);
+  --font-family-body: var(--type-font-family-body);
 }
 
 /*
@@ -89,6 +113,30 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    
+    /* Figma mapped collection values */
+    --icon-body: #333740;
+    --text-body: #333740;
+    --icon-on-action: #ffffff;
+    --text-on-action: #ffffff;
+    --surface-action: #398af0;
+    --surface-action-hover: #2d6ec0;
+    --surface-action-hover-2: #d7e8fc;
+    --surface-action-secondary: #f5f6f7;
+    --surface-primary: #ffffff;
+    
+    --fontsize-body-md: 16px;
+    --fontsize-body-sm: 12px;
+    --line-height-body-md: 24px;
+    --line-height-body-sm: 20px;
+    --paragraph-spacing-body-md: 16px;
+    --paragraph-spacing-body-sm: 16px;
+    
+    --border-radius-round: 50px;
+    --border-radius-md: 4px;
+    
+    --type-font-weight-semibold: 600;
+    --type-font-family-body: 'Inter', sans-serif;
   }
   .dark {
     --background: 0 0% 3.9%;
