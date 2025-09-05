@@ -25,7 +25,7 @@ const SelectContext = React.createContext<{
   onOpenChange: (open: boolean) => void;
 } | null>(null);
 
-export function Select({ value, onValueChange, children, ...props }: SelectProps) {
+export function Select({ value, onValueChange, children }: SelectProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
@@ -38,7 +38,10 @@ export function Select({ value, onValueChange, children, ...props }: SelectProps
     >
       <div className="relative">
         {React.Children.map(children, child =>
-          React.isValidElement(child) ? React.cloneElement(child, { isOpen, ...props }) : child
+          React.isValidElement(child) 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ? React.cloneElement(child, { isOpen } as any) 
+            : child
         )}
       </div>
     </SelectContext.Provider>
@@ -50,12 +53,14 @@ export function SelectTrigger({
   placeholder,
   isOpen,
   disabled,
+  children,
   ...props
 }: {
   className?: string;
   placeholder?: string;
   isOpen?: boolean;
   disabled?: boolean;
+  children?: React.ReactNode;
 }) {
   const context = React.useContext(SelectContext);
   if (!context) throw new Error("SelectTrigger must be used within Select");
@@ -74,7 +79,7 @@ export function SelectTrigger({
       {...props}
     >
       <span className={value ? "" : "text-muted-foreground"}>
-        {value || placeholder}
+        {children || value || placeholder}
       </span>
       <ChevronDown className="h-4 w-4 opacity-50" />
     </button>

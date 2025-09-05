@@ -119,13 +119,19 @@ export class LeadService {
       prisma.lead.count({ 
         where: { 
           userId, 
-          email: { not: null, not: "" } 
+          AND: [
+            { email: { not: null } },
+            { email: { not: "" } }
+          ]
         } 
       }),
       prisma.lead.count({ 
         where: { 
           userId, 
-          phoneNumber: { not: null, not: "" } 
+          AND: [
+            { phoneNumber: { not: null } },
+            { phoneNumber: { not: "" } }
+          ]
         } 
       }),
       prisma.lead.count({

@@ -44,7 +44,7 @@ export function PasteDataStep({ rawData, setRawData, onNext, canProceed }: Paste
               <li>Open your email with the leads table</li>
               <li>Select the entire table (drag from top-left to bottom-right)</li>
               <li>Copy it (Ctrl+C or Cmd+C)</li>
-              <li>Paste it in the box below or click the "Paste from Clipboard" button</li>
+              <li>Paste it in the box below or click the &ldquo;Paste from Clipboard&rdquo; button</li>
             </ol>
           </div>
         </div>

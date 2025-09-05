@@ -113,7 +113,7 @@ export function PreviewDataStep({
       Object.entries(columnMapping).forEach(([columnIndex, fieldName]) => {
         if (fieldName && fieldName in lead) {
           const value = row[parseInt(columnIndex)] || '';
-          (lead as any)[fieldName] = value.trim();
+          (lead as Record<string, string>)[fieldName] = value.trim();
         }
       });
 
@@ -124,10 +124,10 @@ export function PreviewDataStep({
   }, [parsedData, columnMapping, setParsedLeads]);
 
   const handleColumnMappingChange = (columnIndex: string, fieldName: string) => {
-    setColumnMapping(prev => ({
-      ...prev,
+    setColumnMapping({
+      ...columnMapping,
       [columnIndex]: fieldName,
-    }));
+    });
   };
 
   const getMappedFields = () => {
@@ -183,7 +183,7 @@ export function PreviewDataStep({
           {headers.map((header, index) => (
             <div key={index} className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">
-                Column: "{header}"
+                Column: &ldquo;{header}&rdquo;
               </Label>
               <Select
                 value={columnMapping[index.toString()] || ""}

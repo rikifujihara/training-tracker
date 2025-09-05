@@ -188,7 +188,7 @@ export function ConfirmationStep({ leads, onPrevious, onConfirm }: ConfirmationS
           <div>
             <h4 className="font-medium text-sm">Ready to Import</h4>
             <p className="text-sm text-muted-foreground mt-1">
-              Click "Import Leads" to add these {leads.length} leads to your system.
+              Click &ldquo;Import Leads&rdquo; to add these {leads.length} leads to your system.
               {hasIssues && " Issues will be handled automatically during import."}
             </p>
           </div>
