@@ -3,14 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { LeadService } from "@/lib/services/lead.service";
 import { CreateLeadInput } from "@/lib/types/lead";
 
-// Force Node.js runtime for Prisma compatibility
-export const runtime = 'nodejs';
-
 export async function POST(request: NextRequest) {
   try {
-    // Debug: Log DATABASE_URL format (first 20 chars only for security)
-    console.log("DATABASE_URL format:", process.env.DATABASE_URL?.substring(0, 20));
-    
     // Check authentication
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
