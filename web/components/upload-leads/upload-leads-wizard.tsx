@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Upload, Table, CheckCircle, AlertTriangle } from "lucide-react";
+import { useUploadLeads } from "@/lib/hooks/use-leads";
 import { PasteDataStep } from "./paste-data-step";
 import { PreviewDataStep } from "./preview-data-step";
 import { ConfirmationStep } from "./confirmation-step";
@@ -54,11 +55,8 @@ export function UploadLeadsWizard() {
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>(
     {}
   );
-  const [uploadResult, setUploadResult] = useState<{
-    success: boolean;
-    imported?: number;
-    error?: string;
-  } | null>(null);
+  
+  const uploadLeadsMutation = useUploadLeads();
 
   const handleNext = () => {
     if (currentStep < WIZARD_STEPS.length) {
@@ -75,6 +73,14 @@ export function UploadLeadsWizard() {
   const canProceedFromStep1 = rawData.trim().length > 0;
   const canProceedFromStep2 =
     parsedLeads.length > 0 && Object.keys(columnMapping).length > 0;
+
+  const resetWizard = () => {
+    setCurrentStep(1);
+    setRawData("");
+    setParsedLeads([]);
+    setColumnMapping({});
+    uploadLeadsMutation.reset(); // Reset mutation state
+  };
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -105,9 +111,7 @@ export function UploadLeadsWizard() {
           <ConfirmationStep
             leads={parsedLeads}
             onPrevious={handlePrevious}
-            onConfirm={(result) => {
-              setUploadResult(result);
-            }}
+            uploadMutation={uploadLeadsMutation}
           />
         );
       default:
@@ -164,9 +168,9 @@ export function UploadLeadsWizard() {
       {/* Step Content */}
       <Card>
         <CardContent className="p-6">
-          {uploadResult ? (
+          {uploadLeadsMutation.isSuccess || uploadLeadsMutation.isError ? (
             <div className="text-center space-y-4">
-              {uploadResult.success ? (
+              {uploadLeadsMutation.isSuccess ? (
                 <>
                   <div className="flex justify-center">
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -175,16 +179,10 @@ export function UploadLeadsWizard() {
                   </div>
                   <h3 className="text-xl font-semibold text-green-800">Success!</h3>
                   <p className="text-muted-foreground">
-                    {uploadResult.imported} leads have been successfully imported to your database.
+                    {uploadLeadsMutation.data?.data.imported} leads have been successfully imported to your database.
                   </p>
                   <button
-                    onClick={() => {
-                      setCurrentStep(1);
-                      setRawData("");
-                      setParsedLeads([]);
-                      setColumnMapping({});
-                      setUploadResult(null);
-                    }}
+                    onClick={resetWizard}
                     className="bg-surface-action hover:bg-surface-action-hover text-white px-6 py-2 rounded-md"
                   >
                     Import More Leads
@@ -199,23 +197,17 @@ export function UploadLeadsWizard() {
                   </div>
                   <h3 className="text-xl font-semibold text-red-800">Upload Failed</h3>
                   <p className="text-muted-foreground">
-                    {uploadResult.error}
+                    {uploadLeadsMutation.error?.message || "An unexpected error occurred"}
                   </p>
                   <div className="flex gap-3 justify-center">
                     <button
-                      onClick={() => setUploadResult(null)}
+                      onClick={() => uploadLeadsMutation.reset()}
                       className="bg-surface-action hover:bg-surface-action-hover text-white px-6 py-2 rounded-md"
                     >
                       Try Again
                     </button>
                     <button
-                      onClick={() => {
-                        setCurrentStep(1);
-                        setRawData("");
-                        setParsedLeads([]);
-                        setColumnMapping({});
-                        setUploadResult(null);
-                      }}
+                      onClick={resetWizard}
                       className="border border-muted-foreground text-muted-foreground hover:bg-muted px-6 py-2 rounded-md"
                     >
                       Start Over

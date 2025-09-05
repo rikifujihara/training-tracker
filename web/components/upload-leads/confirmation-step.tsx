@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, CheckCircle2, Users, Mail, Phone, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { UseMutationResult } from "@tanstack/react-query";
+import { CreateLeadInput } from "@/lib/types/lead";
 
 type Lead = {
   firstName: string;
@@ -19,45 +20,13 @@ type Lead = {
 interface ConfirmationStepProps {
   leads: Lead[];
   onPrevious: () => void;
-  onConfirm: (result: { success: boolean; imported?: number; error?: string }) => void;
+  uploadMutation: UseMutationResult<unknown, Error, CreateLeadInput[], unknown>;
 }
 
-export function ConfirmationStep({ leads, onPrevious, onConfirm }: ConfirmationStepProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function ConfirmationStep({ leads, onPrevious, uploadMutation }: ConfirmationStepProps) {
 
-  const handleConfirm = async () => {
-    setIsSubmitting(true);
-    try {
-      const response = await fetch('/api/leads/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ leads }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        onConfirm({ 
-          success: true, 
-          imported: result.data.imported 
-        });
-      } else {
-        onConfirm({ 
-          success: false, 
-          error: result.error || 'Failed to import leads' 
-        });
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      onConfirm({ 
-        success: false, 
-        error: 'Network error occurred while uploading leads' 
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleConfirm = () => {
+    uploadMutation.mutate(leads);
   };
 
   // Validation checks
@@ -200,7 +169,7 @@ export function ConfirmationStep({ leads, onPrevious, onConfirm }: ConfirmationS
         <Button
           variant="outline"
           onClick={onPrevious}
-          disabled={isSubmitting}
+          disabled={uploadMutation.isPending}
           className="flex items-center gap-2"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -208,10 +177,10 @@ export function ConfirmationStep({ leads, onPrevious, onConfirm }: ConfirmationS
         </Button>
         <Button
           onClick={handleConfirm}
-          disabled={isSubmitting}
+          disabled={uploadMutation.isPending}
           className="flex items-center gap-2 bg-surface-action hover:bg-surface-action-hover text-white"
         >
-          {isSubmitting ? "Importing..." : "Import Leads"}
+          {uploadMutation.isPending ? "Importing..." : "Import Leads"}
           <CheckCircle2 className="w-4 h-4" />
         </Button>
       </div>
