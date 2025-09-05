@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { LeadService } from "@/lib/services/lead.service";
 
+// Force Node.js runtime for Prisma compatibility
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     // Check authentication
