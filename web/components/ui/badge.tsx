@@ -15,6 +15,10 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/80",
         outline: "text-foreground",
+        status: "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] border-transparent",
+        "status-hot": "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] border-transparent bg-red-500 text-white",
+        "status-warm": "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] border-transparent bg-icon-warning text-text-on-action",
+        "status-cold": "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] border-transparent bg-blue-500 text-white",
       },
     },
     defaultVariants: {

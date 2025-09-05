@@ -46,6 +46,7 @@
   /* Figma mapped collection variables */
   --color-icon-body: var(--icon-body);
   --color-text-body: var(--text-body);
+  --color-text-disabled: var(--text-disabled);
   --color-icon-on-action: var(--icon-on-action);
   --color-text-on-action: var(--text-on-action);
   --color-surface-action: var(--surface-action);
@@ -53,6 +54,9 @@
   --color-surface-action-hover-2: var(--surface-action-hover-2);
   --color-surface-action-secondary: var(--surface-action-secondary);
   --color-surface-primary: var(--surface-primary);
+  --color-icon-warning: var(--icon-warning);
+  --color-border-warning: var(--border-warning);
+  --color-border-primary: var(--border-primary);
   
   --fontsize-body-md: var(--fontsize-body-md);
   --fontsize-body-sm: var(--fontsize-body-sm);
@@ -117,6 +121,7 @@
     /* Figma mapped collection values */
     --icon-body: #333740;
     --text-body: #333740;
+    --text-disabled: #737780;
     --icon-on-action: #ffffff;
     --text-on-action: #ffffff;
     --surface-action: #398af0;
@@ -124,6 +129,9 @@
     --surface-action-hover-2: #d7e8fc;
     --surface-action-secondary: #f5f6f7;
     --surface-primary: #ffffff;
+    --icon-warning: #ff6b00;
+    --border-warning: #ff9040;
+    --border-primary: #d0d1d4;
     
     --fontsize-body-md: 16px;
     --fontsize-body-sm: 12px;
