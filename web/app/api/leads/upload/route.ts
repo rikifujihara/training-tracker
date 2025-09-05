@@ -5,6 +5,9 @@ import { CreateLeadInput } from "@/lib/types/lead";
 
 export async function POST(request: NextRequest) {
   try {
+    // Debug: Log DATABASE_URL format (first 20 chars only for security)
+    console.log("DATABASE_URL format:", process.env.DATABASE_URL?.substring(0, 20));
+    
     // Check authentication
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
