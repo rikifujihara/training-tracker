@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { CreateLeadInput, Lead } from "@/lib/types/lead";
+import { CreateLeadInput, Lead, LeadStatus, RawLead } from "@/lib/types/lead";
 
 export class LeadService {
   /**
@@ -41,29 +41,33 @@ export class LeadService {
       return results;
     });
 
-    return createdLeads;
+    return createdLeads.map(lead => this.enrichLeadWithDisplayFields(lead));
   }
 
   /**
-   * Get all leads for a user
+   * Get all leads for a user with computed display fields
    */
   static async getLeadsByUserId(userId: string): Promise<Lead[]> {
-    return prisma.lead.findMany({
+    const rawLeads = await prisma.lead.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
+
+    return rawLeads.map(lead => this.enrichLeadWithDisplayFields(lead));
   }
 
   /**
    * Get lead by ID (with user ownership check)
    */
   static async getLeadById(leadId: string, userId: string): Promise<Lead | null> {
-    return prisma.lead.findFirst({
+    const rawLead = await prisma.lead.findFirst({
       where: {
         id: leadId,
         userId,
       },
     });
+
+    return rawLead ? this.enrichLeadWithDisplayFields(rawLead) : null;
   }
 
   /**
@@ -80,7 +84,7 @@ export class LeadService {
       throw new Error("Lead not found or access denied");
     }
 
-    return prisma.lead.update({
+    const updatedLead = await prisma.lead.update({
       where: { id: leadId },
       data: {
         firstName: data.firstName?.trim(),
@@ -93,6 +97,8 @@ export class LeadService {
         goals: data.goals?.trim(),
       },
     });
+
+    return this.enrichLeadWithDisplayFields(updatedLead);
   }
 
   /**
@@ -150,5 +156,55 @@ export class LeadService {
       withPhone,
       recentImports,
     };
+  }
+
+  /**
+   * Enrich a raw lead with computed display fields
+   */
+  private static enrichLeadWithDisplayFields(rawLead: RawLead): Lead {
+    return {
+      ...rawLead,
+      displayName: this.parseDisplayName(rawLead.firstName, rawLead.lastName),
+      status: this.calculateLeadStatus(rawLead.createdAt),
+      statusAgeDays: this.calculateStatusAgeDays(rawLead.createdAt),
+    };
+  }
+
+  /**
+   * Parse display name from first and last name
+   */
+  private static parseDisplayName(firstName: string | null, lastName: string | null): string {
+    return `${firstName ?? ""}${firstName && lastName ? " " : ""}${lastName ?? ""}`.trim();
+  }
+
+  /**
+   * Calculate lead status based on creation date
+   */
+  private static calculateLeadStatus(createdAt: Date): LeadStatus {
+    const now = new Date();
+    const diffInMs = now.getTime() - new Date(createdAt).getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    // Less than 1 day old - hot lead
+    if (diffInDays < 1) {
+      return LeadStatus.HOT;
+    }
+
+    // 1-3 days old - warm lead
+    if (diffInDays <= 3) {
+      return LeadStatus.WARM;
+    }
+
+    // Older than 3 days - cold lead
+    return LeadStatus.COLD;
+  }
+
+  /**
+   * Calculate status age in days
+   */
+  private static calculateStatusAgeDays(createdAt: Date): number {
+    const now = new Date();
+    const diffInMs = now.getTime() - new Date(createdAt).getTime();
+    return Math.floor(diffInMs / (1000 * 60 * 60 * 24));
   }
 }

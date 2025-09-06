@@ -115,11 +115,7 @@ export default function ProspectsPage() {
           {leadsData.leads.slice(0, 10).map((lead) => (
             <ProspectCard
               key={lead.id}
-              lead={{
-                ...lead,
-                createdAt: new Date(lead.createdAt),
-                importedAt: new Date(lead.importedAt),
-              }}
+              lead={lead}
               nextAction="First Call"
             />
           ))}
