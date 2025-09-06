@@ -4,14 +4,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Phone, NotebookPen, History, MessageSquare } from "lucide-react";
 import { Lead, LeadStatus } from "@/lib/types/lead";
 import { NotesModal } from "@/components/contact-points/notes-modal";
+import { LogContactPointModal, LogContactPointData } from "@/components/contact-points/log-contact-point-modal";
 import { ContactPoint, ContactType, ContactPointOutcome } from "@/lib/types/contactPoint";
+import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 
 export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -26,6 +24,8 @@ export function ProspectCard({
   ...props
 }: ProspectCardProps) {
   const [notesModalOpen, setNotesModalOpen] = React.useState(false);
+  const [logModalOpen, setLogModalOpen] = React.useState(false);
+  const createContactPointMutation = useCreateContactPoint();
   const statusBarColor = getStatusBarColor(lead.status);
   const statusAgeText = lead.statusAgeDays === 0 ? "Today" : 
                        lead.statusAgeDays === 1 ? "1 day old" : 
@@ -67,6 +67,17 @@ export function ProspectCard({
       updatedAt: new Date(),
     }
   ];
+
+  const handleLogContactPoint = (data: LogContactPointData) => {
+    createContactPointMutation.mutate({
+      leadId: lead.id,
+      contactType: data.contactType,
+      contactDate: data.contactDate,
+      outcome: data.outcome,
+      notes: data.notes,
+    });
+  };
+
   return (
     <div
       className={cn(
@@ -115,27 +126,15 @@ export function ProspectCard({
 
           {/* Action buttons */}
           <div className="flex gap-4 items-start">
-            <Dialog open={notesModalOpen} onOpenChange={setNotesModalOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="secondary"
-                  size="default"
-                  className="bg-surface-action-secondary text-text-body hover:bg-surface-action-secondary/80 h-12 px-6 py-3 gap-3 font-semibold"
-                >
-                  <NotebookPen className="w-6 h-6" />
-                  Notes
-                </Button>
-              </DialogTrigger>
-              <NotesModal
-                open={notesModalOpen}
-                onOpenChange={setNotesModalOpen}
-                lead={lead}
-                contactPoints={mockContactPoints}
-                generalNotes="This prospect seems very motivated and has clear fitness goals. Follow up scheduled for Friday consultation."
-                onGeneralNotesChange={() => {}}
-                onSave={() => {}}
-              />
-            </Dialog>
+            <Button
+              variant="secondary"
+              size="default"
+              className="bg-surface-action-secondary text-text-body hover:bg-surface-action-secondary/80 h-12 px-6 py-3 gap-3 font-semibold"
+              onClick={() => setNotesModalOpen(true)}
+            >
+              <NotebookPen className="w-6 h-6" />
+              Notes
+            </Button>
 
             <Button
               variant="secondary"
@@ -150,6 +149,7 @@ export function ProspectCard({
               variant="secondary"
               size="default"
               className="bg-surface-action-secondary text-text-body hover:bg-surface-action-secondary/80 h-12 px-6 py-3 gap-3 font-semibold w-[137px]"
+              onClick={() => setLogModalOpen(true)}
             >
               <MessageSquare className="w-6 h-6" />
               <Phone className="w-6 h-6" />
@@ -161,6 +161,25 @@ export function ProspectCard({
         {/* Status badge */}
         <Badge variant={lead.status}>{statusAgeText}</Badge>
       </div>
+
+      {/* Modals */}
+      <NotesModal
+        open={notesModalOpen}
+        onOpenChange={setNotesModalOpen}
+        lead={lead}
+        contactPoints={mockContactPoints}
+        generalNotes="This prospect seems very motivated and has clear fitness goals. Follow up scheduled for Friday consultation."
+        onGeneralNotesChange={() => {}}
+        onSave={() => {}}
+      />
+
+      <LogContactPointModal
+        open={logModalOpen}
+        onOpenChange={setLogModalOpen}
+        lead={lead}
+        onSave={handleLogContactPoint}
+        isLoading={createContactPointMutation.isPending}
+      />
     </div>
   );
 
