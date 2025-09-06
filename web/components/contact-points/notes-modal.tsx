@@ -13,13 +13,12 @@ import {
 import { ContactHistoryCard } from "./contact-history-card";
 import { NotebookPen, X, Save, PenLine, Phone, MessageSquareText } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
-import { ContactPoint } from "@/lib/types/contactPoint";
+import { useContactPointsByLeadId } from "@/lib/hooks/use-contact-points";
 
 export interface NotesModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   lead: Lead;
-  contactPoints?: ContactPoint[];
   generalNotes?: string;
   onGeneralNotesChange?: (notes: string) => void;
   onSave?: () => void;
@@ -30,12 +29,18 @@ export function NotesModal({
   open,
   onOpenChange,
   lead,
-  contactPoints = [],
   generalNotes = "",
   onGeneralNotesChange,
   onSave,
   isLoading = false,
 }: NotesModalProps) {
+  // Fetch contact points for this lead
+  const {
+    data: contactPointsData,
+    isLoading: contactPointsLoading,
+  } = useContactPointsByLeadId(lead.id);
+
+  const contactPoints = contactPointsData?.contactPoints || [];
   const [editingNotes, setEditingNotes] = React.useState(false);
   const [localNotes, setLocalNotes] = React.useState(generalNotes);
 
@@ -148,7 +153,23 @@ export function NotesModal({
           </div>
 
           {/* Contact History Cards */}
-          {contactPoints.length > 0 ? (
+          {contactPointsLoading ? (
+            <div className="space-y-2">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="bg-surface-primary p-4 rounded-lg animate-pulse">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex gap-2">
+                      <div className="h-6 w-12 bg-text-disabled/20 rounded-full"></div>
+                      <div className="h-6 w-16 bg-text-disabled/20 rounded-full"></div>
+                    </div>
+                    <div className="h-6 w-32 bg-text-disabled/20 rounded"></div>
+                  </div>
+                  <div className="h-4 bg-text-disabled/20 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-text-disabled/20 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          ) : contactPoints.length > 0 ? (
             <div className="space-y-2">
               {contactPoints.map((contactPoint) => (
                 <ContactHistoryCard

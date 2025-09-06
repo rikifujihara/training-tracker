@@ -9,7 +9,6 @@ import { Lead, LeadStatus } from "@/lib/types/lead";
 import { NotesModal } from "@/components/contact-points/notes-modal";
 import { LogContactPointModal, LogContactPointData } from "@/components/contact-points/log-contact-point-modal";
 import { ContactHistoryModal } from "@/components/contact-points/contact-history-modal";
-import { ContactPoint, ContactType, ContactPointOutcome } from "@/lib/types/contactPoint";
 import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 
 export interface ProspectCardProps
@@ -33,42 +32,6 @@ export function ProspectCard({
                        lead.statusAgeDays === 1 ? "1 day old" : 
                        `${lead.statusAgeDays} days old`;
 
-  // Mock contact points for testing
-  const mockContactPoints: ContactPoint[] = [
-    {
-      id: "1",
-      leadId: lead.id,
-      userId: "user1",
-      contactType: ContactType.PHONE,
-      outcome: ContactPointOutcome.NO_ANSWER,
-      notes: "Called at 2:30 PM. Phone went straight to voicemail. Left a detailed message about our fitness programs.",
-      contactDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "2", 
-      leadId: lead.id,
-      userId: "user1",
-      contactType: ContactType.TEXT,
-      outcome: ContactPointOutcome.INTERESTED,
-      notes: "Sent text with program details. Prospect replied showing interest in personal training packages.",
-      contactDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: "3",
-      leadId: lead.id, 
-      userId: "user1",
-      contactType: ContactType.PHONE,
-      outcome: ContactPointOutcome.SCHEDULED_APPOINTMENT,
-      notes: "Great conversation! Scheduled consultation for this Friday at 3 PM. Very motivated to start their fitness journey.",
-      contactDate: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-  ];
 
   const handleLogContactPoint = (data: LogContactPointData) => {
     createContactPointMutation.mutate({
@@ -170,7 +133,6 @@ export function ProspectCard({
         open={notesModalOpen}
         onOpenChange={setNotesModalOpen}
         lead={lead}
-        contactPoints={mockContactPoints}
         generalNotes="This prospect seems very motivated and has clear fitness goals. Follow up scheduled for Friday consultation."
         onGeneralNotesChange={() => {}}
         onSave={() => {}}
