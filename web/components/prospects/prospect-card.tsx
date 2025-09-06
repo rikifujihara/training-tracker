@@ -135,9 +135,6 @@ export function ProspectCard({
         open={notesModalOpen}
         onOpenChange={setNotesModalOpen}
         lead={lead}
-        generalNotes="This prospect seems very motivated and has clear fitness goals. Follow up scheduled for Friday consultation."
-        onGeneralNotesChange={() => {}}
-        onSave={() => {}}
       />
 
       <LogContactPointModal

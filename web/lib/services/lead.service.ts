@@ -95,6 +95,7 @@ export class LeadService {
         phoneNumber: data.phoneNumber?.trim(),
         email: data.email?.trim(),
         goals: data.goals?.trim(),
+        generalNotes: data.generalNotes?.trim(),
       },
     });
 

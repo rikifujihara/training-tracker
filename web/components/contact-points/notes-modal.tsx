@@ -21,46 +21,55 @@ import {
 } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { useContactPointsByLeadId } from "@/lib/hooks/use-contact-points";
+import { useUpdateLead } from "@/lib/hooks/use-leads";
 
 export interface NotesModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   lead: Lead;
-  generalNotes?: string;
-  onGeneralNotesChange?: (notes: string) => void;
-  onSave?: () => void;
-  isLoading?: boolean;
 }
 
 export function NotesModal({
   open,
   onOpenChange,
   lead,
-  generalNotes = "",
-  onGeneralNotesChange,
-  onSave,
-  isLoading = false,
 }: NotesModalProps) {
   // Fetch contact points for this lead
   const { data: contactPointsData, isLoading: contactPointsLoading } =
     useContactPointsByLeadId(lead.id);
 
+  // Hook for updating lead
+  const { mutate: updateLead, isPending: isUpdating } = useUpdateLead();
+
   const contactPoints = contactPointsData?.contactPoints || [];
   const [editingNotes, setEditingNotes] = React.useState(false);
-  const [localNotes, setLocalNotes] = React.useState(generalNotes);
+  const [localNotes, setLocalNotes] = React.useState(lead.generalNotes || "");
 
   React.useEffect(() => {
-    setLocalNotes(generalNotes);
-  }, [generalNotes]);
+    setLocalNotes(lead.generalNotes || "");
+  }, [lead.generalNotes]);
 
   const handleNotesChange = (value: string) => {
     setLocalNotes(value);
-    onGeneralNotesChange?.(value);
   };
 
   const handleSave = () => {
-    onSave?.();
-    onOpenChange(false);
+    updateLead(
+      {
+        leadId: lead.id,
+        data: {
+          generalNotes: localNotes,
+        },
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          console.error("Failed to save notes:", error);
+        },
+      }
+    );
   };
 
   return (
@@ -207,7 +216,7 @@ export function NotesModal({
               <Button variant="secondary" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} disabled={isLoading}>
+              <Button onClick={handleSave} disabled={isUpdating}>
                 Save
                 <Save className="w-6 h-6 ml-3" />
               </Button>

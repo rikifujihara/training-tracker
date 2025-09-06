@@ -7,6 +7,19 @@ export type CreateLeadInput = {
   phoneNumber?: string;
   email?: string;
   goals?: string;
+  generalNotes?: string;
+};
+
+export type UpdateLeadInput = {
+  firstName?: string;
+  lastName?: string;
+  age?: string;
+  birthday?: string;
+  gender?: string;
+  phoneNumber?: string;
+  email?: string;
+  goals?: string;
+  generalNotes?: string;
 };
 
 export enum LeadStatus {
@@ -26,6 +39,7 @@ export type RawLead = {
   phoneNumber: string | null;
   email: string | null;
   goals: string | null;
+  generalNotes: string | null;
   source: string;
   importedAt: Date;
   createdAt: Date;
@@ -43,6 +57,7 @@ export type Lead = {
   phoneNumber: string | null;
   email: string | null;
   goals: string | null;
+  generalNotes: string | null;
   source: string;
   importedAt: Date;
   createdAt: Date;

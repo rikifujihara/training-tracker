@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { CreateLeadInput, Lead } from '@/lib/types/lead';
+import { CreateLeadInput, UpdateLeadInput, Lead } from '@/lib/types/lead';
 
 // Types for API responses
 interface LeadUploadResponse {
@@ -61,6 +61,23 @@ const fetchLeads = async (): Promise<LeadsResponse> => {
   return response.json();
 };
 
+const updateLead = async (leadId: string, data: UpdateLeadInput): Promise<{ success: boolean; data: Lead }> => {
+  const response = await fetch(`/api/leads/${leadId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
 // Query keys
 const leadKeys = {
   all: ['leads'] as const,
@@ -113,5 +130,36 @@ export const useLeadStats = () => {
     queryFn: fetchLeads,
     select: (data) => data.data.stats,
     staleTime: 5 * 60 * 1000, // Stats don't change as frequently, cache for 5 minutes
+  });
+};
+
+export const useUpdateLead = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ leadId, data }: { leadId: string; data: UpdateLeadInput }) => 
+      updateLead(leadId, data),
+    onSuccess: (response) => {
+      // Invalidate and refetch leads
+      queryClient.invalidateQueries({ queryKey: leadKeys.all });
+      
+      // Optimistically update the lead in cache
+      queryClient.setQueryData(leadKeys.lists(), (oldData: LeadsResponse | undefined) => {
+        if (!oldData) return oldData;
+        
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            leads: oldData.data.leads.map(lead => 
+              lead.id === response.data.id ? response.data : lead
+            ),
+          },
+        };
+      });
+    },
+    onError: (error) => {
+      console.error('Update lead error:', error);
+    },
   });
 };
