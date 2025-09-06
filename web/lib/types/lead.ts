@@ -52,3 +52,4 @@ export type Lead = {
   status: LeadStatus;
   statusAgeDays: number;
 };
+
