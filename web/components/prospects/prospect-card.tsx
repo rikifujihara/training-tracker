@@ -39,6 +39,7 @@ export function ProspectCard({
 }: ProspectCardProps) {
   const name = parseName();
   const { statusBadgeType, statusAge } = getLeadStatus();
+  const statusBarColor = getStatusBarColor(statusBadgeType);
   return (
     <div
       className={cn(
@@ -47,8 +48,8 @@ export function ProspectCard({
       )}
       {...props}
     >
-      {/* Orange status bar on left */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-border-warning" />
+      {/* Status bar on left */}
+      <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusBarColor}`} />
 
       <div className="flex gap-[11px] items-start justify-start px-4 py-5">
         {/* Main content */}
@@ -69,7 +70,8 @@ export function ProspectCard({
           {/* Contact info */}
           {(lead.phoneNumber || lead.email) && (
             <div className="text-text-body text-[16px] leading-[24px]">
-              Contact: {[lead.phoneNumber, lead.email].filter(Boolean).join(" • ")}
+              Contact:{" "}
+              {[lead.phoneNumber, lead.email].filter(Boolean).join(" • ")}
             </div>
           )}
 
@@ -109,9 +111,9 @@ export function ProspectCard({
               size="default"
               className="bg-surface-action-secondary text-text-body hover:bg-surface-action-secondary/80 h-12 px-6 py-3 gap-3 font-semibold w-[137px]"
             >
-              Log
               <MessageSquare className="w-6 h-6" />
               <Phone className="w-6 h-6" />
+              Log
             </Button>
           </div>
         </div>
@@ -123,9 +125,9 @@ export function ProspectCard({
   );
 
   function parseName() {
-    return `${lead.firstName ?? ""}${lead.firstName && lead.lastName ? " " : ""}${
-      lead.lastName ?? ""
-    }`.trim();
+    return `${lead.firstName ?? ""}${
+      lead.firstName && lead.lastName ? " " : ""
+    }${lead.lastName ?? ""}`.trim();
   }
 
   function getLeadStatus(): {
@@ -144,12 +146,14 @@ export function ProspectCard({
         const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
         return {
           statusBadgeType: LeadStatus.HOT,
-          statusAge: diffInMinutes <= 1 ? "Just now" : `${diffInMinutes} minutes old`,
+          statusAge:
+            diffInMinutes <= 1 ? "Just now" : `${diffInMinutes} minutes old`,
         };
       }
       return {
         statusBadgeType: LeadStatus.HOT,
-        statusAge: diffInHours === 1 ? "1 hour old" : `${diffInHours} hours old`,
+        statusAge:
+          diffInHours === 1 ? "1 hour old" : `${diffInHours} hours old`,
       };
     }
 
@@ -166,5 +170,18 @@ export function ProspectCard({
       statusBadgeType: LeadStatus.COLD,
       statusAge: `${diffInDays} days old`,
     };
+  }
+
+  function getStatusBarColor(status: LeadStatus): string {
+    switch (status) {
+      case LeadStatus.HOT:
+        return "bg-red-500";
+      case LeadStatus.WARM:
+        return "bg-icon-warning";
+      case LeadStatus.COLD:
+        return "bg-blue-500";
+      default:
+        return "bg-border-warning";
+    }
   }
 }
