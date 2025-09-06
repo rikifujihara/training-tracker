@@ -48,8 +48,14 @@ const outcomeOptions = [
   { value: ContactPointOutcome.BUSY, label: "Busy" },
   { value: ContactPointOutcome.NOT_INTERESTED, label: "Not Interested" },
   { value: ContactPointOutcome.INTERESTED, label: "Interested" },
-  { value: ContactPointOutcome.REQUESTED_CALLBACK, label: "Callback Requested" },
-  { value: ContactPointOutcome.SCHEDULED_APPOINTMENT, label: "Scheduled Appointment" },
+  {
+    value: ContactPointOutcome.REQUESTED_CALLBACK,
+    label: "Callback Requested",
+  },
+  {
+    value: ContactPointOutcome.SCHEDULED_APPOINTMENT,
+    label: "Scheduled Appointment",
+  },
 ];
 
 export function LogContactPointModal({
@@ -59,8 +65,12 @@ export function LogContactPointModal({
   onSave,
   isLoading = false,
 }: LogContactPointModalProps) {
-  const [contactType, setContactType] = React.useState<ContactType>(ContactType.PHONE);
-  const [outcome, setOutcome] = React.useState<ContactPointOutcome | undefined>();
+  const [contactType, setContactType] = React.useState<ContactType>(
+    ContactType.PHONE
+  );
+  const [outcome, setOutcome] = React.useState<
+    ContactPointOutcome | undefined
+  >();
   const [notes, setNotes] = React.useState("");
   const [contactDate, setContactDate] = React.useState(new Date());
 
@@ -85,22 +95,17 @@ export function LogContactPointModal({
     onOpenChange(false);
   };
 
-  const formatDateTime = (date: Date) => {
-    return date.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM format
-  };
 
-  const handleDateTimeChange = (value: string) => {
-    setContactDate(new Date(value));
-  };
-
-  const selectedContactTypeConfig = contactTypeOptions.find(opt => opt.value === contactType);
+  const selectedContactTypeConfig = contactTypeOptions.find(
+    (opt) => opt.value === contactType
+  );
   const SelectedIcon = selectedContactTypeConfig?.icon || Phone;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogOverlay className="bg-black/80" />
-        <DialogContent 
+        <DialogContent
           className="max-w-[440px] p-0 gap-0 rounded-lg overflow-hidden"
           showCloseButton={false}
         >
@@ -129,16 +134,23 @@ export function LogContactPointModal({
             {/* Lead Summary */}
             <div className="bg-surface-primary p-4 rounded-lg">
               <h3 className="text-[16px] leading-[24px] font-semibold text-text-body">
-                {lead.displayName}: {lead.age && lead.gender && `${lead.age}, ${lead.gender}`}
+                {lead.displayName}:{" "}
+                {lead.age && lead.gender && `${lead.age}, ${lead.gender}`}
               </h3>
             </div>
 
             {/* Contact Type */}
             <div className="space-y-2">
-              <Label htmlFor="contact-type" className="text-[16px] leading-[24px] font-semibold text-black">
+              <Label
+                htmlFor="contact-type"
+                className="text-[16px] leading-[24px] font-semibold text-black"
+              >
                 Contact Type
               </Label>
-              <Select value={contactType} onValueChange={(value) => setContactType(value as ContactType)}>
+              <Select
+                value={contactType}
+                onValueChange={(value) => setContactType(value as ContactType)}
+              >
                 <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary">
                   <SelectValue />
                 </SelectTrigger>
@@ -158,26 +170,20 @@ export function LogContactPointModal({
               </Select>
             </div>
 
-            {/* Date & Time */}
-            <div className="space-y-2">
-              <Label htmlFor="contact-date" className="text-[16px] leading-[24px] font-semibold text-black">
-                Date & Time
-              </Label>
-              <input
-                id="contact-date"
-                type="datetime-local"
-                value={formatDateTime(contactDate)}
-                onChange={(e) => handleDateTimeChange(e.target.value)}
-                className="w-full h-12 px-3 bg-surface-primary border border-border-primary rounded text-[16px] leading-[24px] text-text-body"
-              />
-            </div>
-
             {/* Outcome */}
             <div className="space-y-2">
-              <Label htmlFor="outcome" className="text-[16px] leading-[24px] font-semibold text-black">
+              <Label
+                htmlFor="outcome"
+                className="text-[16px] leading-[24px] font-semibold text-black"
+              >
                 Outcome (Optional)
               </Label>
-              <Select value={outcome} onValueChange={(value) => setOutcome(value as ContactPointOutcome)}>
+              <Select
+                value={outcome}
+                onValueChange={(value) =>
+                  setOutcome(value as ContactPointOutcome)
+                }
+              >
                 <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary">
                   <SelectValue placeholder="Select outcome..." />
                 </SelectTrigger>
@@ -193,7 +199,10 @@ export function LogContactPointModal({
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label htmlFor="notes" className="text-[16px] leading-[24px] font-semibold text-black">
+              <Label
+                htmlFor="notes"
+                className="text-[16px] leading-[24px] font-semibold text-black"
+              >
                 Notes (Optional)
               </Label>
               <textarea
