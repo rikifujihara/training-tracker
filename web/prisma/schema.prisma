@@ -36,6 +36,7 @@ model User {
 
   // Relationships
   leads Lead[]
+  contactPoints ContactPoint[]
 
   // Future relationships (will uncomment later)
   // workouts     Workout[]
@@ -68,6 +69,7 @@ model Lead {
 
   // Relationships
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contactPoints ContactPoint[]
 
   // Indexes
   @@index([userId])
@@ -75,9 +77,52 @@ model Lead {
   @@map("leads")
 }
 
+model ContactPoint {
+  id        String   @id @default(cuid())
+  leadId    String   @map("lead_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Contact fields
+  contactType ContactType           @map("contact_type")
+  outcome     ContactPointOutcome?  @map("outcome")
+  notes       String?
+  contactDate DateTime              @map("contact_date")
+
+  // Relationships
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([leadId])
+  @@index([userId])
+  @@index([contactDate])
+  @@map("contact_points")
+}
+
 enum UserRole {
   TRAINER
   CLIENT
 
   @@map("user_role")
+}
+
+enum ContactType {
+  PHONE
+  TEXT
+
+  @@map("contact_type")
+}
+
+enum ContactPointOutcome {
+  NO_ANSWER
+  NOT_INTERESTED
+  REQUESTED_CALLBACK
+  INTERESTED
+  SCHEDULED_APPOINTMENT
+  LEFT_VOICEMAIL
+  BUSY
+
+  @@map("contact_point_outcome")
 }
