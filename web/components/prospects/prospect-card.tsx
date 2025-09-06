@@ -7,7 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Phone, NotebookPen, History, MessageSquare } from "lucide-react";
 import { Lead, LeadStatus } from "@/lib/types/lead";
 import { NotesModal } from "@/components/contact-points/notes-modal";
-import { LogContactPointModal, LogContactPointData } from "@/components/contact-points/log-contact-point-modal";
+import {
+  LogContactPointModal,
+  LogContactPointData,
+} from "@/components/contact-points/log-contact-point-modal";
 import { ContactHistoryModal } from "@/components/contact-points/contact-history-modal";
 import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 
@@ -28,10 +31,12 @@ export function ProspectCard({
   const [historyModalOpen, setHistoryModalOpen] = React.useState(false);
   const createContactPointMutation = useCreateContactPoint();
   const statusBarColor = getStatusBarColor(lead.status);
-  const statusAgeText = lead.statusAgeDays === 0 ? "Today" : 
-                       lead.statusAgeDays === 1 ? "1 day old" : 
-                       `${lead.statusAgeDays} days old`;
-
+  const statusAgeText =
+    lead.statusAgeDays === 0
+      ? "Today"
+      : lead.statusAgeDays === 1
+      ? "1 day old"
+      : `${lead.statusAgeDays} days old`;
 
   const handleLogContactPoint = (data: LogContactPointData) => {
     createContactPointMutation.mutate({
@@ -94,7 +99,6 @@ export function ProspectCard({
             <Button
               variant="secondary"
               size="default"
-              className="bg-surface-action-secondary text-text-body hover:bg-surface-action-secondary/80 h-12 px-6 py-3 gap-3 font-semibold"
               onClick={() => setNotesModalOpen(true)}
             >
               <NotebookPen className="w-6 h-6" />
@@ -104,7 +108,6 @@ export function ProspectCard({
             <Button
               variant="secondary"
               size="default"
-              className="bg-surface-action-secondary text-text-body hover:bg-surface-action-secondary/80 h-12 px-6 py-3 gap-3 font-semibold"
               onClick={() => setHistoryModalOpen(true)}
             >
               <History className="w-6 h-6" />
@@ -114,7 +117,6 @@ export function ProspectCard({
             <Button
               variant="secondary"
               size="default"
-              className="bg-surface-action-secondary text-text-body hover:bg-surface-action-secondary/80 h-12 px-6 py-3 gap-3 font-semibold w-[137px]"
               onClick={() => setLogModalOpen(true)}
             >
               <MessageSquare className="w-6 h-6" />

@@ -46,7 +46,7 @@ export function ContactHistoryModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogOverlay className="bg-black/80" />
-        <DialogContent 
+        <DialogContent
           className="max-w-[440px] max-h-[90vh] p-0 gap-0 rounded-lg overflow-hidden"
           showCloseButton={false}
         >
@@ -60,7 +60,7 @@ export function ContactHistoryModal({
                 </DialogTitle>
               </div>
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="icon"
                 className="h-12 w-12 p-3 rounded-lg hover:bg-surface-action-secondary"
                 onClick={() => onOpenChange(false)}
@@ -83,7 +83,10 @@ export function ContactHistoryModal({
             {isLoading ? (
               <div className="space-y-2">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-surface-primary p-4 rounded-lg animate-pulse">
+                  <div
+                    key={i}
+                    className="bg-surface-primary p-4 rounded-lg animate-pulse"
+                  >
                     <div className="flex justify-between items-center mb-4">
                       <div className="flex gap-2">
                         <div className="h-6 w-12 bg-text-disabled/20 rounded-full"></div>
@@ -125,18 +128,10 @@ export function ContactHistoryModal({
           {/* Footer */}
           <div className="bg-surface-primary p-4 border-t-0">
             <div className="flex items-center justify-end gap-2.5 w-full">
-              <Button
-                variant="secondary"
-                onClick={() => onOpenChange(false)}
-                className="bg-surface-action-secondary text-text-body hover:bg-surface-action-secondary/80 px-6 py-3"
-              >
+              <Button variant="secondary" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleSave}
-                disabled={false}
-                className="bg-surface-action text-text-on-action hover:bg-surface-action/90 px-6 py-3 min-h-12 min-w-12"
-              >
+              <Button onClick={handleSave} disabled={false}>
                 Save
                 <Save className="w-6 h-6 ml-3" />
               </Button>

@@ -5,33 +5,38 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-[4px] text-[16px] leading-[24px] font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-surface-action focus-visible:ring-offset-2 disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:size-6 [&_svg]:shrink-0 cursor-pointer hover:cursor-pointer active:opacity-30",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+          "bg-surface-action text-text-on-action hover:bg-surface-action-hover focus:bg-surface-action disabled:bg-surface-disabled disabled:text-text-on-disabled",
+        primary:
+          "bg-surface-action text-text-on-action hover:bg-surface-action-hover focus:bg-surface-action disabled:bg-surface-disabled disabled:text-text-on-disabled",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-surface-action-secondary text-text-body hover:bg-surface-action-hover-2 focus:bg-surface-action-secondary disabled:bg-surface-action-secondary disabled:text-text-on-disabled",
+        ghost:
+          "bg-transparent text-text-action hover:bg-surface-action-hover-2 hover:text-text-action-hover focus:bg-transparent focus:text-text-action disabled:bg-transparent disabled:text-text-disabled",
+        destructive:
+          "bg-destructive text-text-on-action hover:bg-destructive/90 focus:bg-destructive disabled:bg-surface-disabled disabled:text-text-on-disabled",
+        outline:
+          "border border-border-primary bg-surface-primary text-text-body hover:bg-surface-action-hover-2 focus:bg-surface-primary disabled:bg-surface-primary disabled:text-text-disabled disabled:border-border-primary/50",
+        link: "text-text-action underline-offset-4 hover:underline hover:text-text-action-hover focus:text-text-action disabled:text-text-disabled disabled:no-underline",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        default: "px-6 py-3 min-h-12",
+        sm: "px-4 py-2 min-h-8 text-[14px] leading-[20px] gap-2 [&_svg]:size-4",
+        lg: "px-8 py-4 min-h-14 text-[18px] leading-[26px]",
+        icon: "min-h-12 min-w-12 p-3",
+        "icon-sm": "min-h-8 min-w-8 p-2 [&_svg]:size-4",
+        "icon-lg": "min-h-14 min-w-14 p-4",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "primary",
       size: "default",
     },
-  },
+  }
 );
 
 export interface ButtonProps
@@ -50,7 +55,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     );
-  },
+  }
 );
 Button.displayName = "Button";
 

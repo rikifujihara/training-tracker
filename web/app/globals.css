@@ -59,6 +59,10 @@
   --color-border-primary: var(--border-primary);
   --color-icon-information: var(--icon-information);
   --color-surface-page: var(--surface-page);
+  --color-text-action: var(--text-action);
+  --color-text-action-hover: var(--text-action-hover);
+  --color-text-on-disabled: var(--text-on-disabled);
+  --color-surface-disabled: var(--surface-disabled);
   
   --fontsize-body-md: var(--fontsize-body-md);
   --fontsize-body-sm: var(--fontsize-body-sm);
@@ -136,6 +140,10 @@
     --border-primary: #d0d1d4;
     --icon-information: #000aff;
     --surface-page: #f5f6f7;
+    --text-action: #398af0;
+    --text-action-hover: #2d6ec0;
+    --text-on-disabled: #22252b;
+    --surface-disabled: #ecedee;
     
     --fontsize-body-md: 16px;
     --fontsize-body-sm: 12px;
