@@ -109,25 +109,35 @@ export default function ProspectsPage() {
         </Card>
       </div>
 
-      {/* Recent Leads Table */}
-      {leadsData?.leads && leadsData.leads.length > 0
-        ? leadsData.leads
-            .slice(0, 10)
-            .map((lead) => (
-              <ProspectCard
-                key={lead.id}
-                firstName={lead.firstName ?? undefined}
-                lastName={lead.lastName ?? undefined}
-                age={lead.age ?? undefined}
-                gender={lead.gender ?? undefined}
-                goals="General strength and fitness for health"
-                interests="Swimming, dogs, boxing"
-                nextAction="First Call"
-                statusBadgeType="status-warm"
-                statusAge="1 day old"
-              />
-            ))
-        : null}
+      {/* Recent Leads Cards */}
+      {leadsData?.leads && leadsData.leads.length > 0 ? (
+        <div className="space-y-4">
+          {leadsData.leads.slice(0, 10).map((lead) => (
+            <ProspectCard
+              key={lead.id}
+              lead={{
+                ...lead,
+                createdAt: new Date(lead.createdAt),
+                importedAt: new Date(lead.importedAt),
+              }}
+              nextAction="First Call"
+              statusBadgeType="status-warm"
+              statusAge="1 day old"
+            />
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-muted-foreground text-center py-4">
+              No leads yet.{" "}
+              <a href="/protected/upload-leads" className="underline">
+                Upload your first leads
+              </a>
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

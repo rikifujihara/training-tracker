@@ -6,14 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Phone, NotebookPen, History, MessageSquare } from "lucide-react";
 
+export interface Lead {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  age: string | null;
+  gender: string | null;
+  goals: string | null;
+  phoneNumber: string | null;
+  email: string | null;
+  createdAt: Date;
+  importedAt: Date;
+}
+
 export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  firstName?: string;
-  lastName?: string;
-  age?: string;
-  gender?: string;
-  goals?: string;
-  interests?: string;
+  lead: Lead;
   nextAction?: string;
   statusBadgeType?: "status-hot" | "status-warm" | "status-cold";
   statusAge?: string;
@@ -21,12 +29,7 @@ export interface ProspectCardProps
 
 export function ProspectCard({
   className,
-  firstName,
-  lastName,
-  age,
-  gender,
-  goals,
-  interests,
+  lead,
   nextAction = "First Call",
   statusBadgeType = "status-warm",
   statusAge = "1 day old",
@@ -50,20 +53,20 @@ export function ProspectCard({
           {/* Name and details */}
           <div className="text-text-body text-[20px] leading-[23px] font-normal">
             {name}
-            {age && gender && `: ${age} yo ${gender}`}
+            {lead.age && lead.gender && `: ${lead.age} yo ${lead.gender}`}
           </div>
 
           {/* Goals */}
-          {goals && (
+          {lead.goals && (
             <div className="text-text-body text-[16px] leading-[24px]">
-              Goals: {goals}
+              Goals: {lead.goals}
             </div>
           )}
 
-          {/* Interests */}
-          {interests && (
+          {/* Contact info */}
+          {(lead.phoneNumber || lead.email) && (
             <div className="text-text-body text-[16px] leading-[24px]">
-              Interests: {interests}
+              Contact: {[lead.phoneNumber, lead.email].filter(Boolean).join(" • ")}
             </div>
           )}
 
@@ -117,8 +120,8 @@ export function ProspectCard({
   );
 
   function parseName() {
-    return `${firstName ?? ""}${firstName && lastName ? " " : ""}${
-      lastName ?? ""
+    return `${lead.firstName ?? ""}${lead.firstName && lead.lastName ? " " : ""}${
+      lead.lastName ?? ""
     }`.trim();
   }
 }
