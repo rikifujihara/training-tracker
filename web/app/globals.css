@@ -57,6 +57,8 @@
   --color-icon-warning: var(--icon-warning);
   --color-border-warning: var(--border-warning);
   --color-border-primary: var(--border-primary);
+  --color-icon-information: var(--icon-information);
+  --color-surface-page: var(--surface-page);
   
   --fontsize-body-md: var(--fontsize-body-md);
   --fontsize-body-sm: var(--fontsize-body-sm);
@@ -132,6 +134,8 @@
     --icon-warning: #ff6b00;
     --border-warning: #ff9040;
     --border-primary: #d0d1d4;
+    --icon-information: #000aff;
+    --surface-page: #f5f6f7;
     
     --fontsize-body-md: 16px;
     --fontsize-body-sm: 12px;

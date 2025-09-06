@@ -1,5 +1,5 @@
 // Import Prisma-generated enums
-import type { ContactType, ContactPointOutcome } from "@prisma/client";
+import { ContactType, ContactPointOutcome } from "@prisma/client";
 
 // Re-export for convenience
 export { ContactType, ContactPointOutcome };
