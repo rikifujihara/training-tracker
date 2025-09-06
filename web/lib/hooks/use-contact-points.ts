@@ -164,7 +164,15 @@ export const useContactPointsByLeadId = (leadId: string) => {
   return useQuery({
     queryKey: contactPointKeys.byLead(leadId),
     queryFn: () => fetchContactPointsByLeadId(leadId),
-    select: (data) => data.data,
+    select: (data) => ({
+      ...data.data,
+      contactPoints: data.data.contactPoints.map((cp) => ({
+        ...cp,
+        contactDate: new Date(cp.contactDate),
+        createdAt: new Date(cp.createdAt),
+        updatedAt: new Date(cp.updatedAt),
+      }))
+    }),
     enabled: !!leadId,
   });
 };

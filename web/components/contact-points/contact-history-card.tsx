@@ -9,7 +9,7 @@ import { ContactType, ContactPointOutcome } from "@/lib/types/contactPoint";
 export interface ContactHistoryCardProps extends React.HTMLAttributes<HTMLDivElement> {
   contactType: ContactType;
   outcome?: ContactPointOutcome | null;
-  contactDate: Date;
+  contactDate: Date | string;
   notes?: string | null;
   showNotes?: boolean;
   showOutcomeBadge?: boolean;
@@ -51,7 +51,15 @@ export function ContactHistoryCard({
   const typeConfig = contactTypeConfig[contactType];
   const TypeIcon = typeConfig.icon;
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
+    // Ensure we have a valid Date object
+    const dateObj = date instanceof Date ? date : new Date(date);
+    
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      return 'Invalid date';
+    }
+    
     return new Intl.DateTimeFormat('en-US', {
       weekday: 'long',
       day: 'numeric',
@@ -60,7 +68,7 @@ export function ContactHistoryCard({
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
-    }).format(date);
+    }).format(dateObj);
   };
 
   return (
