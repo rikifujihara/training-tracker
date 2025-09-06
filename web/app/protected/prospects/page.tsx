@@ -121,8 +121,6 @@ export default function ProspectsPage() {
                 importedAt: new Date(lead.importedAt),
               }}
               nextAction="First Call"
-              statusBadgeType="status-warm"
-              statusAge="1 day old"
             />
           ))}
         </div>

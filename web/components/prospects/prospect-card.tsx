@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Phone, NotebookPen, History, MessageSquare } from "lucide-react";
 
+export enum LeadStatus {
+  HOT = "status-hot",
+  WARM = "status-warm",
+  COLD = "status-cold",
+}
+
 export interface Lead {
   id: string;
   firstName: string | null;
@@ -23,19 +29,16 @@ export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
   lead: Lead;
   nextAction?: string;
-  statusBadgeType?: "status-hot" | "status-warm" | "status-cold";
-  statusAge?: string;
 }
 
 export function ProspectCard({
   className,
   lead,
   nextAction = "First Call",
-  statusBadgeType = "status-warm",
-  statusAge = "1 day old",
   ...props
 }: ProspectCardProps) {
   const name = parseName();
+  const { statusBadgeType, statusAge } = getLeadStatus();
   return (
     <div
       className={cn(
@@ -123,5 +126,45 @@ export function ProspectCard({
     return `${lead.firstName ?? ""}${lead.firstName && lead.lastName ? " " : ""}${
       lead.lastName ?? ""
     }`.trim();
+  }
+
+  function getLeadStatus(): {
+    statusBadgeType: LeadStatus;
+    statusAge: string;
+  } {
+    const now = new Date();
+    const createdAt = new Date(lead.createdAt);
+    const diffInMs = now.getTime() - createdAt.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    // Less than 24 hours old - hot lead
+    if (diffInHours < 24) {
+      if (diffInHours === 0) {
+        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+        return {
+          statusBadgeType: LeadStatus.HOT,
+          statusAge: diffInMinutes <= 1 ? "Just now" : `${diffInMinutes} minutes old`,
+        };
+      }
+      return {
+        statusBadgeType: LeadStatus.HOT,
+        statusAge: diffInHours === 1 ? "1 hour old" : `${diffInHours} hours old`,
+      };
+    }
+
+    // 1-3 days old - warm lead
+    if (diffInDays <= 3) {
+      return {
+        statusBadgeType: LeadStatus.WARM,
+        statusAge: diffInDays === 1 ? "1 day old" : `${diffInDays} days old`,
+      };
+    }
+
+    // Older than 3 days - cold lead
+    return {
+      statusBadgeType: LeadStatus.COLD,
+      statusAge: `${diffInDays} days old`,
+    };
   }
 }
