@@ -37,10 +37,10 @@ export function Select({ value, onValueChange, children }: SelectProps) {
       }}
     >
       <div className="relative">
-        {React.Children.map(children, child =>
-          React.isValidElement(child) 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ? React.cloneElement(child, { isOpen } as any) 
+        {React.Children.map(children, (child) =>
+          React.isValidElement(child)
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              React.cloneElement(child, { isOpen } as any)
             : child
         )}
       </div>
@@ -54,6 +54,8 @@ export function SelectTrigger({
   isOpen,
   disabled,
   children,
+  leftIcon,
+  rightIcon,
   ...props
 }: {
   className?: string;
@@ -61,6 +63,8 @@ export function SelectTrigger({
   isOpen?: boolean;
   disabled?: boolean;
   children?: React.ReactNode;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }) {
   const context = React.useContext(SelectContext);
   if (!context) throw new Error("SelectTrigger must be used within Select");
@@ -71,17 +75,31 @@ export function SelectTrigger({
     <button
       type="button"
       className={cn(
-        "flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-12 w-full items-center gap-2 rounded border border-border-primary bg-surface-primary px-3 py-2 text-[16px] leading-[24px] text-text-body placeholder:text-text-disabled focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       onClick={() => onOpenChange(!isOpen)}
       disabled={disabled}
       {...props}
     >
-      <span className={value ? "" : "text-muted-foreground"}>
+      {leftIcon && (
+        <div className="flex-shrink-0 text-text-body">{leftIcon}</div>
+      )}
+      <span
+        className={cn(
+          "flex-1 text-left",
+          value ? "text-text-body" : "text-text-disabled"
+        )}
+      >
         {children || value || placeholder}
       </span>
-      <ChevronDown className="h-4 w-4 opacity-50" />
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {rightIcon ? (
+          <div className="w-6 h-6 text-text-body">{rightIcon}</div>
+        ) : (
+          <ChevronDown className="h-6 w-6 text-text-disabled" />
+        )}
+      </div>
     </button>
   );
 }
@@ -101,19 +119,22 @@ export function SelectContent({
   return (
     <div
       className={cn(
-        "absolute top-full z-50 w-full rounded-md border bg-popover mt-1 shadow-md",
+        "absolute top-full z-50 w-full rounded border border-border-primary bg-surface-primary mt-1 shadow-md",
         className
       )}
       {...props}
     >
-      <div className="max-h-60 overflow-auto p-1">
-        {children}
-      </div>
+      <div className="max-h-60 overflow-auto p-1">{children}</div>
     </div>
   );
 }
 
-export function SelectItem({ value, className, children, ...props }: SelectItemProps) {
+export function SelectItem({
+  value,
+  className,
+  children,
+  ...props
+}: SelectItemProps) {
   const context = React.useContext(SelectContext);
   if (!context) throw new Error("SelectItem must be used within Select");
 
@@ -123,7 +144,7 @@ export function SelectItem({ value, className, children, ...props }: SelectItemP
     <button
       type="button"
       className={cn(
-        "relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex w-full cursor-pointer select-none items-center px-3 py-2 text-[16px] leading-[24px] text-text-body outline-none hover:bg-surface-action-secondary focus:bg-surface-action-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
       onClick={() => {

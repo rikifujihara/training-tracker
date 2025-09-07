@@ -95,7 +95,6 @@ export function LogContactPointModal({
     onOpenChange(false);
   };
 
-
   const selectedContactTypeConfig = contactTypeOptions.find(
     (opt) => opt.value === contactType
   );
@@ -119,7 +118,7 @@ export function LogContactPointModal({
                 </DialogTitle>
               </div>
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="icon"
                 className="h-12 w-12 p-3 rounded-lg hover:bg-surface-action-secondary"
                 onClick={() => onOpenChange(false)}
@@ -141,18 +140,14 @@ export function LogContactPointModal({
 
             {/* Contact Type */}
             <div className="space-y-2">
-              <Label
-                htmlFor="contact-type"
-                className="text-[16px] leading-[24px] font-semibold text-black"
-              >
-                Contact Type
-              </Label>
+              <Label htmlFor="contact-type">Contact Type</Label>
               <Select
                 value={contactType}
                 onValueChange={(value) => setContactType(value as ContactType)}
               >
-                <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary">
-                  <SelectValue />
+                {/* <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary"> */}
+                <SelectTrigger leftIcon={<SelectedIcon size={16} />}>
+                  {selectedContactTypeConfig?.label}
                 </SelectTrigger>
                 <SelectContent>
                   {contactTypeOptions.map((option) => {
@@ -172,12 +167,7 @@ export function LogContactPointModal({
 
             {/* Outcome */}
             <div className="space-y-2">
-              <Label
-                htmlFor="outcome"
-                className="text-[16px] leading-[24px] font-semibold text-black"
-              >
-                Outcome (Optional)
-              </Label>
+              <Label htmlFor="outcome">Outcome</Label>
               <Select
                 value={outcome}
                 onValueChange={(value) =>
@@ -199,12 +189,7 @@ export function LogContactPointModal({
 
             {/* Notes */}
             <div className="space-y-2">
-              <Label
-                htmlFor="notes"
-                className="text-[16px] leading-[24px] font-semibold text-black"
-              >
-                Notes (Optional)
-              </Label>
+              <Label htmlFor="notes">Notes</Label>
               <textarea
                 id="notes"
                 value={notes}

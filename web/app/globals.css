@@ -62,6 +62,7 @@
   --color-text-action-hover: var(--text-action-hover);
   --color-text-on-disabled: var(--text-on-disabled);
   --color-surface-disabled: var(--surface-disabled);
+  --color-text-headings: var(--text-headings);
   
   --fontsize-body-md: var(--fontsize-body-md);
   --fontsize-body-sm: var(--fontsize-body-sm);
@@ -143,6 +144,7 @@
     --text-action-hover: #2d6ec0;
     --text-on-disabled: #22252b;
     --surface-disabled: #ecedee;
+    --text-headings: #22252b;
     
     --fontsize-body-md: 16px;
     --fontsize-body-sm: 12px;
