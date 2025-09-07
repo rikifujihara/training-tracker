@@ -1,15 +1,36 @@
+"use client";
+
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { DesktopSidebar } from "@/components/ui/desktop-sidebar";
+
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const pathname = usePathname();
+
   return (
-    <main className="min-h-screen flex flex-col items-center bg-surface-action-secondary">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
+    <div className="flex h-screen bg-surface-page">
+      {/* Sidebar - Hidden on mobile (sm breakpoint and below) */}
+      <div className={`hidden sm:block transition-all duration-300 ${sidebarCollapsed ? 'w-20' : 'w-64'} flex-shrink-0`}>
+        <DesktopSidebar
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          currentPath={pathname}
+          userName="Riki Fujihara"
+          userInitials="RF"
+        />
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto">
+        <div className="p-6">
           {children}
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

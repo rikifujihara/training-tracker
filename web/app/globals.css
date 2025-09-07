@@ -79,6 +79,7 @@
   
   --font-weight-semibold: var(--type-font-weight-semibold);
   --font-family-body: var(--type-font-family-body);
+  --font-family-heading: var(--type-font-family-heading);
 }
 
 /*
@@ -164,6 +165,7 @@
     
     --type-font-weight-semibold: 600;
     --type-font-family-body: 'Inter', sans-serif;
+    --type-font-family-heading: 'Poppins', sans-serif;
   }
 }
 
