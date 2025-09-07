@@ -35,8 +35,9 @@ model User {
   lastName  String? @map("last_name")
 
   // Relationships
-  leads         Lead[]
-  contactPoints ContactPoint[]
+  leads            Lead[]
+  contactPoints    ContactPoint[]
+  messageTemplates MessageTemplate[]
 
   // Future relationships (will uncomment later)
   // workouts     Workout[]
@@ -126,4 +127,23 @@ enum ContactPointOutcome {
   BUSY
 
   @@map("contact_point_outcome")
+}
+
+model MessageTemplate {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id") // Always belongs to a user
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Template fields
+  name      String // "Initial Contact", "Follow Up", etc.
+  content   String // "Hi #{firstName}, this is Riki from..."
+  sortOrder Int    @default(0) @map("sort_order") // for custom ordering
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([userId])
+  @@map("message_template")
 }

@@ -4,13 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Phone,
-  NotebookPen,
-  History,
-  MessageSquare,
-  MoreHorizontal,
-} from "lucide-react";
+import { Phone, History, MessageSquare, MoreHorizontal } from "lucide-react";
 import { Lead, LeadStatus } from "@/lib/types/lead";
 import { NotesModal } from "@/components/contact-points/notes-modal";
 import {
@@ -103,7 +97,7 @@ export function ProspectCard({
                 size="default"
                 onClick={() => setNotesModalOpen(true)}
               >
-                <NotebookPen className="w-6 h-6" />
+                <History className="w-6 h-6" />
                 Notes
               </Button>
 
@@ -112,8 +106,15 @@ export function ProspectCard({
                 size="default"
                 onClick={() => setLogModalOpen(true)}
               >
-                <MessageSquare className="w-6 h-6" />
                 <Phone className="w-6 h-6" />
+                Log
+              </Button>
+              <Button
+                variant="secondary"
+                size="default"
+                onClick={() => setLogModalOpen(true)}
+              >
+                <MessageSquare className="w-6 h-6" />
                 Log
               </Button>
             </div>
@@ -180,17 +181,26 @@ export function ProspectCard({
               className="justify-center"
               onClick={() => setLogModalOpen(true)}
             >
-              <MessageSquare className="w-6 h-6" />
               <Phone className="w-6 h-6" />
+              Log
+            </Button>
+            <Button
+              variant="secondary"
+              size="default"
+              className="justify-center"
+              onClick={() => setLogModalOpen(true)}
+            >
+              <MessageSquare className="w-6 h-6" />
               Log
             </Button>
 
             {/* Message and Call buttons */}
             <div className="flex gap-2.5 w-full">
-              <a href="sms:0452289538?body=I'm%20interested%20in%20your%20services" className="flex-1">
+              <a
+                href="sms:0452289538?body=I'm%20interested%20in%20your%20services"
+                className="flex-1"
+              >
                 <Button
-                  variant="primary"
-                  size="default"
                   className="w-full justify-center gap-3 px-6 py-3 h-12"
                   onClick={handleSendMessage}
                 >
@@ -200,8 +210,6 @@ export function ProspectCard({
               </a>
               <a href="tel:0452289538" className="flex-1">
                 <Button
-                  variant="primary"
-                  size="default"
                   className="w-full justify-center gap-3 px-6 py-3 h-12"
                   onClick={handleCall}
                 >
