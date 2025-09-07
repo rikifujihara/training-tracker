@@ -63,6 +63,7 @@
   --color-text-on-disabled: var(--text-on-disabled);
   --color-surface-disabled: var(--surface-disabled);
   --color-text-headings: var(--text-headings);
+  --color-icon-error: var(--icon-error);
   
   --fontsize-body-lg: var(--fontsize-body-lg);
   --fontsize-body-md: var(--fontsize-body-md);
@@ -147,6 +148,7 @@
     --text-on-disabled: #22252b;
     --surface-disabled: #ecedee;
     --text-headings: #22252b;
+    --icon-error: #ff0000;
     
     --fontsize-body-lg: 20px;
     --fontsize-body-md: 16px;

@@ -4,27 +4,29 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex text-xs px-2.5 py-1 items-center gap-1 justify-center border-transparent transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-full",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground shadow-sm hover:bg-primary/80",
+          " bg-primary text-primary-foreground shadow-sm hover:bg-primary/80",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          " font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
-          "border-transparent bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/80",
-        outline: "text-foreground",
-        status: "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] border-transparent",
-        "status-hot": "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] border-transparent bg-red-500 text-white",
-        "status-warm": "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] border-transparent bg-icon-warning text-text-on-action",
-        "status-cold": "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] border-transparent bg-blue-500 text-white",
+          " font-semibold bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/80",
+        outline: " font-semibold text-foreground border border-border",
+        "status-hot":
+          "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] bg-icon-error text-text-on-action whitespace-nowrap",
+        "status-warm":
+          "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] bg-icon-warning text-text-on-action whitespace-nowrap",
+        "status-cold":
+          "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] bg-blue-500 text-text-on-action whitespace-nowrap",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 export interface BadgeProps

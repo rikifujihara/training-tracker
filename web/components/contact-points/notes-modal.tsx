@@ -11,14 +11,7 @@ import {
   DialogOverlay,
 } from "@/components/ui/dialog";
 import { ContactHistoryCard } from "./contact-history-card";
-import {
-  NotebookPen,
-  X,
-  Save,
-  PenLine,
-  Phone,
-  MessageSquareText,
-} from "lucide-react";
+import { NotebookPen, X, Save, PenLine } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { useContactPointsByLeadId } from "@/lib/hooks/use-contact-points";
 import { useUpdateLead } from "@/lib/hooks/use-leads";
@@ -29,11 +22,7 @@ export interface NotesModalProps {
   lead: Lead;
 }
 
-export function NotesModal({
-  open,
-  onOpenChange,
-  lead,
-}: NotesModalProps) {
+export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
   // Fetch contact points for this lead
   const { data: contactPointsData, isLoading: contactPointsLoading } =
     useContactPointsByLeadId(lead.id);
@@ -123,12 +112,6 @@ export function NotesModal({
                 <span className="font-bold">Next</span>: First call scheduled
               </div>
             </div>
-
-            {/* General Notes Section */}
-            <h3 className="text-[16px] leading-[24px] font-semibold text-black">
-              General Notes
-            </h3>
-
             {/* Editable Text Area */}
             <div className="relative">
               <div className="bg-surface-primary p-3 rounded border border-border-primary min-h-[120px]">
@@ -158,15 +141,6 @@ export function NotesModal({
                   <PenLine className="w-6 h-6 text-text-disabled" />
                 </button>
               )}
-            </div>
-
-            {/* Contact Notes Header */}
-            <div className="flex items-center gap-2.5">
-              <Phone className="w-6 h-6 text-text-body" />
-              <MessageSquareText className="w-6 h-6 text-text-body" />
-              <h3 className="text-[16px] leading-[24px] font-semibold text-black">
-                Notes
-              </h3>
             </div>
 
             {/* Contact History Cards */}

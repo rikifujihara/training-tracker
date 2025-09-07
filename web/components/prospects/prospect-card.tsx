@@ -139,23 +139,12 @@ export function ProspectCard({
       <div className="block sm:hidden">
         <div className="flex flex-col gap-[11px] px-4 py-5">
           {/* Header with name, badge, and more button */}
-          <div className="flex gap-[11px] items-start justify-start">
+          <div className="flex gap-[11px]">
             {/* Main content */}
-            <div className="flex-1 flex flex-col gap-4 min-w-0">
+            <div className="flex-1 flex flex-col gap-4 min-w-0 justify-center">
               {/* Name */}
               <div className="text-text-body text-[20px] leading-[23px] font-normal">
                 {lead.displayName}
-              </div>
-
-              {/* Next action */}
-              <div className="flex gap-2 items-center">
-                <span className="text-text-disabled text-[16px] leading-[24px]">
-                  Next:
-                </span>
-                <span className="text-text-body text-[16px] leading-[24px] font-semibold">
-                  {nextAction}
-                </span>
-                <Phone className="w-6 h-6 text-icon-body" />
               </div>
             </div>
 
@@ -170,6 +159,16 @@ export function ProspectCard({
                 <MoreHorizontal className="w-6 h-6 text-icon-body" />
               </Button>
             </div>
+          </div>
+          {/* Next action */}
+          <div className="flex gap-2 items-center">
+            <span className="text-text-disabled text-[16px] leading-[24px]">
+              Next:
+            </span>
+            <span className="text-text-body text-[16px] leading-[24px] font-semibold">
+              {nextAction}
+            </span>
+            <Phone className="w-6 h-6 text-icon-body" />
           </div>
 
           {/* Actions section */}

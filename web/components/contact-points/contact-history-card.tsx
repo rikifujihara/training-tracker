@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Phone, MessageSquareText } from "lucide-react";
 import { ContactType, ContactPointOutcome } from "@/lib/types/contactPoint";
 
-export interface ContactHistoryCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ContactHistoryCardProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   contactType: ContactType;
   outcome?: ContactPointOutcome | null;
   contactDate: Date | string;
@@ -28,13 +29,34 @@ const contactTypeConfig = {
   },
 };
 
-const outcomeConfig: Record<ContactPointOutcome, { label: string; bgColor: string }> = {
-  [ContactPointOutcome.NO_ANSWER]: { label: "No Answer", bgColor: "bg-surface-action" },
-  [ContactPointOutcome.NOT_INTERESTED]: { label: "Not Interested", bgColor: "bg-destructive" },
-  [ContactPointOutcome.REQUESTED_CALLBACK]: { label: "Callback Requested", bgColor: "bg-icon-warning" },
-  [ContactPointOutcome.INTERESTED]: { label: "Interested", bgColor: "bg-green-500" },
-  [ContactPointOutcome.SCHEDULED_APPOINTMENT]: { label: "Scheduled", bgColor: "bg-green-600" },
-  [ContactPointOutcome.LEFT_VOICEMAIL]: { label: "Left Voicemail", bgColor: "bg-surface-action" },
+const outcomeConfig: Record<
+  ContactPointOutcome,
+  { label: string; bgColor: string }
+> = {
+  [ContactPointOutcome.NO_ANSWER]: {
+    label: "No Answer",
+    bgColor: "bg-surface-action",
+  },
+  [ContactPointOutcome.NOT_INTERESTED]: {
+    label: "Not Interested",
+    bgColor: "bg-destructive",
+  },
+  [ContactPointOutcome.REQUESTED_CALLBACK]: {
+    label: "Callback Requested",
+    bgColor: "bg-icon-warning",
+  },
+  [ContactPointOutcome.INTERESTED]: {
+    label: "Interested",
+    bgColor: "bg-green-500",
+  },
+  [ContactPointOutcome.SCHEDULED_APPOINTMENT]: {
+    label: "Scheduled",
+    bgColor: "bg-green-600",
+  },
+  [ContactPointOutcome.LEFT_VOICEMAIL]: {
+    label: "Left Voicemail",
+    bgColor: "bg-surface-action",
+  },
   [ContactPointOutcome.BUSY]: { label: "Busy", bgColor: "bg-yellow-500" },
 };
 
@@ -54,19 +76,19 @@ export function ContactHistoryCard({
   const formatDate = (date: Date | string) => {
     // Ensure we have a valid Date object
     const dateObj = date instanceof Date ? date : new Date(date);
-    
+
     // Check if the date is valid
     if (isNaN(dateObj.getTime())) {
-      return 'Invalid date';
+      return "Invalid date";
     }
-    
-    return new Intl.DateTimeFormat('en-US', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'numeric',
-      year: '2-digit',
-      hour: 'numeric',
-      minute: '2-digit',
+
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      day: "numeric",
+      month: "numeric",
+      year: "2-digit",
+      hour: "numeric",
+      minute: "2-digit",
       hour12: true,
     }).format(dateObj);
   };
@@ -80,16 +102,10 @@ export function ContactHistoryCard({
       {...props}
     >
       {/* Header with badges and date */}
-      <div className="flex items-start justify-between w-full">
-        <div className="flex gap-2 items-center">
+      <div className="flex items-start justify-between w-full max-sm:flex-col-reverse gap-2">
+        <div className="flex flex-col gap-2 items-start">
           {/* Contact type badge */}
-          <Badge
-            variant="default"
-            className={cn(
-              "px-1.5 py-0 h-6 gap-1 rounded-[50px] text-[12px] leading-[20px] font-normal text-text-on-action",
-              typeConfig.bgColor
-            )}
-          >
+          <Badge variant="default" className={cn(typeConfig.bgColor)}>
             <TypeIcon className="w-4 h-4" />
             {typeConfig.label}
           </Badge>
@@ -98,10 +114,7 @@ export function ContactHistoryCard({
           {showOutcomeBadge && outcome && (
             <Badge
               variant="default"
-              className={cn(
-                "px-1.5 py-0 h-6 rounded-[50px] text-[12px] leading-[20px] font-normal text-text-on-action",
-                outcomeConfig[outcome].bgColor
-              )}
+              className={cn(outcomeConfig[outcome].bgColor)}
             >
               {outcomeConfig[outcome].label}
             </Badge>

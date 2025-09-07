@@ -2,8 +2,7 @@
 import { ProspectCard } from "@/components/prospects/prospect-card";
 
 import { useLeads, useLeadStats } from "@/lib/hooks/use-leads";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Mail, Phone, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function ProspectsPage() {
   const {
@@ -11,7 +10,7 @@ export default function ProspectsPage() {
     isLoading: leadsLoading,
     error: leadsError,
   } = useLeads();
-  const { data: statsData, isLoading: statsLoading } = useLeadStats();
+  const { isLoading: statsLoading } = useLeadStats();
 
   if (leadsLoading || statsLoading) {
     return (
@@ -42,82 +41,14 @@ export default function ProspectsPage() {
     );
   }
 
-  const stats = statsData || {
-    total: 0,
-    withEmail: 0,
-    withPhone: 0,
-    recentImports: 0,
-  };
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">With Email</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.withEmail}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.total > 0
-                ? Math.round((stats.withEmail / stats.total) * 100)
-                : 0}
-              % of total
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">With Phone</CardTitle>
-            <Phone className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.withPhone}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.total > 0
-                ? Math.round((stats.withPhone / stats.total) * 100)
-                : 0}
-              % of total
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Recent Imports
-            </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.recentImports}</div>
-            <p className="text-xs text-muted-foreground">Last 30 days</p>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Recent Leads Cards */}
       {leadsData?.leads && leadsData.leads.length > 0 ? (
         <div className="space-y-4">
           {leadsData.leads.slice(0, 10).map((lead) => (
-            <ProspectCard
-              key={lead.id}
-              lead={lead}
-              nextAction="First Call"
-            />
+            <ProspectCard key={lead.id} lead={lead} nextAction="First Call" />
           ))}
         </div>
       ) : (
