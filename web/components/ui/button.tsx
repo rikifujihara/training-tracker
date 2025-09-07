@@ -16,7 +16,7 @@ const buttonVariants = cva(
         secondary:
           "bg-surface-action-secondary text-text-body hover:bg-surface-action-hover-2 focus:bg-surface-action-secondary disabled:bg-surface-action-secondary disabled:text-text-on-disabled",
         ghost:
-          "bg-transparent text-text-action hover:bg-surface-action-hover-2 hover:text-text-action-hover focus:bg-transparent focus:text-text-action disabled:bg-transparent disabled:text-text-disabled",
+          "bg-transparent text-text-body hover:bg-surface-action-hover-2 focus:bg-transparent disabled:bg-transparent disabled:text-text-disabled",
         destructive:
           "bg-destructive text-text-on-action hover:bg-destructive/90 focus:bg-destructive disabled:bg-surface-disabled disabled:text-text-on-disabled",
         outline:

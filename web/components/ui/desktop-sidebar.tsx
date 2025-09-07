@@ -3,18 +3,20 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
-import { 
-  Home, 
-  Users, 
-  MessageSquare, 
-  Calendar, 
-  CreditCard, 
+import {
+  Home,
+  Users,
+  MessageSquare,
+  Calendar,
+  CreditCard,
   Settings,
   Menu,
-  X
+  X,
 } from "lucide-react";
+import { Button } from "./button";
 
-export interface DesktopSidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface DesktopSidebarProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
   currentPath?: string;
@@ -24,23 +26,51 @@ export interface DesktopSidebarProps extends React.HTMLAttributes<HTMLDivElement
 
 const navigationItems = [
   { icon: Home, label: "Dashboard", href: "/protected", badge: undefined },
-  { icon: Users, label: "Prospects", href: "/protected/prospects", badge: undefined },
-  { icon: Users, label: "Clients", href: "/protected/clients", badge: undefined },
-  { icon: MessageSquare, label: "Chat", href: "/protected/chat", badge: undefined },
-  { icon: Calendar, label: "Schedule", href: "/protected/schedule", badge: undefined },
-  { icon: CreditCard, label: "Billing", href: "/protected/billing", badge: undefined },
+  {
+    icon: Users,
+    label: "Prospects",
+    href: "/protected/prospects",
+    badge: undefined,
+  },
+  {
+    icon: Users,
+    label: "Clients",
+    href: "/protected/clients",
+    badge: undefined,
+  },
+  {
+    icon: MessageSquare,
+    label: "Chat",
+    href: "/protected/chat",
+    badge: undefined,
+  },
+  {
+    icon: Calendar,
+    label: "Schedule",
+    href: "/protected/schedule",
+    badge: undefined,
+  },
+  {
+    icon: CreditCard,
+    label: "Billing",
+    href: "/protected/billing",
+    badge: undefined,
+  },
 ];
 
 const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
-  ({ 
-    collapsed = false, 
-    onToggleCollapse, 
-    currentPath = "/clients", 
-    userName = "Riki Fujihara",
-    userInitials = "RF",
-    className,
-    ...props 
-  }, ref) => {
+  (
+    {
+      collapsed = false,
+      onToggleCollapse,
+      currentPath = "/clients",
+      userName = "Riki Fujihara",
+      userInitials = "RF",
+      className,
+      ...props
+    },
+    ref
+  ) => {
     return (
       <div
         ref={ref}
@@ -52,10 +82,12 @@ const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
         {...props}
       >
         {/* Header - Logo and Menu Toggle */}
-        <div className={cn(
-          "flex items-center w-full",
-          collapsed ? "justify-center" : "justify-between gap-7"
-        )}>
+        <div
+          className={cn(
+            "flex items-center w-full",
+            collapsed ? "justify-center" : "justify-between gap-7"
+          )}
+        >
           {!collapsed && (
             <div className="flex items-center">
               <span className="font-heading font-semibold text-[20px] leading-[24px] text-text-headings">
@@ -68,13 +100,18 @@ const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
               </div>
             </div>
           )}
-          
-          <button
-            onClick={onToggleCollapse}
-            className="flex-shrink-0 w-6 h-6 text-text-body hover:text-text-headings transition-colors"
+
+          <Button
+            variant="ghost"
+            size="icon"
+            type="button"
+            onClick={(e) => {
+              onToggleCollapse?.();
+              e.currentTarget.blur(); // Remove focus after click
+            }}
           >
             {collapsed ? <Menu size={24} /> : <X size={24} />}
-          </button>
+          </Button>
         </div>
 
         {/* Divider */}
@@ -85,7 +122,7 @@ const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
           {navigationItems.map((item) => {
             const IconComponent = item.icon;
             const isSelected = currentPath === item.href;
-            
+
             return (
               <SidebarNavItem
                 key={item.href}
@@ -122,16 +159,18 @@ const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
         <div className="w-full h-px bg-[#d9d9d9]" />
 
         {/* User Avatar */}
-        <div className={cn(
-          "flex items-center",
-          collapsed ? "justify-center" : "gap-3"
-        )}>
+        <div
+          className={cn(
+            "flex items-center",
+            collapsed ? "justify-center" : "gap-3"
+          )}
+        >
           <div className="w-10 h-10 bg-surface-action rounded-[50px] border border-border-primary flex items-center justify-center flex-shrink-0">
             <span className="font-heading font-semibold text-[24px] leading-[28px] text-white">
               {userInitials}
             </span>
           </div>
-          
+
           {!collapsed && (
             <div className="flex flex-col items-start min-w-0 flex-1">
               <span className="font-heading font-semibold text-[20px] leading-[24px] text-black truncate">
