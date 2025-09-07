@@ -64,8 +64,10 @@
   --color-surface-disabled: var(--surface-disabled);
   --color-text-headings: var(--text-headings);
   
+  --fontsize-body-lg: var(--fontsize-body-lg);
   --fontsize-body-md: var(--fontsize-body-md);
   --fontsize-body-sm: var(--fontsize-body-sm);
+  --line-height-body-lg: var(--line-height-body-lg);
   --line-height-body-md: var(--line-height-body-md);
   --line-height-body-sm: var(--line-height-body-sm);
   --paragraph-spacing-body-md: var(--paragraph-spacing-body-md);
@@ -146,8 +148,10 @@
     --surface-disabled: #ecedee;
     --text-headings: #22252b;
     
+    --fontsize-body-lg: 20px;
     --fontsize-body-md: 16px;
     --fontsize-body-sm: 12px;
+    --line-height-body-lg: 32px;
     --line-height-body-md: 24px;
     --line-height-body-sm: 20px;
     --paragraph-spacing-body-md: 16px;
