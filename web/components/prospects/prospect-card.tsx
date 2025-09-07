@@ -17,7 +17,6 @@ import {
   LogContactPointModal,
   LogContactPointData,
 } from "@/components/contact-points/log-contact-point-modal";
-import { ContactHistoryModal } from "@/components/contact-points/contact-history-modal";
 import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 
 export interface ProspectCardProps
@@ -34,7 +33,6 @@ export function ProspectCard({
 }: ProspectCardProps) {
   const [notesModalOpen, setNotesModalOpen] = React.useState(false);
   const [logModalOpen, setLogModalOpen] = React.useState(false);
-  const [historyModalOpen, setHistoryModalOpen] = React.useState(false);
   const createContactPointMutation = useCreateContactPoint();
   const statusBarColor = getStatusBarColor(lead.status);
   const statusAgeText =
@@ -112,15 +110,6 @@ export function ProspectCard({
               <Button
                 variant="secondary"
                 size="default"
-                onClick={() => setHistoryModalOpen(true)}
-              >
-                <History className="w-6 h-6" />
-                History
-              </Button>
-
-              <Button
-                variant="secondary"
-                size="default"
                 onClick={() => setLogModalOpen(true)}
               >
                 <MessageSquare className="w-6 h-6" />
@@ -180,19 +169,8 @@ export function ProspectCard({
               className="justify-center"
               onClick={() => setNotesModalOpen(true)}
             >
-              <NotebookPen className="w-6 h-6" />
-              Notes
-            </Button>
-
-            {/* History button */}
-            <Button
-              variant="secondary"
-              size="default"
-              className="justify-center"
-              onClick={() => setHistoryModalOpen(true)}
-            >
               <History className="w-6 h-6" />
-              History
+              Notes
             </Button>
 
             {/* Log button */}
@@ -249,13 +227,6 @@ export function ProspectCard({
         lead={lead}
         onSave={handleLogContactPoint}
         isLoading={createContactPointMutation.isPending}
-      />
-
-      <ContactHistoryModal
-        open={historyModalOpen}
-        onOpenChange={setHistoryModalOpen}
-        lead={lead}
-        onSave={() => {}}
       />
     </div>
   );

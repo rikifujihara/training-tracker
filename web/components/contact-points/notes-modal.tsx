@@ -42,6 +42,9 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
     setLocalNotes(value);
   };
 
+  // Check if there are changes to save
+  const hasChanges = localNotes !== (lead.generalNotes || "");
+
   const handleSave = () => {
     updateLead(
       {
@@ -190,7 +193,7 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
               <Button variant="secondary" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} disabled={isUpdating}>
+              <Button onClick={handleSave} disabled={!hasChanges || isUpdating}>
                 Save
                 <Save className="w-6 h-6 ml-3" />
               </Button>
