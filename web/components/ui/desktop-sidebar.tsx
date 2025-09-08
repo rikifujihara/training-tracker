@@ -40,8 +40,8 @@ const navigationItems = [
   },
   {
     icon: MessageSquare,
-    label: "Chat",
-    href: "/protected/chat",
+    label: "Templates",
+    href: "/protected/templates",
     badge: undefined,
   },
   {
