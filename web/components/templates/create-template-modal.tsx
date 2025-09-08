@@ -78,55 +78,43 @@ export function CreateTemplateModal({
           {/* Template Editor */}
           <div className="space-y-8">
             <div>
-              <h3 className="font-semibold text-text-headings text-lg mb-6">
-                Template Details
-              </h3>
-
               {/* Template Name */}
               <div className="space-y-3 mb-8">
                 <Label htmlFor="template-name" className="text-base">
-                  Template Name
+                  Name
                 </Label>
                 <Input
                   id="template-name"
                   value={templateName}
                   onChange={(e) => setTemplateName(e.target.value)}
                   placeholder="Enter template name"
-                  // className="h-12 text-base"
                 />
               </div>
 
               {/* Message Content */}
               <div className="space-y-3">
                 <Label htmlFor="message-content" className="text-base">
-                  Message Template
+                  Content
                 </Label>
+                <div className="flex items-start gap-2 p-4 bg-surface-action-hover-2 rounded-md border-l-4 border-surface-action">
+                  <div className="flex-1">
+                    <p className="text-sm text-text-body">
+                      Use{" "}
+                      <code className="bg-white px-2 py-1 rounded text-sm font-mono">
+                        first_name
+                      </code>{" "}
+                      and we&apos;ll fill it in for you.
+                    </p>
+                  </div>
+                </div>
                 <textarea
                   ref={textareaRef}
                   id="message-content"
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   placeholder="Enter your message template with variables like first_name"
-                  className="flex min-h-48 w-full rounded-md border border-input bg-transparent px-4 py-3 text-base shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none leading-relaxed"
+                  className="flex min-h-30 w-full rounded-md border border-input bg-transparent px-4 py-3 text-base shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none leading-relaxed"
                 />
-                <div className="flex items-start gap-2 p-4 bg-surface-action-hover-2 rounded-md border-l-4 border-surface-action">
-                  <div className="flex-1">
-                    <p className="text-sm text-text-body mb-2">
-                      Use{" "}
-                      <code className="bg-white px-2 py-1 rounded text-sm font-mono">
-                        first_name
-                      </code>{" "}
-                      to insert dynamic variables.
-                    </p>
-                    <p className="text-xs text-text-body">
-                      Available:{" "}
-                      <code className="bg-white px-1 py-0.5 rounded text-xs">
-                        first_name
-                      </code>{" "}
-                      - Client&apos;s first name
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -156,24 +144,6 @@ export function CreateTemplateModal({
                         "Your message preview will appear here..."}
                     </p>
                   </div>
-                  <p className="text-sm text-text-body">
-                    Variables are replaced with sample data (e.g., &quot;John&quot; for
-                    first_name).
-                  </p>
-                </div>
-
-                <div className="p-5 bg-surface-action-hover-2 rounded-md border-l-4 border-surface-action">
-                  <h4 className="font-semibold text-text-headings mb-3 text-base">
-                    Available Variables:
-                  </h4>
-                  <ul className="space-y-2 text-sm text-text-body">
-                    <li>
-                      <code className="bg-white px-2 py-1 rounded font-mono">
-                        first_name
-                      </code>{" "}
-                      - Client&apos;s first name
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>
