@@ -12,7 +12,10 @@ export default function TemplatesPage() {
   // Mock data - empty for now since no backend is hooked up yet
   const templates: Array<{ id: string; name: string; message: string }> = [];
 
-  const handleSaveTemplate = (templateData: { name: string; message: string }) => {
+  const handleSaveTemplate = (templateData: {
+    name: string;
+    message: string;
+  }) => {
     console.log("Template saved:", templateData);
     // TODO: Here we'll implement the actual save logic later
   };
@@ -20,7 +23,7 @@ export default function TemplatesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start max-sm:flex-col max-sm:gap-3">
         <div>
           <h1 className="text-3xl font-heading font-semibold text-text-headings mb-2">
             Message Templates
@@ -55,7 +58,8 @@ export default function TemplatesPage() {
                 No templates yet
               </h3>
               <p className="text-text-body mb-6 max-w-md mx-auto">
-                Create your first message template to streamline your client communication.
+                Create your first message template to streamline your client
+                communication.
               </p>
               <Button onClick={() => setCreateModalOpen(true)}>
                 <Plus size={20} />

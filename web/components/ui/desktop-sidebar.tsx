@@ -3,16 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
-import {
-  Home,
-  Users,
-  MessageSquare,
-  Calendar,
-  CreditCard,
-  Settings,
-  Menu,
-  X,
-} from "lucide-react";
+import { Home, Users, MessageSquare, Settings, Menu, X } from "lucide-react";
 import { Button } from "./button";
 
 export interface DesktopSidebarProps
@@ -32,30 +23,30 @@ const navigationItems = [
     href: "/protected/prospects",
     badge: undefined,
   },
-  {
-    icon: Users,
-    label: "Clients",
-    href: "/protected/clients",
-    badge: undefined,
-  },
+  // {
+  //   icon: Users,
+  //   label: "Clients",
+  //   href: "#",
+  //   badge: undefined,
+  // },
   {
     icon: MessageSquare,
     label: "Templates",
     href: "/protected/templates",
     badge: undefined,
   },
-  {
-    icon: Calendar,
-    label: "Schedule",
-    href: "/protected/schedule",
-    badge: undefined,
-  },
-  {
-    icon: CreditCard,
-    label: "Billing",
-    href: "/protected/billing",
-    badge: undefined,
-  },
+  // {
+  //   icon: Calendar,
+  //   label: "Schedule",
+  //   href: "#",
+  //   badge: undefined,
+  // },
+  // {
+  //   icon: CreditCard,
+  //   label: "Billing",
+  //   href: "#",
+  //   badge: undefined,
+  // },
 ];
 
 const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
@@ -125,7 +116,7 @@ const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
 
             return (
               <SidebarNavItem
-                key={item.href}
+                key={`${item.label}`}
                 icon={<IconComponent size={24} />}
                 label={item.label}
                 badge={item.badge}
