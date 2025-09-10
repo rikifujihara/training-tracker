@@ -5,13 +5,37 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreateTemplateModal } from "@/components/templates/create-template-modal";
-import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { useMessageTemplates, useDeleteTemplate } from "@/lib/hooks/use-message-templates";
 
 export default function TemplatesPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState<string | null>(null);
 
   // Fetch templates using our hook
   const { data: templates = [], isLoading, error } = useMessageTemplates();
+  const deleteTemplateMutation = useDeleteTemplate();
+
+  const handleDeleteClick = (templateId: string) => {
+    setTemplateToDelete(templateId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (templateToDelete) {
+      deleteTemplateMutation.mutate(templateToDelete, {
+        onSuccess: () => {
+          setDeleteModalOpen(false);
+          setTemplateToDelete(null);
+        },
+        onError: (error) => {
+          console.error("Failed to delete template:", error);
+          // TODO: Show error toast/notification
+        },
+      });
+    }
+  };
 
 
   return (
@@ -70,7 +94,11 @@ export default function TemplatesPage() {
                     <Button variant="secondary" size="sm">
                       Edit
                     </Button>
-                    <Button variant="secondary" size="sm">
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      onClick={() => handleDeleteClick(template.id)}
+                    >
                       Delete
                     </Button>
                   </div>
@@ -106,6 +134,17 @@ export default function TemplatesPage() {
       <CreateTemplateModal
         open={createModalOpen}
         onOpenChange={setCreateModalOpen}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title="Are you sure you want to delete this template?"
+        description=""
+        deleteLabel="Delete template"
+        onConfirm={handleDeleteConfirm}
+        isPending={deleteTemplateMutation.isPending}
       />
     </div>
   );
