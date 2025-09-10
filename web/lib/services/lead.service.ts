@@ -1,13 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { CreateLeadInput, Lead, LeadStatus, RawLead } from "@/lib/types/lead";
+import { TaskType, TaskStatus } from "@/lib/types/task";
 
 export class LeadService {
   /**
    * Create multiple leads for a user
    */
-  static async createLeads(userId: string, leads: CreateLeadInput[]): Promise<Lead[]> {
+  static async createLeads(
+    userId: string,
+    leads: CreateLeadInput[]
+  ): Promise<Lead[]> {
     // Clean and prepare lead data
-    const cleanLeads = leads.map(lead => ({
+    const cleanLeads = leads.map((lead) => ({
       userId,
       firstName: lead.firstName?.trim() || null,
       lastName: lead.lastName?.trim() || null,
@@ -21,27 +25,45 @@ export class LeadService {
     }));
 
     // Filter out completely empty leads
-    const validLeads = cleanLeads.filter(lead => 
-      lead.firstName || lead.lastName || lead.email || lead.phoneNumber
+    const validLeads = cleanLeads.filter(
+      (lead) =>
+        lead.firstName || lead.lastName || lead.email || lead.phoneNumber
     );
 
     if (validLeads.length === 0) {
       throw new Error("No valid leads found to import");
     }
 
-    // Create leads in database
+    // TODO: this service probably shouldn't contain the task creation logic directly, will refactor in the future
+    // Create leads and their initial call tasks in database
     const createdLeads = await prisma.$transaction(async (tx) => {
       const results = [];
       for (const leadData of validLeads) {
-        const created = await tx.lead.create({
+        // Create the lead
+        const createdLead = await tx.lead.create({
           data: leadData,
         });
-        results.push(created);
+
+        // Create an "Initial call" task for this lead
+        await tx.task.create({
+          data: {
+            userId: userId,
+            leadId: createdLead.id,
+            title: "Initial call",
+            description: null,
+            dueDate: createdLead.createdAt, // Due date same as creation date
+            taskType: TaskType.INITIAL_CALL,
+            status: TaskStatus.PENDING,
+            updatedAt: new Date(),
+          },
+        });
+
+        results.push(createdLead);
       }
       return results;
     });
 
-    return createdLeads.map(lead => this.enrichLeadWithDisplayFields(lead));
+    return createdLeads.map((lead) => this.enrichLeadWithDisplayFields(lead));
   }
 
   /**
@@ -50,16 +72,19 @@ export class LeadService {
   static async getLeadsByUserId(userId: string): Promise<Lead[]> {
     const rawLeads = await prisma.lead.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
-    return rawLeads.map(lead => this.enrichLeadWithDisplayFields(lead));
+    return rawLeads.map((lead) => this.enrichLeadWithDisplayFields(lead));
   }
 
   /**
    * Get lead by ID (with user ownership check)
    */
-  static async getLeadById(leadId: string, userId: string): Promise<Lead | null> {
+  static async getLeadById(
+    leadId: string,
+    userId: string
+  ): Promise<Lead | null> {
     const rawLead = await prisma.lead.findFirst({
       where: {
         id: leadId,
@@ -123,23 +148,17 @@ export class LeadService {
   static async getLeadStats(userId: string) {
     const [total, withEmail, withPhone, recentImports] = await Promise.all([
       prisma.lead.count({ where: { userId } }),
-      prisma.lead.count({ 
-        where: { 
-          userId, 
-          AND: [
-            { email: { not: null } },
-            { email: { not: "" } }
-          ]
-        } 
+      prisma.lead.count({
+        where: {
+          userId,
+          AND: [{ email: { not: null } }, { email: { not: "" } }],
+        },
       }),
-      prisma.lead.count({ 
-        where: { 
-          userId, 
-          AND: [
-            { phoneNumber: { not: null } },
-            { phoneNumber: { not: "" } }
-          ]
-        } 
+      prisma.lead.count({
+        where: {
+          userId,
+          AND: [{ phoneNumber: { not: null } }, { phoneNumber: { not: "" } }],
+        },
       }),
       prisma.lead.count({
         where: {
@@ -174,8 +193,13 @@ export class LeadService {
   /**
    * Parse display name from first and last name
    */
-  private static parseDisplayName(firstName: string | null, lastName: string | null): string {
-    return `${firstName ?? ""}${firstName && lastName ? " " : ""}${lastName ?? ""}`.trim();
+  private static parseDisplayName(
+    firstName: string | null,
+    lastName: string | null
+  ): string {
+    return `${firstName ?? ""}${firstName && lastName ? " " : ""}${
+      lastName ?? ""
+    }`.trim();
   }
 
   /**
