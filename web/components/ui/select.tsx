@@ -158,10 +158,16 @@ export function SelectItem({
   );
 }
 
-export function SelectValue({ placeholder }: { placeholder?: string }) {
+export function SelectValue({
+  displayText,
+  placeholder,
+}: {
+  placeholder?: string;
+  displayText?: string;
+}) {
   const context = React.useContext(SelectContext);
   if (!context) throw new Error("SelectValue must be used within Select");
 
   const { value } = context;
-  return <>{value || placeholder}</>;
+  return <>{displayText || value || placeholder}</>;
 }

@@ -100,6 +100,10 @@ export function LogContactPointModal({
   );
   const SelectedIcon = selectedContactTypeConfig?.icon || Phone;
 
+  const selectedCallOutcome = outcomeOptions.find(
+    (opt) => opt.value === outcome
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
@@ -114,7 +118,7 @@ export function LogContactPointModal({
               <div className="flex items-center gap-3">
                 <SelectedIcon className="w-6 h-6 text-text-body" />
                 <DialogTitle className="text-[16px] leading-[24px] font-semibold text-black">
-                  Log Contact
+                  Log Phone Call
                 </DialogTitle>
               </div>
               <Button
@@ -133,36 +137,9 @@ export function LogContactPointModal({
             {/* Lead Summary */}
             <div className="bg-surface-primary p-4 rounded-lg">
               <h3 className="text-[16px] leading-[24px] font-semibold text-text-body">
-                {lead.displayName}:{" "}
+                {lead.displayName}{" "}
                 {lead.age && lead.gender && `${lead.age}, ${lead.gender}`}
               </h3>
-            </div>
-
-            {/* Contact Type */}
-            <div className="space-y-2">
-              <Label htmlFor="contact-type">Contact Type</Label>
-              <Select
-                value={contactType}
-                onValueChange={(value) => setContactType(value as ContactType)}
-              >
-                {/* <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary"> */}
-                <SelectTrigger leftIcon={<SelectedIcon size={16} />}>
-                  {selectedContactTypeConfig?.label}
-                </SelectTrigger>
-                <SelectContent>
-                  {contactTypeOptions.map((option) => {
-                    const IconComponent = option.icon;
-                    return (
-                      <SelectItem key={option.value} value={option.value}>
-                        <div className="flex items-center gap-2">
-                          <IconComponent className="w-4 h-4" />
-                          {option.label}
-                        </div>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
             </div>
 
             {/* Outcome */}
@@ -175,7 +152,13 @@ export function LogContactPointModal({
                 }
               >
                 <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary">
-                  <SelectValue placeholder="Select outcome..." />
+                  <SelectValue
+                    displayText={
+                      selectedCallOutcome
+                        ? selectedCallOutcome.label
+                        : "Please select a call outcome"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {outcomeOptions.map((option) => (
@@ -194,7 +177,7 @@ export function LogContactPointModal({
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add details about this contact..."
+                placeholder="Add details about the call..."
                 className="w-full min-h-[96px] p-3 bg-surface-primary border border-border-primary rounded resize-none text-[16px] leading-[24px] text-text-body placeholder:text-text-disabled"
               />
             </div>

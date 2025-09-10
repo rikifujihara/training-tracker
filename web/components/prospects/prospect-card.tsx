@@ -10,7 +10,7 @@ import { NotesModal } from "@/components/contact-points/notes-modal";
 import {
   LogContactPointModal,
   LogContactPointData,
-} from "@/components/contact-points/log-contact-point-modal";
+} from "@/components/contact-points/log-phone-call-modal";
 import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 
 export interface ProspectCardProps
