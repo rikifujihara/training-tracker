@@ -5,17 +5,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreateTemplateModal } from "@/components/templates/create-template-modal";
+import { EditTemplateModal, MessageTemplate } from "@/components/templates/edit-template-modal";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { useMessageTemplates, useDeleteTemplate } from "@/lib/hooks/use-message-templates";
 
 export default function TemplatesPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [templateToEdit, setTemplateToEdit] = useState<MessageTemplate | null>(null);
   const [templateToDelete, setTemplateToDelete] = useState<string | null>(null);
 
   // Fetch templates using our hook
   const { data: templates = [], isLoading, error } = useMessageTemplates();
   const deleteTemplateMutation = useDeleteTemplate();
+
+  const handleEditClick = (template: MessageTemplate) => {
+    setTemplateToEdit(template);
+    setEditModalOpen(true);
+  };
 
   const handleDeleteClick = (templateId: string) => {
     setTemplateToDelete(templateId);
@@ -91,7 +99,11 @@ export default function TemplatesPage() {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="secondary" size="sm">
+                    <Button 
+                      variant="secondary" 
+                      size="sm"
+                      onClick={() => handleEditClick(template)}
+                    >
                       Edit
                     </Button>
                     <Button 
@@ -134,6 +146,13 @@ export default function TemplatesPage() {
       <CreateTemplateModal
         open={createModalOpen}
         onOpenChange={setCreateModalOpen}
+      />
+
+      {/* Edit Template Modal */}
+      <EditTemplateModal
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        template={templateToEdit}
       />
 
       {/* Delete Confirmation Modal */}
