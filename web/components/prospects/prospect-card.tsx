@@ -21,12 +21,16 @@ export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
   lead: Lead;
   nextAction?: string;
+  onShowNotes?: (lead: Lead) => void;
+  selectedForNotes?: boolean;
 }
 
 export function ProspectCard({
   className,
   lead,
   nextAction = "First Call",
+  onShowNotes,
+  selectedForNotes = false,
   ...props
 }: ProspectCardProps) {
   const [notesModalOpen, setNotesModalOpen] = React.useState(false);
@@ -108,9 +112,10 @@ export function ProspectCard({
             {/* Action buttons */}
             <div className="flex gap-4 items-start">
               <Button
-                variant="secondary"
+                variant={selectedForNotes ? "default" : "secondary"}
                 size="default"
-                onClick={() => setNotesModalOpen(true)}
+                onClick={() => onShowNotes ? onShowNotes(lead) : setNotesModalOpen(true)}
+                className={selectedForNotes ? "bg-surface-action text-text-on-action hover:bg-surface-action/90" : ""}
               >
                 <History className="w-6 h-6" />
                 Notes

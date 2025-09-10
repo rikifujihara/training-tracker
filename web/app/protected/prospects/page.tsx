@@ -1,16 +1,34 @@
 "use client";
+import React, { useState } from "react";
 import { ProspectCard } from "@/components/prospects/prospect-card";
+import { NotesSidePane } from "@/components/prospects/notes-side-pane";
 
 import { useLeads, useLeadStats } from "@/lib/hooks/use-leads";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Lead } from "@/lib/types/lead";
 
 export default function ProspectsPage() {
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [showNotesSidePane, setShowNotesSidePane] = useState(false);
+  
   const {
     data: leadsData,
     isLoading: leadsLoading,
     error: leadsError,
   } = useLeads();
   const { isLoading: statsLoading } = useLeadStats();
+
+  // Set the first lead as selected by default when leads load
+  React.useEffect(() => {
+    if (leadsData?.leads && leadsData.leads.length > 0 && !selectedLead) {
+      setSelectedLead(leadsData.leads[0]);
+    }
+  }, [leadsData?.leads, selectedLead]);
+
+  const handleShowNotes = (lead: Lead) => {
+    setSelectedLead(lead);
+    setShowNotesSidePane(true);
+  };
 
   if (leadsLoading || statsLoading) {
     return (
@@ -41,15 +59,30 @@ export default function ProspectsPage() {
     );
   }
 
-
   return (
     <div className="space-y-6">
       {/* Recent Leads Cards */}
       {leadsData?.leads && leadsData.leads.length > 0 ? (
-        <div className="space-y-4">
-          {leadsData.leads.slice(0, 10).map((lead) => (
-            <ProspectCard key={lead.id} lead={lead} nextAction="First Call" />
-          ))}
+        <div className="flex gap-6">
+          <div className="space-y-4 flex-shrink-0">
+            {leadsData.leads.slice(0, 10).map((lead) => (
+              <ProspectCard 
+                key={lead.id} 
+                lead={lead} 
+                nextAction="First Call"
+                onShowNotes={handleShowNotes}
+                selectedForNotes={selectedLead?.id === lead.id}
+              />
+            ))}
+          </div>
+          <div className="min-w-[400px] w-full">
+            <div className="sticky top-6 h-[calc(100vh-120px)]">
+              <NotesSidePane 
+                lead={selectedLead} 
+                isVisible={showNotesSidePane || !!selectedLead}
+              />
+            </div>
+          </div>
         </div>
       ) : (
         <Card>
