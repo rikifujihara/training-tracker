@@ -11,8 +11,6 @@ export interface DesktopSidebarProps
   collapsed?: boolean;
   onToggleCollapse?: () => void;
   currentPath?: string;
-  userName?: string;
-  userInitials?: string;
 }
 
 const navigationItems = [
@@ -55,8 +53,6 @@ const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
       collapsed = false,
       onToggleCollapse,
       currentPath = "/clients",
-      userName = "Riki Fujihara",
-      userInitials = "RF",
       className,
       ...props
     },
@@ -144,31 +140,6 @@ const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(
             selected={currentPath === "/protected/settings"}
             href="/protected/settings"
           />
-        </div>
-
-        {/* Divider */}
-        <div className="w-full h-px bg-[#d9d9d9]" />
-
-        {/* User Avatar */}
-        <div
-          className={cn(
-            "flex items-center",
-            collapsed ? "justify-center" : "gap-3"
-          )}
-        >
-          <div className="w-10 h-10 bg-surface-action rounded-[50px] border border-border-primary flex items-center justify-center flex-shrink-0">
-            <span className="font-heading font-semibold text-[24px] leading-[28px] text-white">
-              {userInitials}
-            </span>
-          </div>
-
-          {!collapsed && (
-            <div className="flex flex-col items-start min-w-0 flex-1">
-              <span className="font-heading font-semibold text-[20px] leading-[24px] text-black truncate">
-                {userName}
-              </span>
-            </div>
-          )}
         </div>
       </div>
     );

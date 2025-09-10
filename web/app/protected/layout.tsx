@@ -15,21 +15,21 @@ export default function ProtectedLayout({
   return (
     <div className="flex h-screen bg-surface-page">
       {/* Sidebar - Hidden on mobile (sm breakpoint and below) */}
-      <div className={`hidden sm:block transition-all duration-300 ${sidebarCollapsed ? 'w-20' : 'w-64'} flex-shrink-0`}>
+      <div
+        className={`hidden sm:block transition-all duration-300 ${
+          sidebarCollapsed ? "w-20" : "w-64"
+        } flex-shrink-0`}
+      >
         <DesktopSidebar
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           currentPath={pathname}
-          userName="Riki Fujihara"
-          userInitials="RF"
         />
       </div>
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        <div className="p-6">
-          {children}
-        </div>
+        <div className="p-6">{children}</div>
       </main>
     </div>
   );
