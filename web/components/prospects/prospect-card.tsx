@@ -11,6 +11,10 @@ import {
   LogContactPointModal,
   LogContactPointData,
 } from "@/components/contact-points/log-phone-call-modal";
+import {
+  LogTextMessageModal,
+  LogTextMessageData,
+} from "@/components/contact-points/log-text-message-modal";
 import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 
 export interface ProspectCardProps
@@ -27,6 +31,7 @@ export function ProspectCard({
 }: ProspectCardProps) {
   const [notesModalOpen, setNotesModalOpen] = React.useState(false);
   const [logModalOpen, setLogModalOpen] = React.useState(false);
+  const [logTextModalOpen, setLogTextModalOpen] = React.useState(false);
   const createContactPointMutation = useCreateContactPoint();
   const statusBarColor = getStatusBarColor(lead.status);
   const statusAgeText =
@@ -37,6 +42,16 @@ export function ProspectCard({
       : `${lead.statusAgeDays} days old`;
 
   const handleLogContactPoint = (data: LogContactPointData) => {
+    createContactPointMutation.mutate({
+      leadId: lead.id,
+      contactType: data.contactType,
+      contactDate: data.contactDate,
+      outcome: data.outcome,
+      notes: data.notes,
+    });
+  };
+
+  const handleLogTextMessage = (data: LogTextMessageData) => {
     createContactPointMutation.mutate({
       leadId: lead.id,
       contactType: data.contactType,
@@ -112,7 +127,7 @@ export function ProspectCard({
               <Button
                 variant="secondary"
                 size="default"
-                onClick={() => setLogModalOpen(true)}
+                onClick={() => setLogTextModalOpen(true)}
               >
                 <MessageSquare className="w-6 h-6" />
                 Log
@@ -188,7 +203,7 @@ export function ProspectCard({
               variant="secondary"
               size="default"
               className="justify-center"
-              onClick={() => setLogModalOpen(true)}
+              onClick={() => setLogTextModalOpen(true)}
             >
               <MessageSquare className="w-6 h-6" />
               Log
@@ -234,6 +249,14 @@ export function ProspectCard({
         onOpenChange={setLogModalOpen}
         lead={lead}
         onSave={handleLogContactPoint}
+        isLoading={createContactPointMutation.isPending}
+      />
+
+      <LogTextMessageModal
+        open={logTextModalOpen}
+        onOpenChange={setLogTextModalOpen}
+        lead={lead}
+        onSave={handleLogTextMessage}
         isLoading={createContactPointMutation.isPending}
       />
     </div>
