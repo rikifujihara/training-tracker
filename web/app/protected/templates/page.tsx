@@ -5,20 +5,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreateTemplateModal } from "@/components/templates/create-template-modal";
+import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
 
 export default function TemplatesPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
-  // Mock data - empty for now since no backend is hooked up yet
-  const templates: Array<{ id: string; name: string; message: string }> = [];
+  // Fetch templates using our hook
+  const { data: templates = [], isLoading, error } = useMessageTemplates();
 
-  const handleSaveTemplate = (templateData: {
-    name: string;
-    message: string;
-  }) => {
-    console.log("Template saved:", templateData);
-    // TODO: Here we'll implement the actual save logic later
-  };
 
   return (
     <div className="space-y-6">
@@ -38,13 +32,51 @@ export default function TemplatesPage() {
         </Button>
       </div>
 
-      {/* Templates List or Empty State */}
-      {templates.length > 0 ? (
+      {/* Loading State */}
+      {isLoading ? (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="pt-6">
+                <div className="h-4 bg-muted rounded w-1/3 mb-2"></div>
+                <div className="h-6 bg-muted rounded w-3/4"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : error ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center text-red-600">
+              Error loading templates: {error.message}
+            </div>
+          </CardContent>
+        </Card>
+      ) : templates.length > 0 ? (
         <div className="space-y-4">
           {templates.map((template) => (
-            <div key={template.id}>
-              {/* Template cards will go here - matching prospect-card design */}
-            </div>
+            <Card key={template.id}>
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold text-text-headings mb-2">
+                      {template.name}
+                    </h3>
+                    <p className="text-text-body text-sm line-clamp-2">
+                      {template.content}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm">
+                      Edit
+                    </Button>
+                    <Button variant="secondary" size="sm">
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       ) : (
@@ -74,7 +106,6 @@ export default function TemplatesPage() {
       <CreateTemplateModal
         open={createModalOpen}
         onOpenChange={setCreateModalOpen}
-        onSave={handleSaveTemplate}
       />
     </div>
   );

@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, X } from "lucide-react";
+import { useCreateTemplate } from "@/lib/hooks/use-message-templates";
 
 export interface CreateTemplateModalProps {
   open: boolean;
@@ -31,6 +32,7 @@ export function CreateTemplateModal({
   );
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const createTemplateMutation = useCreateTemplate();
 
   // Function to generate preview with placeholder substitution
   const generatePreview = (text: string) => {
@@ -46,10 +48,29 @@ export function CreateTemplateModal({
   }, [messageText]);
 
   const handleSave = () => {
-    if (onSave) {
-      onSave({ name: templateName, message: messageText });
+    if (!templateName.trim() || !messageText.trim()) {
+      return; // Don't save if fields are empty
     }
-    onOpenChange(false);
+
+    createTemplateMutation.mutate(
+      {
+        name: templateName.trim(),
+        content: messageText.trim(),
+      },
+      {
+        onSuccess: () => {
+          // Call the optional onSave callback
+          if (onSave) {
+            onSave({ name: templateName, message: messageText });
+          }
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          console.error("Failed to create template:", error);
+          // TODO: Show error toast/notification
+        },
+      }
+    );
   };
 
   const handleClear = () => {
@@ -115,9 +136,9 @@ export function CreateTemplateModal({
 
                 {/* Message Content */}
                 <div className="space-y-3">
-                  <Label htmlFor="message-content" className="text-base">
+                  {/* <Label htmlFor="message-content" className="text-base">
                     Content
-                  </Label>
+                  </Label> */}
                   <div className="flex items-start gap-2 p-4 bg-surface-action-hover-2 rounded-md border-l-4 border-surface-action">
                     <div className="flex-1">
                       <p className="text-sm text-text-body">
@@ -163,10 +184,19 @@ export function CreateTemplateModal({
           {/* Footer */}
           <div className="bg-surface-primary p-4 border-t-0">
             <div className="flex items-center justify-end gap-2.5 w-full">
-              <Button variant="secondary" onClick={handleClear}>
+              <Button 
+                variant="secondary" 
+                onClick={handleClear}
+                disabled={createTemplateMutation.isPending}
+              >
                 Clear
               </Button>
-              <Button onClick={handleSave}>Save Template</Button>
+              <Button 
+                onClick={handleSave}
+                disabled={createTemplateMutation.isPending || !templateName.trim() || !messageText.trim()}
+              >
+                {createTemplateMutation.isPending ? "Saving..." : "Save Template"}
+              </Button>
             </div>
           </div>
         </DialogContent>
