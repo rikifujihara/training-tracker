@@ -38,6 +38,7 @@ model User {
   leads            Lead[]
   contactPoints    ContactPoint[]
   messageTemplates MessageTemplate[]
+  tasks            Task[]
 
   // Future relationships (will uncomment later)
   // workouts     Workout[]
@@ -72,6 +73,7 @@ model Lead {
   // Relationships
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   contactPoints ContactPoint[]
+  tasks         Task[]
 
   // Indexes
   @@index([userId])
@@ -141,9 +143,64 @@ model MessageTemplate {
   sortOrder Int    @default(0) @map("sort_order") // for custom ordering
 
   // Relationships
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks Task[]
 
   // Indexes
   @@index([userId])
   @@map("message_template")
+}
+
+model Task {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  leadId    String   @map("lead_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @map("updated_at")
+
+  // Task fields
+  title       String
+  description String?
+  dueDate     DateTime @map("due_date")
+
+  // Task type and status
+  taskType TaskType   @map("task_type")
+  status   TaskStatus @default(PENDING)
+
+  // For message template tasks
+  messageTemplateId String? @map("message_template_id")
+
+  // For completed tasks - what was the outcome?
+  completedAt DateTime? @map("completed_at")
+  notes       String? // Notes from completing the task
+
+  // Relationships
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lead            Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  messageTemplate MessageTemplate? @relation(fields: [messageTemplateId], references: [id])
+
+  // Indexes
+  @@index([dueDate])
+  @@index([leadId])
+  @@index([userId])
+  @@index([status])
+  @@index([taskType])
+  @@map("tasks")
+}
+
+enum TaskType {
+  INITIAL_CALL
+  FOLLOW_UP_CALL
+  SEND_TEXT
+  CONSULTATION_BOOKING
+  OTHER
+
+  @@map("task_type")
+}
+
+enum TaskStatus {
+  PENDING
+  COMPLETED
+
+  @@map("task_status")
 }
