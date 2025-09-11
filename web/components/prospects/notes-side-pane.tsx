@@ -55,7 +55,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
 
   // Follow-up task editing states
   const [editingTask, setEditingTask] = React.useState(false);
-  const [taskTitle, setTaskTitle] = React.useState("");
+  const [taskDescription, setTaskDescription] = React.useState("");
   const [taskType, setTaskType] = React.useState<TaskType>(TaskType.CALL);
   const [taskDueDate, setTaskDueDate] = React.useState("");
   const [taskDueTime, setTaskDueTime] = React.useState("");
@@ -70,7 +70,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   // Initialize task form when task loads
   React.useEffect(() => {
     if (nextTask) {
-      setTaskTitle(nextTask.title);
+      setTaskDescription(nextTask.description || "");
       setTaskType(nextTask.taskType);
       const dueDate = new Date(nextTask.dueDate);
       setTaskDueDate(dueDate.toISOString().split("T")[0]);
@@ -91,7 +91,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   // Check if task has changes
   const hasTaskChanges =
     nextTask &&
-    (taskTitle !== nextTask.title ||
+    (taskDescription !== (nextTask.description || "") ||
       taskType !== nextTask.taskType ||
       taskDueDate !== new Date(nextTask.dueDate).toISOString().split("T")[0] ||
       taskDueTime !== new Date(nextTask.dueDate).toTimeString().slice(0, 5) ||
@@ -139,7 +139,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   };
 
   const handleTaskSave = () => {
-    if (!nextTask || !taskDueDate || !taskDueTime || !taskTitle.trim()) return;
+    if (!nextTask || !taskDueDate || !taskDueTime) return;
 
     // Combine date and time
     const combinedDateTime = new Date(`${taskDueDate}T${taskDueTime}`);
@@ -148,7 +148,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
       {
         taskId: nextTask.id,
         data: {
-          title: taskTitle.trim(),
+          description: taskDescription.trim() || undefined,
           taskType: taskType,
           dueDate: combinedDateTime,
           messageTemplateId:
@@ -216,10 +216,6 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                   <div className="flex items-start justify-between">
                     <div className="space-y-2 flex-1">
                       <div className="text-[16px] leading-[24px] text-text-body">
-                        <span className="font-bold">Task</span>:{" "}
-                        {nextTask.title}
-                      </div>
-                      <div className="text-[16px] leading-[24px] text-text-body">
                         <span className="font-bold">Type</span>:{" "}
                         {formatTaskType(nextTask.taskType)}
                       </div>
@@ -253,20 +249,6 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
               ) : (
                 /* Task Edit Form */
                 <div className="space-y-4">
-                  {/* Task Name */}
-                  <div className="space-y-2">
-                    <label className="text-[14px] leading-[20px] font-medium text-text-body">
-                      Task Name
-                    </label>
-                    <Input
-                      type="text"
-                      value={taskTitle}
-                      onChange={(e) => setTaskTitle(e.target.value)}
-                      className="text-[14px] leading-[20px]"
-                      placeholder="Enter task name"
-                    />
-                  </div>
-
                   {/* Task Type */}
                   <div className="space-y-2">
                     <label className="text-[14px] leading-[20px] font-medium text-text-body">
@@ -291,7 +273,19 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                       </SelectContent>
                     </Select>
                   </div>
-
+                  {/* Task Description */}
+                  <div className="space-y-2">
+                    <label className="text-[14px] leading-[20px] font-medium text-text-body">
+                      Task Description
+                    </label>
+                    <Input
+                      type="text"
+                      value={taskDescription}
+                      onChange={(e) => setTaskDescription(e.target.value)}
+                      className="text-[14px] leading-[20px]"
+                      placeholder="Enter task description"
+                    />
+                  </div>
                   {/* Message Template (only for SEND_TEXT) */}
                   {taskType === TaskType.SEND_TEXT && (
                     <div className="space-y-2">
@@ -379,7 +373,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                         setEditingTask(false);
                         // Reset form to original values
                         if (nextTask) {
-                          setTaskTitle(nextTask.title);
+                          setTaskDescription(nextTask.description || "");
                           setTaskType(nextTask.taskType);
                           const dueDate = new Date(nextTask.dueDate);
                           setTaskDueDate(dueDate.toISOString().split("T")[0]);
@@ -395,9 +389,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                     <Button
                       size="sm"
                       onClick={handleTaskSave}
-                      disabled={
-                        isUpdatingTask || !hasTaskChanges || !taskTitle.trim()
-                      }
+                      disabled={isUpdatingTask || !hasTaskChanges}
                     >
                       Save
                       <Save className="w-4 h-4 ml-1" />
