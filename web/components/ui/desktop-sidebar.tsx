@@ -3,15 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
-import {
-  Home,
-  Users,
-  MessageSquare,
-  Settings,
-  Menu,
-  X,
-  ListCheck,
-} from "lucide-react";
+import { Home, Users, MessageSquare, Settings, Menu, X } from "lucide-react";
 import { Button } from "./button";
 
 export interface DesktopSidebarProps
@@ -30,29 +22,11 @@ const navigationItems = [
     badge: undefined,
   },
   {
-    icon: ListCheck,
-    label: "Tasks",
-    href: "/protected/tasks",
-    badge: undefined,
-  },
-  {
     icon: MessageSquare,
     label: "Templates",
     href: "/protected/templates",
     badge: undefined,
   },
-  // {
-  //   icon: Calendar,
-  //   label: "Schedule",
-  //   href: "#",
-  //   badge: undefined,
-  // },
-  // {
-  //   icon: CreditCard,
-  //   label: "Billing",
-  //   href: "#",
-  //   badge: undefined,
-  // },
 ];
 
 const DesktopSidebar = React.forwardRef<HTMLDivElement, DesktopSidebarProps>(

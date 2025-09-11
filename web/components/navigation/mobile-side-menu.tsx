@@ -10,14 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
-import {
-  Home,
-  Users,
-  MessageSquare,
-  Settings,
-  X,
-  ListCheck,
-} from "lucide-react";
+import { Home, Users, MessageSquare, Settings, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface MobileSideMenuProps {
@@ -28,7 +21,6 @@ export interface MobileSideMenuProps {
 const navigationItems = [
   { icon: Home, label: "Dashboard", href: "/protected" },
   { icon: Users, label: "Prospects", href: "/protected/prospects" },
-  { icon: ListCheck, label: "Tasks", href: "/protected/tasks" },
   { icon: MessageSquare, label: "Templates", href: "/protected/templates" },
 ];
 

@@ -5,15 +5,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { CreateTemplateModal } from "@/components/templates/create-template-modal";
-import { EditTemplateModal, MessageTemplate } from "@/components/templates/edit-template-modal";
+import {
+  EditTemplateModal,
+  MessageTemplate,
+} from "@/components/templates/edit-template-modal";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
-import { useMessageTemplates, useDeleteTemplate } from "@/lib/hooks/use-message-templates";
+import {
+  useMessageTemplates,
+  useDeleteTemplate,
+} from "@/lib/hooks/use-message-templates";
 
 export default function TemplatesPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [templateToEdit, setTemplateToEdit] = useState<MessageTemplate | null>(null);
+  const [templateToEdit, setTemplateToEdit] = useState<MessageTemplate | null>(
+    null
+  );
   const [templateToDelete, setTemplateToDelete] = useState<string | null>(null);
 
   // Fetch templates using our hook
@@ -44,7 +52,6 @@ export default function TemplatesPage() {
       });
     }
   };
-
 
   return (
     <div className="space-y-6">
@@ -89,7 +96,7 @@ export default function TemplatesPage() {
           {templates.map((template) => (
             <Card key={template.id}>
               <CardContent className="pt-6">
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start max-sm:flex-col max-sm:gap-4 max-sm:items-end">
                   <div>
                     <h3 className="font-semibold text-text-headings mb-2">
                       {template.name}
@@ -99,15 +106,15 @@ export default function TemplatesPage() {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       size="sm"
                       onClick={() => handleEditClick(template)}
                     >
                       Edit
                     </Button>
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       size="sm"
                       onClick={() => handleDeleteClick(template.id)}
                     >

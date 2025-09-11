@@ -60,10 +60,10 @@ export function EditTemplateModal({
   }, [open, template]);
 
   // Check if there are changes to enable/disable update button
-  const hasChanges = template && (
-    templateName.trim() !== template.name ||
-    messageText.trim() !== template.content
-  );
+  const hasChanges =
+    template &&
+    (templateName.trim() !== template.name ||
+      messageText.trim() !== template.content);
 
   const handleUpdate = () => {
     if (!template || !templateName.trim() || !messageText.trim()) {
@@ -102,7 +102,7 @@ export function EditTemplateModal({
       <DialogPortal>
         <DialogOverlay className="bg-black/80" />
         <DialogContent
-          className="w-[95vw] max-w-6xl max-h-[95vh] p-0 gap-0 rounded-lg overflow-hidden"
+          className="w-[95vw] max-w-6xl p-0 gap-0 rounded-lg overflow-hidden"
           showCloseButton={false}
         >
           {/* Header */}
@@ -126,7 +126,7 @@ export function EditTemplateModal({
           </DialogHeader>
 
           {/* Body - Scrollable */}
-          <div className="bg-surface-page p-4 flex-1 overflow-y-auto max-h-[calc(95vh-200px)]">
+          <div className="bg-surface-page p-4 flex-1 overflow-y-auto max-h-[calc(85vh-200px)]">
             <div className="grid gap-6 lg:grid-cols-2">
               {/* Template Editor */}
               <div className="bg-surface-primary p-6 rounded-lg space-y-6">
@@ -188,20 +188,27 @@ export function EditTemplateModal({
           </div>
 
           {/* Footer */}
-          <div className="bg-surface-primary p-4 border-t-0">
+          <div className="flex bg-surface-primary p-4 border-t-0">
             <div className="flex items-center justify-end gap-2.5 w-full">
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 onClick={handleClear}
                 disabled={updateTemplateMutation.isPending}
               >
                 Reset
               </Button>
-              <Button 
+              <Button
                 onClick={handleUpdate}
-                disabled={updateTemplateMutation.isPending || !hasChanges || !templateName.trim() || !messageText.trim()}
+                disabled={
+                  updateTemplateMutation.isPending ||
+                  !hasChanges ||
+                  !templateName.trim() ||
+                  !messageText.trim()
+                }
               >
-                {updateTemplateMutation.isPending ? "Updating..." : "Update Template"}
+                {updateTemplateMutation.isPending
+                  ? "Updating..."
+                  : "Update Template"}
               </Button>
             </div>
           </div>

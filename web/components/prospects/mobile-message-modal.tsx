@@ -100,26 +100,8 @@ export function MobileMessageModal({
               )}
             </div>
 
-            {/* No Template Option */}
-            <Button
-              variant="outline"
-              className="w-full h-12 justify-start text-left"
-              onClick={() => handleSendSMS()}
-            >
-              <div className="flex flex-col items-start">
-                <span className="font-semibold">No Template</span>
-                <span className="text-sm text-text-disabled">
-                  Send blank message
-                </span>
-              </div>
-            </Button>
-
             {/* Template List */}
             <div className="space-y-2">
-              <h4 className="text-[14px] leading-[20px] font-semibold text-text-body">
-                Message Templates
-              </h4>
-
               {templatesLoading ? (
                 <div className="space-y-2">
                   {[...Array(3)].map((_, i) => (
@@ -131,6 +113,21 @@ export function MobileMessageModal({
                 </div>
               ) : messageTemplates && messageTemplates.length > 0 ? (
                 <div className="space-y-2">
+                  {/* No Template Option */}
+                  <Button
+                    variant="outline"
+                    className="w-full h-auto justify-start text-left p-4"
+                    onClick={() => handleSendSMS()}
+                  >
+                    <div className="flex flex-col items-start w-full">
+                      <span className="font-semibold text-[16px] leading-[24px]">
+                        No Template
+                      </span>
+                      <span className="w-full overflow-ellipsis text-sm text-text-disabled mt-1 line-clamp-2">
+                        Send blank message
+                      </span>
+                    </div>
+                  </Button>
                   {messageTemplates.map((template) => (
                     <Button
                       key={template.id}
@@ -142,7 +139,7 @@ export function MobileMessageModal({
                         <span className="font-semibold text-[16px] leading-[24px]">
                           {template.name}
                         </span>
-                        <span className="text-sm text-text-disabled mt-1 line-clamp-2">
+                        <span className="w-full overflow-ellipsis text-sm text-text-disabled mt-1 line-clamp-2">
                           {parseTemplate(template.content)}
                         </span>
                       </div>
