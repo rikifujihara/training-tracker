@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectTrigger,
@@ -10,15 +11,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { ContactHistoryCard } from "@/components/contact-points/contact-history-card";
-import {
-  NotebookPen,
-  Save,
-  PenLine,
-  Clock,
-  Calendar,
-  Bell,
-  BellOff,
-} from "lucide-react";
+import { NotebookPen, Save, PenLine, Clock, Calendar } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { TaskType } from "@/lib/types/task";
 import { useContactPointsByLeadId } from "@/lib/hooks/use-contact-points";
@@ -394,21 +387,20 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
 
                   {/* Notification Toggle */}
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() =>
-                        setNotificationEnabled(!notificationEnabled)
+                    <Checkbox
+                      id="notification-enabled"
+                      checked={notificationEnabled}
+                      onCheckedChange={(checked) =>
+                        setNotificationEnabled(checked === true)
                       }
-                      className="flex items-center gap-2 text-[14px] leading-[20px] text-text-body hover:text-text-action"
+                      size="md"
+                    />
+                    <label
+                      htmlFor="notification-enabled"
+                      className="text-[14px] leading-[20px] text-text-body cursor-pointer"
                     >
-                      {notificationEnabled ? (
-                        <Bell className="w-4 h-4" />
-                      ) : (
-                        <BellOff className="w-4 h-4" />
-                      )}
-                      {notificationEnabled
-                        ? "Notification enabled"
-                        : "Enable notification"}
-                    </button>
+                      Send notification reminder
+                    </label>
                   </div>
 
                   {/* Action Buttons */}
