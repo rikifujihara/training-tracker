@@ -266,7 +266,14 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                     </label>
                     <Select
                       value={taskType}
-                      onValueChange={(value) => setTaskType(value as TaskType)}
+                      onValueChange={(value) => {
+                        const newTaskType = value as TaskType;
+                        setTaskType(newTaskType);
+                        // Clear message template if not SEND_TEXT
+                        if (newTaskType !== TaskType.SEND_TEXT) {
+                          setSelectedTemplateId("");
+                        }
+                      }}
                     >
                       <SelectTrigger className="text-[14px] leading-[20px]">
                         {formatTaskType(taskType)}
