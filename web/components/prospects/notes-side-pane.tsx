@@ -3,12 +3,29 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { ContactHistoryCard } from "@/components/contact-points/contact-history-card";
-import { NotebookPen, Save, PenLine, Clock, Calendar, Bell, BellOff, Edit3 } from "lucide-react";
+import {
+  NotebookPen,
+  Save,
+  PenLine,
+  Clock,
+  Calendar,
+  Bell,
+  BellOff,
+  Edit3,
+} from "lucide-react";
 import { Lead } from "@/lib/types/lead";
+import { TaskType } from "@/lib/types/task";
 import { useContactPointsByLeadId } from "@/lib/hooks/use-contact-points";
 import { useUpdateLead } from "@/lib/hooks/use-leads";
 import { useNextFollowUpTask, useUpdateTask } from "@/lib/hooks/use-tasks";
+import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
 
 export interface NotesSidePaneProps {
   lead: Lead | null;
@@ -21,7 +38,13 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
     useContactPointsByLeadId(lead?.id || "");
 
   // Fetch next follow-up task for this lead
-  const { data: nextTask, isLoading: taskLoading } = useNextFollowUpTask(lead?.id || "");
+  const { data: nextTask, isLoading: taskLoading } = useNextFollowUpTask(
+    lead?.id || ""
+  );
+
+  // Fetch message templates
+  const { data: messageTemplates, isLoading: templatesLoading } =
+    useMessageTemplates();
 
   // Hook for updating lead
   const { mutate: updateLead, isPending: isUpdating } = useUpdateLead();
@@ -30,11 +53,15 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   const contactPoints = contactPointsData?.contactPoints || [];
   const [editingNotes, setEditingNotes] = React.useState(false);
   const [localNotes, setLocalNotes] = React.useState(lead?.generalNotes || "");
-  
+
   // Follow-up task editing states
   const [editingTask, setEditingTask] = React.useState(false);
+  const [taskTitle, setTaskTitle] = React.useState("");
+  const [taskType, setTaskType] = React.useState<TaskType>("CALL");
   const [taskDueDate, setTaskDueDate] = React.useState("");
   const [taskDueTime, setTaskDueTime] = React.useState("");
+  const [selectedTemplateId, setSelectedTemplateId] =
+    React.useState<string>("");
   const [notificationEnabled, setNotificationEnabled] = React.useState(false);
 
   React.useEffect(() => {
@@ -44,9 +71,12 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   // Initialize task form when task loads
   React.useEffect(() => {
     if (nextTask) {
+      setTaskTitle(nextTask.title);
+      setTaskType(nextTask.taskType);
       const dueDate = new Date(nextTask.dueDate);
-      setTaskDueDate(dueDate.toISOString().split('T')[0]);
+      setTaskDueDate(dueDate.toISOString().split("T")[0]);
       setTaskDueTime(dueDate.toTimeString().slice(0, 5));
+      setSelectedTemplateId(nextTask.messageTemplateId || "");
       // In the future, we might want to check if notifications are enabled
       setNotificationEnabled(false);
     }
@@ -58,26 +88,32 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
 
   // Check if there are changes to save
   const hasChanges = localNotes !== (lead?.generalNotes || "");
-  
+
   // Check if task has changes
-  const hasTaskChanges = nextTask && (
-    taskDueDate !== new Date(nextTask.dueDate).toISOString().split('T')[0] ||
-    taskDueTime !== new Date(nextTask.dueDate).toTimeString().slice(0, 5)
-  );
+  const hasTaskChanges =
+    nextTask &&
+    (taskTitle !== nextTask.title ||
+      taskType !== nextTask.taskType ||
+      taskDueDate !== new Date(nextTask.dueDate).toISOString().split("T")[0] ||
+      taskDueTime !== new Date(nextTask.dueDate).toTimeString().slice(0, 5) ||
+      selectedTemplateId !== (nextTask.messageTemplateId || ""));
 
   // Format task type for display
   const formatTaskType = (type: string) => {
-    return type.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+    return type
+      .replace(/_/g, " ")
+      .toLowerCase()
+      .replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   // Format date for display
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
       hour12: true,
     }).format(date);
   };
@@ -104,7 +140,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   };
 
   const handleTaskSave = () => {
-    if (!nextTask || !taskDueDate || !taskDueTime) return;
+    if (!nextTask || !taskDueDate || !taskDueTime || !taskTitle.trim()) return;
 
     // Combine date and time
     const combinedDateTime = new Date(`${taskDueDate}T${taskDueTime}`);
@@ -113,7 +149,13 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
       {
         taskId: nextTask.id,
         data: {
+          title: taskTitle.trim(),
+          taskType: taskType,
           dueDate: combinedDateTime,
+          messageTemplateId:
+            taskType === "SEND_TEXT" && selectedTemplateId
+              ? selectedTemplateId
+              : undefined,
         },
       },
       {
@@ -153,23 +195,6 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
 
       {/* Body - Scrollable */}
       <div className="bg-surface-page p-4 flex-1 overflow-y-auto space-y-4">
-        {/* Lead Summary */}
-        <div className="bg-surface-primary p-4 rounded-lg space-y-4">
-          <div className="text-[16px] leading-[24px] text-text-body">
-            <span className="font-bold">Age</span>:{" "}
-            {lead.age || "Not specified"}
-          </div>
-
-          <div className="text-[16px] leading-[24px] text-text-body">
-            <span className="font-bold">Goals</span>:{" "}
-            {lead.goals || "Not specified"}
-          </div>
-
-          <div className="text-[16px] leading-[24px] text-text-body">
-            <span className="font-bold">Next</span>: First call scheduled
-          </div>
-        </div>
-
         {/* Next Follow-Up Task */}
         <div className="bg-surface-primary p-4 rounded-lg space-y-4">
           <div className="flex items-center gap-3">
@@ -192,14 +217,29 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                   <div className="flex items-start justify-between">
                     <div className="space-y-2 flex-1">
                       <div className="text-[16px] leading-[24px] text-text-body">
-                        <span className="font-bold">Task</span>: {formatTaskType(nextTask.taskType)}
+                        <span className="font-bold">Task</span>:{" "}
+                        {nextTask.title}
                       </div>
                       <div className="text-[16px] leading-[24px] text-text-body">
-                        <span className="font-bold">Due</span>: {formatDate(new Date(nextTask.dueDate))}
+                        <span className="font-bold">Type</span>:{" "}
+                        {formatTaskType(nextTask.taskType)}
                       </div>
+                      <div className="text-[16px] leading-[24px] text-text-body">
+                        <span className="font-bold">Due</span>:{" "}
+                        {formatDate(new Date(nextTask.dueDate))}
+                      </div>
+                      {nextTask.messageTemplateId && messageTemplates && (
+                        <div className="text-[16px] leading-[24px] text-text-body">
+                          <span className="font-bold">Template</span>:{" "}
+                          {messageTemplates.find(
+                            (t) => t.id === nextTask.messageTemplateId
+                          )?.name || "Unknown"}
+                        </div>
+                      )}
                       {nextTask.description && (
                         <div className="text-[16px] leading-[24px] text-text-body">
-                          <span className="font-bold">Description</span>: {nextTask.description}
+                          <span className="font-bold">Description</span>:{" "}
+                          {nextTask.description}
                         </div>
                       )}
                     </div>
@@ -214,10 +254,80 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
               ) : (
                 /* Task Edit Form */
                 <div className="space-y-4">
-                  <div className="text-[16px] leading-[24px] text-text-body">
-                    <span className="font-bold">Task</span>: {formatTaskType(nextTask.taskType)}
+                  {/* Task Name */}
+                  <div className="space-y-2">
+                    <label className="text-[14px] leading-[20px] font-medium text-text-body">
+                      Task Name
+                    </label>
+                    <Input
+                      type="text"
+                      value={taskTitle}
+                      onChange={(e) => setTaskTitle(e.target.value)}
+                      className="text-[14px] leading-[20px]"
+                      placeholder="Enter task name"
+                    />
                   </div>
-                  
+
+                  {/* Task Type */}
+                  <div className="space-y-2">
+                    <label className="text-[14px] leading-[20px] font-medium text-text-body">
+                      Task Type
+                    </label>
+                    <Select
+                      value={taskType}
+                      onValueChange={(value) => setTaskType(value as TaskType)}
+                    >
+                      <SelectTrigger className="text-[14px] leading-[20px]">
+                        {formatTaskType(taskType)}
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CALL">Initial Call</SelectItem>
+                        <SelectItem value="FOLLOW_UP_CALL">
+                          Follow Up Call
+                        </SelectItem>
+                        <SelectItem value="SEND_TEXT">Send Text</SelectItem>
+                        <SelectItem value="CONSULTATION_BOOKING">
+                          Consultation Booking
+                        </SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Message Template (only for SEND_TEXT) */}
+                  {taskType === "SEND_TEXT" && (
+                    <div className="space-y-2">
+                      <label className="text-[14px] leading-[20px] font-medium text-text-body">
+                        Message Template
+                      </label>
+                      {templatesLoading ? (
+                        <div className="h-12 bg-text-disabled/20 rounded animate-pulse"></div>
+                      ) : (
+                        <Select
+                          value={selectedTemplateId}
+                          onValueChange={setSelectedTemplateId}
+                        >
+                          <SelectTrigger className="text-[14px] leading-[20px]">
+                            {selectedTemplateId && messageTemplates
+                              ? messageTemplates.find(
+                                  (t) => t.id === selectedTemplateId
+                                )?.name || "Select template"
+                              : "Select template"}
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">No template</SelectItem>
+                            {messageTemplates?.map((template) => (
+                              <SelectItem key={template.id} value={template.id}>
+                                {template.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Date and Time */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                       <label className="text-[14px] leading-[20px] font-medium text-text-body">
@@ -243,9 +353,12 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                     </div>
                   </div>
 
+                  {/* Notification Toggle */}
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setNotificationEnabled(!notificationEnabled)}
+                      onClick={() =>
+                        setNotificationEnabled(!notificationEnabled)
+                      }
                       className="flex items-center gap-2 text-[14px] leading-[20px] text-text-body hover:text-text-action"
                     >
                       {notificationEnabled ? (
@@ -253,10 +366,13 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                       ) : (
                         <BellOff className="w-4 h-4" />
                       )}
-                      {notificationEnabled ? "Notification enabled" : "Enable notification"}
+                      {notificationEnabled
+                        ? "Notification enabled"
+                        : "Enable notification"}
                     </button>
                   </div>
 
+                  {/* Action Buttons */}
                   <div className="flex gap-2 justify-end">
                     <Button
                       size="sm"
@@ -265,9 +381,14 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                         setEditingTask(false);
                         // Reset form to original values
                         if (nextTask) {
+                          setTaskTitle(nextTask.title);
+                          setTaskType(nextTask.taskType);
                           const dueDate = new Date(nextTask.dueDate);
-                          setTaskDueDate(dueDate.toISOString().split('T')[0]);
+                          setTaskDueDate(dueDate.toISOString().split("T")[0]);
                           setTaskDueTime(dueDate.toTimeString().slice(0, 5));
+                          setSelectedTemplateId(
+                            nextTask.messageTemplateId || ""
+                          );
                         }
                       }}
                     >
@@ -276,7 +397,9 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                     <Button
                       size="sm"
                       onClick={handleTaskSave}
-                      disabled={isUpdatingTask || !hasTaskChanges}
+                      disabled={
+                        isUpdatingTask || !hasTaskChanges || !taskTitle.trim()
+                      }
                     >
                       Save
                       <Save className="w-4 h-4 ml-1" />
@@ -288,9 +411,23 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
           ) : (
             <div className="text-center text-text-disabled py-4">
               <Calendar className="w-8 h-8 mx-auto mb-2 text-text-disabled/50" />
-              <p className="text-[14px] leading-[20px]">No follow-up task scheduled</p>
+              <p className="text-[14px] leading-[20px]">
+                No follow-up task scheduled
+              </p>
             </div>
           )}
+        </div>
+        {/* Lead Summary */}
+        <div className="bg-surface-primary p-4 rounded-lg space-y-4">
+          <div className="text-[16px] leading-[24px] text-text-body">
+            <span className="font-bold">Age</span>:{" "}
+            {lead.age || "Not specified"}
+          </div>
+
+          <div className="text-[16px] leading-[24px] text-text-body">
+            <span className="font-bold">Goals</span>:{" "}
+            {lead.goals || "Not specified"}
+          </div>
         </div>
 
         {/* Editable Text Area */}

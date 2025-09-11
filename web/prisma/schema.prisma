@@ -5,10 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["queryCompiler"]
-  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
-  engineType      = "library"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  engineType    = "library"
 }
 
 datasource db {
@@ -189,10 +188,9 @@ model Task {
 }
 
 enum TaskType {
-  INITIAL_CALL
-  FOLLOW_UP_CALL
+  CALL
   SEND_TEXT
-  CONSULTATION_BOOKING
+  CONSULTATION
   OTHER
 
   @@map("task_type")

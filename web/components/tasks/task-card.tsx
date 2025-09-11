@@ -4,7 +4,13 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, CheckCircle2, MoreHorizontal, User, Calendar } from "lucide-react";
+import {
+  Clock,
+  CheckCircle2,
+  MoreHorizontal,
+  User,
+  Calendar,
+} from "lucide-react";
 import { TaskType, TaskStatus } from "@/lib/types/task";
 
 // Dummy task interface for visual testing
@@ -20,7 +26,7 @@ export interface DummyTask {
 }
 
 export interface TaskCardProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onSelect"> {
   task: DummyTask;
   selected?: boolean;
   onSelect?: (task: DummyTask) => void;
@@ -74,7 +80,9 @@ export function TaskCard({
               </div>
               <div className="flex gap-2 items-center">
                 <span className="text-text-disabled">Type:</span>
-                <span className="text-text-body font-semibold">{taskTypeLabel}</span>
+                <span className="text-text-body font-semibold">
+                  {taskTypeLabel}
+                </span>
               </div>
             </div>
 
@@ -84,10 +92,12 @@ export function TaskCard({
               <span className="text-text-disabled text-[16px] leading-[24px]">
                 Due:
               </span>
-              <span className={cn(
-                "text-[16px] leading-[24px] font-semibold",
-                task.isOverdue ? "text-text-error" : "text-text-body"
-              )}>
+              <span
+                className={cn(
+                  "text-[16px] leading-[24px] font-semibold",
+                  task.isOverdue ? "text-text-error" : "text-text-body"
+                )}
+              >
                 {dueDateText}
               </span>
             </div>
@@ -122,12 +132,11 @@ export function TaskCard({
 
           {/* Status badge */}
           <Badge variant={task.isOverdue ? "destructive" : "secondary"}>
-            {task.status === TaskStatus.COMPLETED 
-              ? "Completed" 
-              : task.isOverdue 
-              ? "Overdue" 
-              : "Pending"
-            }
+            {task.status === TaskStatus.COMPLETED
+              ? "Completed"
+              : task.isOverdue
+              ? "Overdue"
+              : "Pending"}
           </Badge>
         </div>
       </div>
@@ -152,12 +161,11 @@ export function TaskCard({
             {/* Status badge and more button */}
             <div className="flex items-center gap-3">
               <Badge variant={task.isOverdue ? "destructive" : "secondary"}>
-                {task.status === TaskStatus.COMPLETED 
-                  ? "Done" 
-                  : task.isOverdue 
-                  ? "Late" 
-                  : "Todo"
-                }
+                {task.status === TaskStatus.COMPLETED
+                  ? "Done"
+                  : task.isOverdue
+                  ? "Late"
+                  : "Todo"}
               </Badge>
               <Button
                 variant="ghost"
@@ -174,16 +182,16 @@ export function TaskCard({
           <div className="flex justify-between items-center text-[14px] leading-[20px]">
             <div className="flex gap-2 items-center">
               <Calendar className="w-4 h-4 text-icon-body" />
-              <span className={cn(
-                "font-medium",
-                task.isOverdue ? "text-text-error" : "text-text-body"
-              )}>
+              <span
+                className={cn(
+                  "font-medium",
+                  task.isOverdue ? "text-text-error" : "text-text-body"
+                )}
+              >
                 {dueDateText}
               </span>
             </div>
-            <div className="text-text-disabled">
-              {taskTypeLabel}
-            </div>
+            <div className="text-text-disabled">{taskTypeLabel}</div>
           </div>
 
           {/* Actions section */}
@@ -232,11 +240,15 @@ function getStatusBarColor(status: TaskStatus, isOverdue: boolean): string {
 function getDueDateText(dueDate: Date): string {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const taskDate = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-  
+  const taskDate = new Date(
+    dueDate.getFullYear(),
+    dueDate.getMonth(),
+    dueDate.getDate()
+  );
+
   const diffInMs = taskDate.getTime() - today.getTime();
   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-  
+
   if (diffInDays === 0) {
     return "Today";
   } else if (diffInDays === -1) {
@@ -252,14 +264,10 @@ function getDueDateText(dueDate: Date): string {
 
 function getTaskTypeLabel(taskType: TaskType): string {
   switch (taskType) {
-    case TaskType.INITIAL_CALL:
-      return "Initial Call";
-    case TaskType.FOLLOW_UP_CALL:
+    case TaskType.CALL:
       return "Follow Up Call";
     case TaskType.SEND_TEXT:
       return "Send Text";
-    case TaskType.CONSULTATION_BOOKING:
-      return "Book Consultation";
     case TaskType.OTHER:
       return "Other";
     default:

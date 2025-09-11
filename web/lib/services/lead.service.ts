@@ -52,7 +52,7 @@ export class LeadService {
             title: "Initial call",
             description: null,
             dueDate: createdLead.createdAt, // Due date same as creation date
-            taskType: TaskType.INITIAL_CALL,
+            taskType: TaskType.CALL,
             status: TaskStatus.PENDING,
             updatedAt: new Date(),
           },
