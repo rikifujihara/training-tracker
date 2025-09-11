@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 
-@plugin 'tailwindcss-animate';
+@custom-variant dark (&:is(.dark *));
 
+@plugin 'tailwindcss-animate';
 
 @theme {
   --color-background: hsl(var(--background));
@@ -64,7 +65,7 @@
   --color-surface-disabled: var(--surface-disabled);
   --color-text-headings: var(--text-headings);
   --color-icon-error: var(--icon-error);
-  
+
   --fontsize-body-lg: var(--fontsize-body-lg);
   --fontsize-body-md: var(--fontsize-body-md);
   --fontsize-body-sm: var(--fontsize-body-sm);
@@ -73,10 +74,10 @@
   --line-height-body-sm: var(--line-height-body-sm);
   --paragraph-spacing-body-md: var(--paragraph-spacing-body-md);
   --paragraph-spacing-body-sm: var(--paragraph-spacing-body-sm);
-  
+
   --border-radius-round: var(--border-radius-round);
   --border-radius-md: var(--border-radius-md);
-  
+
   --font-weight-semibold: var(--type-font-weight-semibold);
   --font-family-body: var(--type-font-family-body);
   --font-family-heading: var(--type-font-family-heading);
@@ -127,7 +128,7 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    
+
     /* Figma mapped collection values */
     --icon-body: #333740;
     --text-body: #333740;
@@ -150,7 +151,7 @@
     --surface-disabled: #ecedee;
     --text-headings: #22252b;
     --icon-error: #ff0000;
-    
+
     --fontsize-body-lg: 20px;
     --fontsize-body-md: 16px;
     --fontsize-body-sm: 12px;
@@ -159,10 +160,10 @@
     --line-height-body-sm: 20px;
     --paragraph-spacing-body-md: 16px;
     --paragraph-spacing-body-sm: 16px;
-    
+
     --border-radius-round: 50px;
     --border-radius-md: 4px;
-    
+
     --type-font-weight-semibold: 600;
     --type-font-family-body: 'Inter', sans-serif;
     --type-font-family-heading: 'Poppins', sans-serif;
@@ -172,6 +173,48 @@
 @layer base {
   * {
     /* @apply border-border; */
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+:root {
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+.dark {
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;

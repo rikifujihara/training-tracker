@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { DesktopSidebar } from "@/components/ui/desktop-sidebar";
+import { MobileBottomNav } from "@/components/navigation/mobile-bottom-nav";
+import { MobileSideMenu } from "@/components/navigation/mobile-side-menu";
 
 export default function ProtectedLayout({
   children,
@@ -10,6 +12,7 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   return (
@@ -29,8 +32,17 @@ export default function ProtectedLayout({
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        <div className="p-6">{children}</div>
+        <div className="p-6 pb-24 md:pb-6">{children}</div>
       </main>
+
+      {/* Mobile Navigation - Only visible on small screens */}
+      <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />
+      
+      {/* Mobile Side Menu */}
+      <MobileSideMenu 
+        open={mobileMenuOpen} 
+        onOpenChange={setMobileMenuOpen} 
+      />
     </div>
   );
 }
