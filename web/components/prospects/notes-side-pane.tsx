@@ -18,6 +18,7 @@ import { useContactPointsByLeadId } from "@/lib/hooks/use-contact-points";
 import { useUpdateLead } from "@/lib/hooks/use-leads";
 import { useNextFollowUpTask, useUpdateTask } from "@/lib/hooks/use-tasks";
 import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
+import { useConsultations } from "@/lib/hooks/use-consultations";
 
 export interface NotesSidePaneProps {
   lead: Lead | null;
@@ -37,6 +38,9 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   // Fetch message templates
   const { data: messageTemplates, isLoading: templatesLoading } =
     useMessageTemplates();
+
+  // Fetch consultations for this lead
+  const { data: consultations, isLoading: consultationsLoading } = useConsultations(lead?.id || "", false);
 
   // Hook for updating lead
   const { mutate: updateLead, isPending: isUpdating } = useUpdateLead();
@@ -446,6 +450,85 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
             </div>
           )}
         </div>
+
+        {/* Consultations */}
+        <div className="bg-surface-primary p-4 rounded-lg space-y-4">
+          <div className="flex items-center gap-3">
+            <Calendar className="w-5 h-5 text-text-body" />
+            <h3 className="text-[16px] leading-[24px] font-semibold text-black">
+              Consultations
+            </h3>
+          </div>
+
+          {consultationsLoading ? (
+            <div className="space-y-2">
+              {[...Array(2)].map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-surface-page p-3 rounded-lg animate-pulse"
+                >
+                  <div className="h-4 bg-text-disabled/20 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-text-disabled/20 rounded w-1/2 mb-2"></div>
+                  <div className="h-3 bg-text-disabled/20 rounded w-full"></div>
+                </div>
+              ))}
+            </div>
+          ) : consultations && consultations.length > 0 ? (
+            <div className="space-y-2">
+              {consultations.map((consultation) => (
+                <div
+                  key={consultation.id}
+                  className="bg-surface-page p-3 rounded-lg space-y-2"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1 flex-1">
+                      <div className="text-[14px] leading-[20px] text-text-body">
+                        <span className="font-bold">Scheduled</span>:{" "}
+                        {formatDate(new Date(consultation.scheduledTime))}
+                      </div>
+                      <div className="text-[14px] leading-[20px] text-text-body">
+                        <span className="font-bold">Status</span>:{" "}
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          consultation.status === 'SCHEDULED' 
+                            ? 'bg-blue-100 text-blue-800' 
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {consultation.status}
+                        </span>
+                      </div>
+                      {consultation.outcome && (
+                        <div className="text-[14px] leading-[20px] text-text-body">
+                          <span className="font-bold">Outcome</span>:{" "}
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            consultation.outcome === 'CONVERTED' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {consultation.outcome}
+                          </span>
+                        </div>
+                      )}
+                      {consultation.notes && (
+                        <div className="text-[14px] leading-[20px] text-text-body">
+                          <span className="font-bold">Notes</span>:{" "}
+                          {consultation.notes}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-text-disabled py-4">
+              <Calendar className="w-8 h-8 mx-auto mb-2 text-text-disabled/50" />
+              <p className="text-[14px] leading-[20px]">
+                No consultations scheduled
+              </p>
+            </div>
+          )}
+        </div>
+
         {/* Lead Summary */}
         <div className="bg-surface-primary p-4 rounded-lg space-y-4">
           <div className="text-[16px] leading-[24px] text-text-body">

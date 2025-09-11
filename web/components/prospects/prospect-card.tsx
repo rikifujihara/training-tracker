@@ -4,7 +4,13 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Phone, History, MessageSquare, MoreHorizontal } from "lucide-react";
+import {
+  Phone,
+  History,
+  MessageSquare,
+  MoreHorizontal,
+  Calendar,
+} from "lucide-react";
 import { Lead, LeadStatus } from "@/lib/types/lead";
 import { NotesModal } from "@/components/contact-points/notes-modal";
 import {
@@ -15,7 +21,10 @@ import {
   LogTextMessageModal,
   LogTextMessageData,
 } from "@/components/contact-points/log-text-message-modal";
+import { BookConsultationModal } from "@/components/consultations/book-consultation-modal";
 import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
+import { useCreateConsultation } from "@/lib/hooks/use-consultations";
+import { CreateConsultationInput } from "@/lib/types/consultation";
 
 export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -36,7 +45,10 @@ export function ProspectCard({
   const [notesModalOpen, setNotesModalOpen] = React.useState(false);
   const [logModalOpen, setLogModalOpen] = React.useState(false);
   const [logTextModalOpen, setLogTextModalOpen] = React.useState(false);
+  const [consultationModalOpen, setConsultationModalOpen] =
+    React.useState(false);
   const createContactPointMutation = useCreateContactPoint();
+  const createConsultationMutation = useCreateConsultation();
   const statusBarColor = getStatusBarColor(lead.status);
   const statusAgeText =
     lead.statusAgeDays === 0
@@ -63,6 +75,10 @@ export function ProspectCard({
       outcome: data.outcome,
       notes: data.notes,
     });
+  };
+
+  const handleBookConsultation = (data: CreateConsultationInput) => {
+    createConsultationMutation.mutate(data);
   };
 
   // Placeholder handlers for mobile action buttons
@@ -110,26 +126,21 @@ export function ProspectCard({
               <span className="text-text-body text-[16px] leading-[24px] font-semibold">
                 {nextAction}
               </span>
-              <Phone className="w-6 h-6 text-icon-body" />
             </div>
 
             {/* Action buttons */}
             <div className="flex gap-4 items-start">
-              {/* <Button
-                variant={selectedForNotes ? "default" : "secondary"}
+              <Button
+                variant="secondary"
                 size="default"
-                onClick={() =>
-                  onShowNotes ? onShowNotes(lead) : setNotesModalOpen(true)
-                }
-                className={
-                  selectedForNotes
-                    ? "bg-surface-action text-text-on-action hover:bg-surface-action/90"
-                    : ""
-                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setConsultationModalOpen(true);
+                }}
               >
-                <History className="w-6 h-6" />
-                Notes
-              </Button> */}
+                <Calendar className="w-6 h-6" />
+                Consult
+              </Button>
 
               <Button
                 variant="secondary"
@@ -273,6 +284,14 @@ export function ProspectCard({
         lead={lead}
         onSave={handleLogTextMessage}
         isLoading={createContactPointMutation.isPending}
+      />
+
+      <BookConsultationModal
+        open={consultationModalOpen}
+        onOpenChange={setConsultationModalOpen}
+        lead={lead}
+        onSave={handleBookConsultation}
+        isLoading={createConsultationMutation.isPending}
       />
     </div>
   );
