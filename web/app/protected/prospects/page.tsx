@@ -4,8 +4,11 @@ import { ProspectCard } from "@/components/prospects/prospect-card";
 import { NotesSidePane } from "@/components/prospects/notes-side-pane";
 
 import { useLeads, useLeadStats } from "@/lib/hooks/use-leads";
+import { useTasks } from "@/lib/hooks/use-tasks";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Lead } from "@/lib/types/lead";
+import { TaskStatus } from "@/lib/types/task";
+import { formatTaskType } from "@/lib/utils/task";
 
 export default function ProspectsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -17,6 +20,23 @@ export default function ProspectsPage() {
     error: leadsError,
   } = useLeads();
   const { isLoading: statsLoading } = useLeadStats();
+  
+  // Fetch all tasks to determine next actions
+  const { data: allTasks, isLoading: tasksLoading } = useTasks();
+
+  // Function to get next action for a lead
+  const getNextActionForLead = (leadId: string): string => {
+    if (!allTasks) return "First Call";
+    
+    // Find the first pending task for this lead
+    const nextTask = allTasks.find(
+      (task) => task.leadId === leadId && task.status === TaskStatus.PENDING
+    );
+    
+    if (!nextTask) return "First Call";
+    
+    return formatTaskType(nextTask.taskType);
+  };
 
   // Set the first lead as selected by default when leads load
   React.useEffect(() => {
@@ -30,7 +50,7 @@ export default function ProspectsPage() {
     setShowNotesSidePane(true);
   };
 
-  if (leadsLoading || statsLoading) {
+  if (leadsLoading || statsLoading || tasksLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
@@ -69,7 +89,7 @@ export default function ProspectsPage() {
               <ProspectCard 
                 key={lead.id} 
                 lead={lead} 
-                nextAction="First Call"
+                nextAction={getNextActionForLead(lead.id)}
                 onShowNotes={handleShowNotes}
                 selectedForNotes={selectedLead?.id === lead.id}
               />
