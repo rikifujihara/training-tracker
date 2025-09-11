@@ -249,8 +249,6 @@ function getTaskTypeLabel(taskType: TaskType): string {
       return "Follow Up Call";
     case TaskType.SEND_TEXT:
       return "Send Text";
-    case TaskType.CONSULTATION:
-      return "Book Consultation";
     case TaskType.OTHER:
       return "Other";
     default:
@@ -265,8 +263,6 @@ function getTaskTypeCategory(taskType: TaskType): string {
       return "Phone Call";
     case TaskType.SEND_TEXT:
       return "Text Message";
-    case TaskType.CONSULTATION:
-      return "Booking";
     case TaskType.OTHER:
       return "General";
     default:

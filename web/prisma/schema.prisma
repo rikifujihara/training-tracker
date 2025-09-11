@@ -38,6 +38,7 @@ model User {
   contactPoints    ContactPoint[]
   messageTemplates MessageTemplate[]
   tasks            Task[]
+  Consultation     Consultation[]
 
   // Future relationships (will uncomment later)
   // workouts     Workout[]
@@ -73,6 +74,7 @@ model Lead {
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   contactPoints ContactPoint[]
   tasks         Task[]
+  consultations Consultation[]
 
   // Indexes
   @@index([userId])
@@ -142,8 +144,9 @@ model MessageTemplate {
   sortOrder Int    @default(0) @map("sort_order") // for custom ordering
 
   // Relationships
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tasks Task[]
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks         Task[]
+  consultations Consultation[]
 
   // Indexes
   @@index([userId])
@@ -190,7 +193,6 @@ model Task {
 enum TaskType {
   CALL
   SEND_TEXT
-  CONSULTATION
   OTHER
 
   @@map("task_type")
@@ -201,4 +203,43 @@ enum TaskStatus {
   COMPLETED
 
   @@map("task_status")
+}
+
+model Consultation {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  leadId    String   @map("lead_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @map("updated_at")
+
+  // Consultation fields
+  scheduledTime DateTime @map("scheduled_time")
+  notes         String?
+
+  status  ConsultationStatus   @default(SCHEDULED)
+  outcome ConsultationOutcome?
+
+  messageTemplateId String? @map("message_template_id")
+
+  // Relationships
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lead            Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  messageTemplate MessageTemplate? @relation(fields: [messageTemplateId], references: [id])
+  reminderTime    DateTime?        @map("reminder_time")
+
+  // Indexes
+  @@index([scheduledTime])
+  @@index([leadId])
+  @@index([userId])
+  @@map("consultations")
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  COMPLETED
+}
+
+enum ConsultationOutcome {
+  NOT_CONVERTED
+  CONVERTED
 }

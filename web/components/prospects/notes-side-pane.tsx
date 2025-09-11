@@ -121,7 +121,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   const getTomorrowDateString = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
+    return tomorrow.toISOString().split("T")[0];
   };
 
   // Check if selected date is tomorrow
@@ -276,9 +276,6 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                         <SelectItem value={TaskType.SEND_TEXT}>
                           Send Text
                         </SelectItem>
-                        <SelectItem value={TaskType.CONSULTATION}>
-                          Consultation
-                        </SelectItem>
                         <SelectItem value={TaskType.OTHER}>Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -355,7 +352,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                         />
                       </div>
                     </div>
-                    
+
                     {/* Quick Date Selection Buttons */}
                     <div className="flex gap-2">
                       <Button
@@ -376,7 +373,9 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                           if (taskDueDate) {
                             const currentDate = new Date(taskDueDate);
                             currentDate.setDate(currentDate.getDate() + 1);
-                            setTaskDueDate(currentDate.toISOString().split('T')[0]);
+                            setTaskDueDate(
+                              currentDate.toISOString().split("T")[0]
+                            );
                           }
                         }}
                         disabled={!taskDueDate}

@@ -28,10 +28,10 @@ export const DUMMY_TASKS: DummyTask[] = [
   // Due today
   {
     id: "3",
-    title: "Send consultation booking link",
-    description: "Send Calendly link for consultation booking",
+    title: "Send CALL booking link",
+    description: "Send Calendly link for CALL booking",
     dueDate: new Date(), // Today
-    taskType: TaskType.CONSULTATION,
+    taskType: TaskType.CALL,
     status: TaskStatus.PENDING,
     leadName: "Emma Rodriguez",
     isOverdue: false,
@@ -70,7 +70,7 @@ export const DUMMY_TASKS: DummyTask[] = [
   {
     id: "7",
     title: "Follow up call",
-    description: "Check interest level and schedule consultation",
+    description: "Check interest level and schedule CALL",
     dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // Tomorrow
     taskType: TaskType.CALL,
     status: TaskStatus.PENDING,
@@ -81,7 +81,7 @@ export const DUMMY_TASKS: DummyTask[] = [
   {
     id: "8",
     title: "Follow up call",
-    description: "Check on progress after initial consultation",
+    description: "Check on progress after initial CALL",
     dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
     taskType: TaskType.CALL,
     status: TaskStatus.PENDING,
@@ -102,7 +102,7 @@ export const DUMMY_TASKS: DummyTask[] = [
   {
     id: "10",
     title: "Initial call",
-    description: "Successfully contacted and scheduled consultation",
+    description: "Successfully contacted and scheduled CALL",
     dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // Yesterday
     taskType: TaskType.CALL,
     status: TaskStatus.COMPLETED,
