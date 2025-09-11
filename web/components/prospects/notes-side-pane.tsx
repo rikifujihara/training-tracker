@@ -18,7 +18,6 @@ import {
   Calendar,
   Bell,
   BellOff,
-  Edit3,
 } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { TaskType } from "@/lib/types/task";
@@ -57,7 +56,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   // Follow-up task editing states
   const [editingTask, setEditingTask] = React.useState(false);
   const [taskTitle, setTaskTitle] = React.useState("");
-  const [taskType, setTaskType] = React.useState<TaskType>("CALL");
+  const [taskType, setTaskType] = React.useState<TaskType>(TaskType.CALL);
   const [taskDueDate, setTaskDueDate] = React.useState("");
   const [taskDueTime, setTaskDueTime] = React.useState("");
   const [selectedTemplateId, setSelectedTemplateId] =
@@ -153,7 +152,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
           taskType: taskType,
           dueDate: combinedDateTime,
           messageTemplateId:
-            taskType === "SEND_TEXT" && selectedTemplateId
+            taskType === TaskType.SEND_TEXT && selectedTemplateId
               ? selectedTemplateId
               : undefined,
         },
@@ -196,7 +195,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
       {/* Body - Scrollable */}
       <div className="bg-surface-page p-4 flex-1 overflow-y-auto space-y-4">
         {/* Next Follow-Up Task */}
-        <div className="bg-surface-primary p-4 rounded-lg space-y-4">
+        <div className="bg-surface-primary p-4 rounded-lg space-y-4 relative">
           <div className="flex items-center gap-3">
             <Clock className="w-5 h-5 text-text-body" />
             <h3 className="text-[16px] leading-[24px] font-semibold text-black">
@@ -245,9 +244,9 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                     </div>
                     <button
                       onClick={() => setEditingTask(true)}
-                      className="p-1 hover:bg-surface-action-secondary rounded"
+                      className="absolute bottom-2.5 right-3 p-1 hover:bg-surface-action-secondary rounded"
                     >
-                      <Edit3 className="w-4 h-4 text-text-disabled" />
+                      <PenLine className="w-6 h-6 text-text-disabled" />
                     </button>
                   </div>
                 </>
@@ -281,21 +280,20 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                         {formatTaskType(taskType)}
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="CALL">Initial Call</SelectItem>
-                        <SelectItem value="FOLLOW_UP_CALL">
-                          Follow Up Call
+                        <SelectItem value={TaskType.CALL}>Call</SelectItem>
+                        <SelectItem value={TaskType.SEND_TEXT}>
+                          Send Text
                         </SelectItem>
-                        <SelectItem value="SEND_TEXT">Send Text</SelectItem>
-                        <SelectItem value="CONSULTATION_BOOKING">
-                          Consultation Booking
+                        <SelectItem value={TaskType.CONSULTATION}>
+                          Consultation
                         </SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
+                        <SelectItem value={TaskType.OTHER}>Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {/* Message Template (only for SEND_TEXT) */}
-                  {taskType === "SEND_TEXT" && (
+                  {taskType === TaskType.SEND_TEXT && (
                     <div className="space-y-2">
                       <label className="text-[14px] leading-[20px] font-medium text-text-body">
                         Message Template
