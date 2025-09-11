@@ -25,24 +25,25 @@ export function MobileMessageModal({
   onOpenChange,
   lead,
 }: MobileMessageModalProps) {
-  const { data: messageTemplates, isLoading: templatesLoading } = useMessageTemplates();
+  const { data: messageTemplates, isLoading: templatesLoading } =
+    useMessageTemplates();
 
   // Parse template content by replacing firstName placeholder
   const parseTemplate = (template: string): string => {
-    const firstName = lead.firstName || lead.displayName?.split(' ')[0] || '';
-    return template.replace(/#{firstName}/g, firstName);
+    const firstName = lead.firstName || lead.displayName?.split(" ")[0] || "";
+    return template.replace(/first_name/g, firstName);
   };
 
   // Handle SMS link generation
   const handleSendSMS = (templateContent?: string) => {
     if (!lead.phoneNumber) {
-      console.warn('No phone number available for lead:', lead.displayName);
+      console.warn("No phone number available for lead:", lead.displayName);
       return;
     }
 
     const phoneNumber = lead.phoneNumber;
     let smsUrl = `sms:${phoneNumber}`;
-    
+
     if (templateContent) {
       const parsedMessage = parseTemplate(templateContent);
       const encodedMessage = encodeURIComponent(parsedMessage);
@@ -51,7 +52,7 @@ export function MobileMessageModal({
 
     // Open SMS app
     window.location.href = smsUrl;
-    
+
     // Close modal
     onOpenChange(false);
   };
@@ -107,7 +108,9 @@ export function MobileMessageModal({
             >
               <div className="flex flex-col items-start">
                 <span className="font-semibold">No Template</span>
-                <span className="text-sm text-text-disabled">Send blank message</span>
+                <span className="text-sm text-text-disabled">
+                  Send blank message
+                </span>
               </div>
             </Button>
 
@@ -116,7 +119,7 @@ export function MobileMessageModal({
               <h4 className="text-[14px] leading-[20px] font-semibold text-text-body">
                 Message Templates
               </h4>
-              
+
               {templatesLoading ? (
                 <div className="space-y-2">
                   {[...Array(3)].map((_, i) => (
