@@ -7,6 +7,7 @@ export { ConsultationStatus, ConsultationOutcome };
 export type CreateConsultationInput = {
   leadId: string;
   scheduledTime: Date;
+  durationMinutes: number;
   notes?: string;
   messageTemplateId?: string;
   reminderTime?: Date;
@@ -14,6 +15,7 @@ export type CreateConsultationInput = {
 
 export type UpdateConsultationInput = {
   scheduledTime?: Date;
+  durationMinutes?: number;
   notes?: string;
   status?: ConsultationStatus;
   outcome?: ConsultationOutcome;
@@ -28,6 +30,7 @@ export type RawConsultation = {
   createdAt: Date;
   updatedAt: Date;
   scheduledTime: Date;
+  durationMinutes: number;
   notes: string | null;
   status: ConsultationStatus;
   outcome: ConsultationOutcome | null;

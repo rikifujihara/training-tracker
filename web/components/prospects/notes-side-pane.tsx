@@ -506,6 +506,10 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                         {formatDate(new Date(consultation.scheduledTime))}
                       </div>
                       <div className="text-[14px] leading-[20px] text-text-body">
+                        <span className="font-bold">Duration</span>:{" "}
+                        {consultation.durationMinutes} minutes
+                      </div>
+                      <div className="text-[14px] leading-[20px] text-text-body">
                         <span className="font-bold">Status</span>:{" "}
                         <span className={`px-2 py-1 rounded text-xs ${
                           consultation.status === 'SCHEDULED' 

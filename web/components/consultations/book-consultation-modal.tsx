@@ -40,13 +40,19 @@ export function BookConsultationModal({
   isLoading = false,
 }: BookConsultationModalProps) {
   const [scheduledTime, setScheduledTime] = React.useState<Date>(new Date());
+  const [durationMinutes, setDurationMinutes] = React.useState<number>(60);
   const [notes, setNotes] = React.useState("");
-  const [messageTemplateId, setMessageTemplateId] = React.useState<string | undefined>(undefined);
+  const [messageTemplateId, setMessageTemplateId] = React.useState<
+    string | undefined
+  >(undefined);
   const [reminderEnabled, setReminderEnabled] = React.useState(false);
-  const [reminderTime, setReminderTime] = React.useState<Date | undefined>(undefined);
+  const [reminderTime, setReminderTime] = React.useState<Date | undefined>(
+    undefined
+  );
 
   // Fetch message templates
-  const { data: messageTemplates, isLoading: templatesLoading } = useMessageTemplates();
+  const { data: messageTemplates, isLoading: templatesLoading } =
+    useMessageTemplates();
 
   React.useEffect(() => {
     if (open) {
@@ -54,8 +60,9 @@ export function BookConsultationModal({
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       tomorrow.setHours(10, 0, 0, 0); // Default to 10 AM tomorrow
-      
+
       setScheduledTime(tomorrow);
+      setDurationMinutes(60); // Default to 60 minutes
       setNotes("");
       setMessageTemplateId(undefined);
       setReminderEnabled(false);
@@ -78,6 +85,7 @@ export function BookConsultationModal({
     const data: CreateConsultationInput = {
       leadId: lead.id,
       scheduledTime,
+      durationMinutes,
       notes: notes.trim() || undefined,
       messageTemplateId: messageTemplateId || undefined,
       reminderTime,
@@ -89,10 +97,10 @@ export function BookConsultationModal({
   // Format date for datetime-local input
   const formatDateTimeLocal = (date: Date): string => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
@@ -122,7 +130,7 @@ export function BookConsultationModal({
   const isSelectedDateToday = (): boolean => {
     const today = new Date();
     const scheduledDate = new Date(scheduledTime);
-    
+
     return (
       scheduledDate.getFullYear() === today.getFullYear() &&
       scheduledDate.getMonth() === today.getMonth() &&
@@ -135,7 +143,7 @@ export function BookConsultationModal({
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const scheduledDate = new Date(scheduledTime);
-    
+
     return (
       scheduledDate.getFullYear() === tomorrow.getFullYear() &&
       scheduledDate.getMonth() === tomorrow.getMonth() &&
@@ -143,7 +151,9 @@ export function BookConsultationModal({
     );
   };
 
-  const selectedTemplate = messageTemplates?.find(t => t.id === messageTemplateId);
+  const selectedTemplate = messageTemplates?.find(
+    (t) => t.id === messageTemplateId
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -193,7 +203,7 @@ export function BookConsultationModal({
                 onChange={handleDateTimeChange}
                 className="w-full h-12 p-3 bg-surface-primary border border-border-primary rounded text-[16px] leading-[24px] text-text-body"
               />
-              
+
               {/* Quick Date Selection Buttons */}
               <div className="flex gap-2">
                 <Button
@@ -231,9 +241,55 @@ export function BookConsultationModal({
               </div>
             </div>
 
+            {/* Duration */}
+            <div className="space-y-2">
+              <Label htmlFor="duration">Duration (minutes)</Label>
+              <input
+                id="duration"
+                type="number"
+                min="15"
+                max="240"
+                value={durationMinutes}
+                onChange={(e) =>
+                  setDurationMinutes(parseInt(e.target.value) || 60)
+                }
+                className="w-full h-12 p-3 bg-surface-primary border border-border-primary rounded text-[16px] leading-[24px] text-text-body"
+              />
+
+              {/* Quick Duration Selection Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={durationMinutes === 30 ? "default" : "outline"}
+                  onClick={() => setDurationMinutes(30)}
+                >
+                  30 mins
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={durationMinutes === 45 ? "default" : "outline"}
+                  onClick={() => setDurationMinutes(45)}
+                >
+                  45 mins
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={durationMinutes === 60 ? "default" : "outline"}
+                  onClick={() => setDurationMinutes(60)}
+                >
+                  60 mins
+                </Button>
+              </div>
+            </div>
+
             {/* Message Template */}
             <div className="space-y-2">
-              <Label htmlFor="messageTemplate">Message Template (Optional)</Label>
+              <Label htmlFor="messageTemplate">
+                Reminder Template (Optional)
+              </Label>
               <Select
                 value={messageTemplateId}
                 onValueChange={(value) => setMessageTemplateId(value)}
@@ -273,9 +329,11 @@ export function BookConsultationModal({
                 <Checkbox
                   id="reminderEnabled"
                   checked={reminderEnabled}
-                  onCheckedChange={(checked) => setReminderEnabled(checked === true)}
+                  onCheckedChange={(checked) =>
+                    setReminderEnabled(checked === true)
+                  }
                 />
-                <Label 
+                <Label
                   htmlFor="reminderEnabled"
                   className="text-[16px] leading-[24px] font-normal text-text-body cursor-pointer"
                 >

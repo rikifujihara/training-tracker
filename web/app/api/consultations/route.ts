@@ -66,15 +66,16 @@ export async function POST(request: NextRequest) {
     const consultationData: CreateConsultationInput = {
       leadId: body.leadId,
       scheduledTime: new Date(body.scheduledTime),
+      durationMinutes: body.durationMinutes,
       notes: body.notes,
       messageTemplateId: body.messageTemplateId,
       reminderTime: body.reminderTime ? new Date(body.reminderTime) : undefined,
     };
 
     // Validate required fields
-    if (!consultationData.leadId || !consultationData.scheduledTime) {
+    if (!consultationData.leadId || !consultationData.scheduledTime || !consultationData.durationMinutes) {
       return NextResponse.json(
-        { error: "Missing required fields: leadId, scheduledTime" },
+        { error: "Missing required fields: leadId, scheduledTime, durationMinutes" },
         { status: 400 }
       );
     }

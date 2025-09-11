@@ -213,11 +213,12 @@ model Consultation {
   updatedAt DateTime @map("updated_at")
 
   // Consultation fields
-  scheduledTime DateTime @map("scheduled_time")
-  notes         String?
-
-  status  ConsultationStatus   @default(SCHEDULED)
-  outcome ConsultationOutcome?
+  scheduledTime   DateTime             @map("scheduled_time")
+  durationMinutes Int                  @map("duration_minutes")
+  notes           String?
+  status          ConsultationStatus   @default(SCHEDULED)
+  outcome         ConsultationOutcome?
+  reminderTime    DateTime?            @map("reminder_time")
 
   messageTemplateId String? @map("message_template_id")
 
@@ -225,7 +226,6 @@ model Consultation {
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   lead            Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
   messageTemplate MessageTemplate? @relation(fields: [messageTemplateId], references: [id])
-  reminderTime    DateTime?        @map("reminder_time")
 
   // Indexes
   @@index([scheduledTime])

@@ -40,6 +40,7 @@ export class ConsultationService {
         userId,
         leadId: data.leadId,
         scheduledTime: data.scheduledTime,
+        durationMinutes: data.durationMinutes,
         notes: data.notes?.trim() || null,
         messageTemplateId: data.messageTemplateId || null,
         reminderTime: data.reminderTime || null,
@@ -192,6 +193,7 @@ export class ConsultationService {
     // Build update object with proper typing
     const updateData: {
       scheduledTime?: Date;
+      durationMinutes?: number;
       notes?: string | null;
       status?: ConsultationStatus;
       outcome?: ConsultationOutcome | null;
@@ -200,6 +202,7 @@ export class ConsultationService {
     } = {};
     
     if (data.scheduledTime !== undefined) updateData.scheduledTime = data.scheduledTime;
+    if (data.durationMinutes !== undefined) updateData.durationMinutes = data.durationMinutes;
     if (data.notes !== undefined) updateData.notes = data.notes?.trim() || null;
     if (data.status !== undefined) updateData.status = data.status;
     if (data.outcome !== undefined) updateData.outcome = data.outcome;

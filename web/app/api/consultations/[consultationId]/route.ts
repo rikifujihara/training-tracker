@@ -82,6 +82,9 @@ export async function PUT(
     if (body.scheduledTime !== undefined) {
       updateData.scheduledTime = new Date(body.scheduledTime);
     }
+    if (body.durationMinutes !== undefined) {
+      updateData.durationMinutes = body.durationMinutes;
+    }
     if (body.notes !== undefined) {
       updateData.notes = body.notes;
     }
