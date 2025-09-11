@@ -22,6 +22,7 @@ import {
   LogTextMessageData,
 } from "@/components/contact-points/log-text-message-modal";
 import { BookConsultationModal } from "@/components/consultations/book-consultation-modal";
+import { MobileMessageModal } from "@/components/prospects/mobile-message-modal";
 import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 import { useCreateConsultation } from "@/lib/hooks/use-consultations";
 import { CreateConsultationInput } from "@/lib/types/consultation";
@@ -47,6 +48,7 @@ export function ProspectCard({
   const [logTextModalOpen, setLogTextModalOpen] = React.useState(false);
   const [consultationModalOpen, setConsultationModalOpen] =
     React.useState(false);
+  const [mobileMessageModalOpen, setMobileMessageModalOpen] = React.useState(false);
   const createContactPointMutation = useCreateContactPoint();
   const createConsultationMutation = useCreateConsultation();
   const statusBarColor = getStatusBarColor(lead.status);
@@ -81,9 +83,9 @@ export function ProspectCard({
     createConsultationMutation.mutate(data);
   };
 
-  // Placeholder handlers for mobile action buttons
+  // Handler for mobile message button
   const handleSendMessage = () => {
-    console.log("Send message clicked for:", lead.displayName);
+    setMobileMessageModalOpen(true);
   };
 
   const handleCall = () => {
@@ -237,19 +239,14 @@ export function ProspectCard({
 
             {/* Message and Call buttons */}
             <div className="flex gap-2.5 w-full">
-              <a
-                href="sms:0452289538?body=I'm%20interested%20in%20your%20services"
-                className="flex-1"
+              <Button
+                className="flex-1 w-full justify-center gap-3 px-6 py-3 h-12"
+                onClick={handleSendMessage}
               >
-                <Button
-                  className="w-full justify-center gap-3 px-6 py-3 h-12"
-                  onClick={handleSendMessage}
-                >
-                  <MessageSquare className="w-6 h-6" />
-                  Message
-                </Button>
-              </a>
-              <a href="tel:0452289538" className="flex-1">
+                <MessageSquare className="w-6 h-6" />
+                Message
+              </Button>
+              <a href={`tel:${lead.phoneNumber || ''}`} className="flex-1">
                 <Button
                   className="w-full justify-center gap-3 px-6 py-3 h-12"
                   onClick={handleCall}
@@ -292,6 +289,12 @@ export function ProspectCard({
         lead={lead}
         onSave={handleBookConsultation}
         isLoading={createConsultationMutation.isPending}
+      />
+
+      <MobileMessageModal
+        open={mobileMessageModalOpen}
+        onOpenChange={setMobileMessageModalOpen}
+        lead={lead}
       />
     </div>
   );
