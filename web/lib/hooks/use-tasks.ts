@@ -198,6 +198,19 @@ export const useOverdueTasks = () => {
   });
 };
 
+export const useNextFollowUpTask = (leadId: string) => {
+  return useQuery({
+    queryKey: taskKeys.list(leadId, false),
+    queryFn: () => fetchTasks(leadId, false),
+    select: (data) => {
+      const tasks = data.data.tasks as Task[];
+      // Get the first pending task (should be the next follow-up task)
+      return tasks.find(task => task.status === 'PENDING') || null;
+    },
+    enabled: !!leadId,
+  });
+};
+
 // Mutation hooks
 export const useCreateTask = () => {
   const queryClient = useQueryClient();

@@ -77,9 +77,13 @@ export function ProspectCard({
   return (
     <div
       className={cn(
-        "relative bg-surface-primary rounded border border-border-primary overflow-hidden shadow-sm",
+        "relative bg-surface-primary rounded border border-border-primary overflow-hidden shadow-sm cursor-pointer",
+        selectedForNotes ? "outline-2" : "",
         className
       )}
+      onClick={() =>
+        onShowNotes ? onShowNotes(lead) : setNotesModalOpen(true)
+      }
       {...props}
     >
       {/* Status bar on left - hidden on mobile */}
@@ -111,15 +115,21 @@ export function ProspectCard({
 
             {/* Action buttons */}
             <div className="flex gap-4 items-start">
-              <Button
+              {/* <Button
                 variant={selectedForNotes ? "default" : "secondary"}
                 size="default"
-                onClick={() => onShowNotes ? onShowNotes(lead) : setNotesModalOpen(true)}
-                className={selectedForNotes ? "bg-surface-action text-text-on-action hover:bg-surface-action/90" : ""}
+                onClick={() =>
+                  onShowNotes ? onShowNotes(lead) : setNotesModalOpen(true)
+                }
+                className={
+                  selectedForNotes
+                    ? "bg-surface-action text-text-on-action hover:bg-surface-action/90"
+                    : ""
+                }
               >
                 <History className="w-6 h-6" />
                 Notes
-              </Button>
+              </Button> */}
 
               <Button
                 variant="secondary"
