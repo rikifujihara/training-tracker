@@ -13,28 +13,28 @@ import { formatTaskType } from "@/lib/utils/task";
 export default function ProspectsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showNotesSidePane, setShowNotesSidePane] = useState(false);
-  
+
   const {
     data: leadsData,
     isLoading: leadsLoading,
     error: leadsError,
   } = useLeads();
   const { isLoading: statsLoading } = useLeadStats();
-  
+
   // Fetch all tasks to determine next actions
   const { data: allTasks, isLoading: tasksLoading } = useTasks();
 
   // Function to get next action for a lead
   const getNextActionForLead = (leadId: string): string => {
     if (!allTasks) return "First Call";
-    
+
     // Find the first pending task for this lead
     const nextTask = allTasks.find(
       (task) => task.leadId === leadId && task.status === TaskStatus.PENDING
     );
-    
+
     if (!nextTask) return "First Call";
-    
+
     return formatTaskType(nextTask.taskType);
   };
 
@@ -83,22 +83,23 @@ export default function ProspectsPage() {
     <div className="space-y-6">
       {/* Recent Leads Cards */}
       {leadsData?.leads && leadsData.leads.length > 0 ? (
-        <div className="flex gap-6">
+        <div className="flex gap-6 max-sm:justify-center">
           <div className="space-y-4 flex-shrink-0">
             {leadsData.leads.slice(0, 10).map((lead) => (
-              <ProspectCard 
-                key={lead.id} 
-                lead={lead} 
+              <ProspectCard
+                key={lead.id}
+                lead={lead}
                 nextAction={getNextActionForLead(lead.id)}
                 onShowNotes={handleShowNotes}
                 selectedForNotes={selectedLead?.id === lead.id}
               />
             ))}
           </div>
-          <div className="min-w-[400px] w-full">
+          {/* Notes Side Pane - Desktop Only */}
+          <div className="hidden lg:block min-w-[400px] w-full">
             <div className="sticky top-6 h-[calc(100vh-120px)]">
-              <NotesSidePane 
-                lead={selectedLead} 
+              <NotesSidePane
+                lead={selectedLead}
                 isVisible={showNotesSidePane || !!selectedLead}
               />
             </div>
