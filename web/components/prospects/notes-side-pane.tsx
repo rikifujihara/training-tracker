@@ -117,6 +117,16 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
     }).format(date);
   };
 
+  // Helper function to get tomorrow's date string
+  const getTomorrowDateString = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  };
+
+  // Check if selected date is tomorrow
+  const isSelectedDateTomorrow = taskDueDate === getTomorrowDateString();
+
   const handleSave = () => {
     if (!lead) return;
 
@@ -320,28 +330,59 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                   )}
 
                   {/* Date and Time */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <label className="text-[14px] leading-[20px] font-medium text-text-body">
-                        Date
-                      </label>
-                      <Input
-                        type="date"
-                        value={taskDueDate}
-                        onChange={(e) => setTaskDueDate(e.target.value)}
-                        className="text-[14px] leading-[20px]"
-                      />
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="space-y-2 flex-1">
+                        <label className="text-[14px] leading-[20px] font-medium text-text-body">
+                          Date
+                        </label>
+                        <Input
+                          type="date"
+                          value={taskDueDate}
+                          onChange={(e) => setTaskDueDate(e.target.value)}
+                          className="text-[14px] leading-[20px]"
+                        />
+                      </div>
+                      <div className="space-y-2 flex-1">
+                        <label className="text-[14px] leading-[20px] font-medium text-text-body">
+                          Time
+                        </label>
+                        <Input
+                          type="time"
+                          value={taskDueTime}
+                          onChange={(e) => setTaskDueTime(e.target.value)}
+                          className="text-[14px] leading-[20px]"
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[14px] leading-[20px] font-medium text-text-body">
-                        Time
-                      </label>
-                      <Input
-                        type="time"
-                        value={taskDueTime}
-                        onChange={(e) => setTaskDueTime(e.target.value)}
-                        className="text-[14px] leading-[20px]"
-                      />
+                    
+                    {/* Quick Date Selection Buttons */}
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={isSelectedDateTomorrow ? "default" : "outline"}
+                        onClick={() => {
+                          setTaskDueDate(getTomorrowDateString());
+                        }}
+                      >
+                        Tomorrow
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          if (taskDueDate) {
+                            const currentDate = new Date(taskDueDate);
+                            currentDate.setDate(currentDate.getDate() + 1);
+                            setTaskDueDate(currentDate.toISOString().split('T')[0]);
+                          }
+                        }}
+                        disabled={!taskDueDate}
+                      >
+                        +1 Day
+                      </Button>
                     </div>
                   </div>
 
