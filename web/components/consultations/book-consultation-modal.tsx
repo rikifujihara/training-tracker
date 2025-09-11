@@ -103,6 +103,46 @@ export function BookConsultationModal({
     }
   };
 
+  // Helper function to get today's date with time
+  const getTodayDateTime = (): Date => {
+    const today = new Date();
+    today.setHours(10, 0, 0, 0); // Default to 10 AM
+    return today;
+  };
+
+  // Helper function to get tomorrow's date with time
+  const getTomorrowDateTime = (): Date => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0); // Default to 10 AM
+    return tomorrow;
+  };
+
+  // Check if selected date is today
+  const isSelectedDateToday = (): boolean => {
+    const today = new Date();
+    const scheduledDate = new Date(scheduledTime);
+    
+    return (
+      scheduledDate.getFullYear() === today.getFullYear() &&
+      scheduledDate.getMonth() === today.getMonth() &&
+      scheduledDate.getDate() === today.getDate()
+    );
+  };
+
+  // Check if selected date is tomorrow
+  const isSelectedDateTomorrow = (): boolean => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const scheduledDate = new Date(scheduledTime);
+    
+    return (
+      scheduledDate.getFullYear() === tomorrow.getFullYear() &&
+      scheduledDate.getMonth() === tomorrow.getMonth() &&
+      scheduledDate.getDate() === tomorrow.getDate()
+    );
+  };
+
   const selectedTemplate = messageTemplates?.find(t => t.id === messageTemplateId);
 
   return (
@@ -153,6 +193,42 @@ export function BookConsultationModal({
                 onChange={handleDateTimeChange}
                 className="w-full h-12 p-3 bg-surface-primary border border-border-primary rounded text-[16px] leading-[24px] text-text-body"
               />
+              
+              {/* Quick Date Selection Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={isSelectedDateToday() ? "default" : "outline"}
+                  onClick={() => {
+                    setScheduledTime(getTodayDateTime());
+                  }}
+                >
+                  Today
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={isSelectedDateTomorrow() ? "default" : "outline"}
+                  onClick={() => {
+                    setScheduledTime(getTomorrowDateTime());
+                  }}
+                >
+                  Tomorrow
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const nextDay = new Date(scheduledTime);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    setScheduledTime(nextDay);
+                  }}
+                >
+                  +1 Day
+                </Button>
+              </div>
             </div>
 
             {/* Message Template */}

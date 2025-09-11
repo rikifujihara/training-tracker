@@ -114,6 +114,12 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
     }).format(date);
   };
 
+  // Helper function to get today's date string
+  const getTodayDateString = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
   // Helper function to get tomorrow's date string
   const getTomorrowDateString = () => {
     const tomorrow = new Date();
@@ -121,6 +127,9 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
     return tomorrow.toISOString().split("T")[0];
   };
 
+  // Check if selected date is today
+  const isSelectedDateToday = taskDueDate === getTodayDateString();
+  
   // Check if selected date is tomorrow
   const isSelectedDateTomorrow = taskDueDate === getTomorrowDateString();
 
@@ -359,6 +368,16 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
 
                     {/* Quick Date Selection Buttons */}
                     <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={isSelectedDateToday ? "default" : "outline"}
+                        onClick={() => {
+                          setTaskDueDate(getTodayDateString());
+                        }}
+                      >
+                        Today
+                      </Button>
                       <Button
                         type="button"
                         size="sm"
