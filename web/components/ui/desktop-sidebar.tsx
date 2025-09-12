@@ -3,7 +3,15 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
-import { Home, Users, MessageSquare, Settings, Menu, X } from "lucide-react";
+import {
+  Home,
+  Users,
+  MessageSquare,
+  Settings,
+  Menu,
+  X,
+  UserPlus,
+} from "lucide-react";
 import { Button } from "./button";
 
 export interface DesktopSidebarProps
@@ -25,6 +33,12 @@ const navigationItems = [
     icon: MessageSquare,
     label: "Templates",
     href: "/protected/templates",
+    badge: undefined,
+  },
+  {
+    icon: UserPlus,
+    label: "Leads",
+    href: "/protected/upload-leads",
     badge: undefined,
   },
 ];

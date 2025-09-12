@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { CreateLeadInput, UpdateLeadInput, Lead } from '@/lib/types/lead';
 
 // Types for API responses
@@ -23,6 +23,22 @@ interface LeadsResponse {
   data: {
     leads: Lead[];
     stats: {
+      total: number;
+      withEmail: number;
+      withPhone: number;
+      recentImports: number;
+    };
+  };
+  error?: string;
+}
+
+interface PaginatedLeadsResponse {
+  success: boolean;
+  data: {
+    leads: Lead[];
+    hasNextPage: boolean;
+    totalCount: number;
+    stats?: {
       total: number;
       withEmail: number;
       withPhone: number;
@@ -61,6 +77,31 @@ const fetchLeads = async (): Promise<LeadsResponse> => {
   return response.json();
 };
 
+const fetchLeadsPaginated = async ({
+  pageParam = 0,
+  filter = 'all',
+  pageSize = 10,
+}: {
+  pageParam?: number;
+  filter?: 'today' | 'overdue' | 'upcoming' | 'all';
+  pageSize?: number;
+}): Promise<PaginatedLeadsResponse> => {
+  const params = new URLSearchParams({
+    page: pageParam.toString(),
+    pageSize: pageSize.toString(),
+    filter,
+  });
+
+  const response = await fetch(`/api/leads?${params}`);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
 const updateLead = async (leadId: string, data: UpdateLeadInput): Promise<{ success: boolean; data: Lead }> => {
   const response = await fetch(`/api/leads/${leadId}`, {
     method: 'PUT',
@@ -82,6 +123,7 @@ const updateLead = async (leadId: string, data: UpdateLeadInput): Promise<{ succ
 const leadKeys = {
   all: ['leads'] as const,
   lists: () => [...leadKeys.all, 'list'] as const,
+  infinite: (filter: string) => [...leadKeys.all, 'infinite', { filter }] as const,
   stats: () => [...leadKeys.all, 'stats'] as const,
 } as const;
 
@@ -91,6 +133,25 @@ export const useLeads = () => {
     queryKey: leadKeys.lists(),
     queryFn: fetchLeads,
     select: (data) => data.data, // Extract the data from the response
+  });
+};
+
+export const useInfiniteLeads = (
+  filter: 'today' | 'overdue' | 'upcoming' | 'all' = 'all',
+  pageSize: number = 10
+) => {
+  return useInfiniteQuery({
+    queryKey: leadKeys.infinite(filter),
+    queryFn: ({ pageParam }) => fetchLeadsPaginated({ pageParam, filter, pageSize }),
+    getNextPageParam: (lastPage, allPages) => {
+      const { hasNextPage } = lastPage.data;
+      return hasNextPage ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
+    select: (data) => ({
+      pages: data.pages.map(page => page.data),
+      pageParams: data.pageParams,
+    }),
   });
 };
 

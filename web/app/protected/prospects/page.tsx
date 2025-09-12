@@ -1,49 +1,133 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { ProspectCard } from "@/components/prospects/prospect-card";
 import { NotesSidePane } from "@/components/prospects/notes-side-pane";
 
-import { useLeads, useLeadStats } from "@/lib/hooks/use-leads";
+import { useInfiniteLeads, useLeadStats } from "@/lib/hooks/use-leads";
 import { useTasks } from "@/lib/hooks/use-tasks";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Lead } from "@/lib/types/lead";
-import { TaskStatus } from "@/lib/types/task";
+import { TaskStatus, Task } from "@/lib/types/task";
 import { formatTaskType } from "@/lib/utils/task";
+
+type ProspectFilter = "today" | "overdue" | "upcoming" | "all";
 
 export default function ProspectsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showNotesSidePane, setShowNotesSidePane] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<ProspectFilter>("today");
 
   const {
     data: leadsData,
     isLoading: leadsLoading,
     error: leadsError,
-  } = useLeads();
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteLeads(activeFilter, 10);
+  
   const { isLoading: statsLoading } = useLeadStats();
 
-  // Fetch all tasks to determine next actions
+  // Fetch all tasks to determine next actions (we still need this for the action labels)
   const { data: allTasks, isLoading: tasksLoading } = useTasks();
+
+  // Flatten all leads from all pages
+  const allLeads = useMemo(() => {
+    return leadsData?.pages.flatMap(page => page.leads) || [];
+  }, [leadsData]);
+
+  // Function to get next task for a lead
+  const getNextTaskForLead = (leadId: string): Task | null => {
+    if (!allTasks) return null;
+
+    // Find the first pending task for this lead, sorted by due date
+    const leadTasks = allTasks
+      .filter(
+        (task) => task.leadId === leadId && task.status === TaskStatus.PENDING
+      )
+      .sort(
+        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+      );
+
+    return leadTasks[0] || null;
+  };
 
   // Function to get next action for a lead
   const getNextActionForLead = (leadId: string): string => {
-    if (!allTasks) return "First Call";
-
-    // Find the first pending task for this lead
-    const nextTask = allTasks.find(
-      (task) => task.leadId === leadId && task.status === TaskStatus.PENDING
-    );
-
+    const nextTask = getNextTaskForLead(leadId);
     if (!nextTask) return "First Call";
-
     return formatTaskType(nextTask.taskType);
   };
 
-  // Set the first lead as selected by default when leads load
-  React.useEffect(() => {
-    if (leadsData?.leads && leadsData.leads.length > 0 && !selectedLead) {
-      setSelectedLead(leadsData.leads[0]);
+  // Since filtering is now done server-side, we just use the leads directly
+  const filteredProspects = allLeads;
+
+  // Get filter counts from the current active filter's total count
+  const getFilterCount = (filter: ProspectFilter): number => {
+    if (filter === activeFilter && leadsData?.pages[0]) {
+      return leadsData.pages[0].totalCount;
     }
-  }, [leadsData?.leads, selectedLead]);
+    // For non-active filters, we don't have the count readily available
+    // We could make separate queries for each filter, but for now, just return 0
+    return 0;
+  };
+
+  const getFilterLabel = (filter: ProspectFilter): string => {
+    switch (filter) {
+      case "today":
+        return "Due Today";
+      case "overdue":
+        return "Overdue";
+      case "upcoming":
+        return "Upcoming";
+      case "all":
+        return "All Prospects";
+      default:
+        return "";
+    }
+  };
+
+  // Set the first lead as selected by default when filtered prospects change
+  React.useEffect(() => {
+    if (filteredProspects.length > 0) {
+      setSelectedLead(filteredProspects[0]);
+    } else {
+      setSelectedLead(null);
+    }
+  }, [filteredProspects]);
+
+  // Reset selected lead when filter changes
+  React.useEffect(() => {
+    setSelectedLead(null);
+  }, [activeFilter]);
+
+  // Intersection observer for infinite scroll
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '100px',
+      }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleShowNotes = (lead: Lead) => {
     setSelectedLead(lead);
@@ -81,11 +165,56 @@ export default function ProspectsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Recent Leads Cards */}
-      {leadsData?.leads && leadsData.leads.length > 0 ? (
+      {/* Filter Controls */}
+      <div className="bg-surface-primary rounded-lg border border-border-primary p-4">
+        <div className="flex flex-col gap-4">
+          <h2 className="text-text-headings text-[20px] leading-[24px] font-semibold">
+            Follow ups
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {(["today", "overdue", "upcoming", "all"] as ProspectFilter[]).map(
+              (filter) => {
+                const count = getFilterCount(filter);
+                const isActive = activeFilter === filter;
+
+                return (
+                  <Button
+                    key={filter}
+                    variant={isActive ? "default" : "secondary"}
+                    size="default"
+                    onClick={() => setActiveFilter(filter)}
+                    className={`flex items-center gap-2 ${
+                      isActive
+                        ? "bg-surface-action text-text-on-action hover:bg-surface-action/90"
+                        : ""
+                    }`}
+                  >
+                    <span>{getFilterLabel(filter)}</span>
+                    <Badge
+                      variant={
+                        filter === "overdue" ? "destructive" : "secondary"
+                      }
+                      className={`${
+                        isActive
+                          ? "bg-white/20 text-white hover:bg-white/30"
+                          : ""
+                      }`}
+                    >
+                      {count}
+                    </Badge>
+                  </Button>
+                );
+              }
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Prospects Content */}
+      {filteredProspects.length > 0 ? (
         <div className="flex gap-6 max-sm:justify-center">
           <div className="space-y-4 flex-shrink-0">
-            {leadsData.leads.slice(0, 10).map((lead) => (
+            {filteredProspects.map((lead) => (
               <ProspectCard
                 key={lead.id}
                 lead={lead}
@@ -94,6 +223,27 @@ export default function ProspectsPage() {
                 selectedForNotes={selectedLead?.id === lead.id}
               />
             ))}
+            
+            {/* Load More Button and Intersection Observer Target */}
+            {hasNextPage && (
+              <div ref={loadMoreRef} className="flex justify-center pt-4">
+                <Button
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                  variant="outline"
+                  size="default"
+                >
+                  {isFetchingNextPage ? "Loading..." : "Load More"}
+                </Button>
+              </div>
+            )}
+            
+            {/* Loading indicator for auto-loading */}
+            {isFetchingNextPage && (
+              <div className="flex justify-center py-4">
+                <div className="text-text-disabled">Loading more prospects...</div>
+              </div>
+            )}
           </div>
           {/* Notes Side Pane - Desktop Only */}
           <div className="hidden lg:block min-w-[400px] w-full">
@@ -108,12 +258,32 @@ export default function ProspectsPage() {
       ) : (
         <Card>
           <CardContent className="pt-6">
-            <p className="text-muted-foreground text-center py-4">
-              No leads yet.{" "}
-              <a href="/protected/upload-leads" className="underline">
-                Upload your first leads
-              </a>
-            </p>
+            <div className="text-center py-8">
+              <h3 className="text-text-headings text-[18px] leading-[22px] font-semibold mb-2">
+                No {getFilterLabel(activeFilter).toLowerCase()} prospects
+              </h3>
+              <p className="text-text-disabled text-[16px] leading-[24px]">
+                {activeFilter === "today" ? (
+                  "No prospects have tasks due today."
+                ) : activeFilter === "overdue" ? (
+                  "Great! No overdue tasks for prospects."
+                ) : activeFilter === "upcoming" ? (
+                  "No prospects have upcoming tasks."
+                ) : allLeads && allLeads.length === 0 ? (
+                  <>
+                    No leads yet.{" "}
+                    <a
+                      href="/protected/upload-leads"
+                      className="underline text-surface-action"
+                    >
+                      Upload your first leads
+                    </a>
+                  </>
+                ) : (
+                  "All prospects are shown above."
+                )}
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}

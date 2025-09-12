@@ -79,6 +79,132 @@ export class LeadService {
   }
 
   /**
+   * Get leads for a user with pagination and filtering based on task due dates
+   * Uses pure Prisma queries with post-processing for optimal maintainability
+   */
+  static async getLeadsByUserIdPaginated(
+    userId: string,
+    options: {
+      page: number;
+      pageSize: number;
+      filter: 'today' | 'overdue' | 'upcoming' | 'all';
+    }
+  ): Promise<{
+    leads: Lead[];
+    hasNextPage: boolean;
+    totalCount: number;
+  }> {
+    const { page, pageSize, filter } = options;
+    const skip = page * pageSize;
+
+    // Build date filters based on the filter type
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    if (filter === 'all') {
+      // Simple case: all leads ordered by creation date
+      const [rawLeads, totalCount] = await Promise.all([
+        prisma.lead.findMany({
+          where: { userId },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: pageSize + 1, // Take one extra to check for next page
+        }),
+        prisma.lead.count({ where: { userId } }),
+      ]);
+
+      const hasNextPage = rawLeads.length > pageSize;
+      const leadsToReturn = hasNextPage ? rawLeads.slice(0, pageSize) : rawLeads;
+
+      return {
+        leads: leadsToReturn.map((lead) => this.enrichLeadWithDisplayFields(lead)),
+        hasNextPage,
+        totalCount,
+      };
+    }
+
+    // For filtered cases, we need leads with their tasks
+    // We'll fetch more than needed and sort/paginate in memory
+    // This is a trade-off: simpler code vs. potentially more data transfer
+
+    let taskDateFilter;
+    switch (filter) {
+      case 'today':
+        taskDateFilter = { gte: today, lt: tomorrow };
+        break;
+      case 'overdue':
+        taskDateFilter = { lt: today };
+        break;
+      case 'upcoming':
+        taskDateFilter = { gte: tomorrow };
+        break;
+    }
+
+    // First, get leads that have matching tasks
+    const leadsWithTasks = await prisma.lead.findMany({
+      where: {
+        userId,
+        tasks: {
+          some: {
+            status: TaskStatus.PENDING,
+            dueDate: taskDateFilter,
+          },
+        },
+      },
+      include: {
+        tasks: {
+          where: {
+            status: TaskStatus.PENDING,
+          },
+          orderBy: {
+            dueDate: 'asc',
+          },
+        },
+      },
+    });
+
+    // Process and sort by next task due date
+    const leadsWithNextTask = leadsWithTasks
+      .map((lead) => ({
+        lead,
+        nextTaskDueDate: lead.tasks[0]?.dueDate || null,
+      }))
+      .filter((item) => {
+        // Double-check the filter (should be redundant but ensures correctness)
+        if (!item.nextTaskDueDate) return false;
+        
+        const taskDate = new Date(item.nextTaskDueDate);
+        switch (filter) {
+          case 'today':
+            return taskDate >= today && taskDate < tomorrow;
+          case 'overdue':
+            return taskDate < today;
+          case 'upcoming':
+            return taskDate >= tomorrow;
+          default:
+            return true;
+        }
+      })
+      .sort((a, b) => {
+        if (!a.nextTaskDueDate || !b.nextTaskDueDate) return 0;
+        return new Date(a.nextTaskDueDate).getTime() - new Date(b.nextTaskDueDate).getTime();
+      });
+
+    // Apply pagination
+    const totalCount = leadsWithNextTask.length;
+    const paginatedResults = leadsWithNextTask.slice(skip, skip + pageSize);
+    const hasNextPage = skip + pageSize < totalCount;
+
+    return {
+      leads: paginatedResults.map(({ lead }) => this.enrichLeadWithDisplayFields(lead)),
+      hasNextPage,
+      totalCount,
+    };
+  }
+
+  /**
    * Get lead by ID (with user ownership check)
    */
   static async getLeadById(
