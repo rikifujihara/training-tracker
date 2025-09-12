@@ -3,6 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Task, TaskWithRelations, CreateTaskInput, UpdateTaskInput } from "@/lib/types/task";
 
+// Import leadKeys to invalidate filter counts when tasks change
+const leadKeys = {
+  all: ['leads'] as const,
+  filterCounts: () => ['leads', 'filter-counts'] as const,
+} as const;
+
 // Query keys
 export const taskKeys = {
   all: ['tasks'] as const,
@@ -220,6 +226,8 @@ export const useCreateTask = () => {
     onSuccess: (response) => {
       // Invalidate and refetch tasks
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
+      // Invalidate lead filter counts since new tasks affect prospect filtering
+      queryClient.invalidateQueries({ queryKey: leadKeys.filterCounts() });
       
       // Optimistically add the task to cache
       queryClient.setQueryData(taskKeys.list(), (old: TasksResponse | undefined) => {
@@ -247,6 +255,8 @@ export const useUpdateTask = () => {
     onSuccess: (response) => {
       // Invalidate and refetch tasks
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
+      // Invalidate lead filter counts since task updates affect prospect filtering
+      queryClient.invalidateQueries({ queryKey: leadKeys.filterCounts() });
       
       // Optimistically update the task in cache
       queryClient.setQueryData(taskKeys.list(), (old: TasksResponse | undefined) => {
@@ -275,6 +285,8 @@ export const useDeleteTask = () => {
     onSuccess: (_, taskId) => {
       // Invalidate and refetch tasks
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
+      // Invalidate lead filter counts since task deletion affects prospect filtering
+      queryClient.invalidateQueries({ queryKey: leadKeys.filterCounts() });
       
       // Optimistically remove the task from cache
       queryClient.setQueryData(taskKeys.list(), (old: TasksResponse | undefined) => {
@@ -301,6 +313,8 @@ export const useCompleteTask = () => {
     onSuccess: (response) => {
       // Invalidate and refetch tasks
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
+      // Invalidate lead filter counts since task completion affects prospect filtering
+      queryClient.invalidateQueries({ queryKey: leadKeys.filterCounts() });
       
       // Optimistically update the task in cache
       queryClient.setQueryData(taskKeys.list(), (old: TasksResponse | undefined) => {

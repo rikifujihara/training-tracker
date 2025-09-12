@@ -48,6 +48,17 @@ interface PaginatedLeadsResponse {
   error?: string;
 }
 
+interface FilterCountsResponse {
+  success: boolean;
+  data: {
+    today: number;
+    overdue: number;
+    upcoming: number;
+    all: number;
+  };
+  error?: string;
+}
+
 // API functions
 const uploadLeads = async (leads: CreateLeadInput[]): Promise<LeadUploadResponse> => {
   const response = await fetch('/api/leads/upload', {
@@ -102,6 +113,17 @@ const fetchLeadsPaginated = async ({
   return response.json();
 };
 
+const fetchFilterCounts = async (): Promise<FilterCountsResponse> => {
+  const response = await fetch('/api/leads/filter-counts');
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
 const updateLead = async (leadId: string, data: UpdateLeadInput): Promise<{ success: boolean; data: Lead }> => {
   const response = await fetch(`/api/leads/${leadId}`, {
     method: 'PUT',
@@ -125,6 +147,7 @@ const leadKeys = {
   lists: () => [...leadKeys.all, 'list'] as const,
   infinite: (filter: string) => [...leadKeys.all, 'infinite', { filter }] as const,
   stats: () => [...leadKeys.all, 'stats'] as const,
+  filterCounts: () => [...leadKeys.all, 'filter-counts'] as const,
 } as const;
 
 // Hooks
@@ -155,6 +178,15 @@ export const useInfiniteLeads = (
   });
 };
 
+export const useProspectFilterCounts = () => {
+  return useQuery({
+    queryKey: leadKeys.filterCounts(),
+    queryFn: fetchFilterCounts,
+    select: (data) => data.data,
+    staleTime: 30 * 1000, // Cache for 30 seconds since counts can change frequently
+  });
+};
+
 export const useUploadLeads = () => {
   const queryClient = useQueryClient();
 
@@ -163,6 +195,8 @@ export const useUploadLeads = () => {
     onSuccess: (data) => {
       // Invalidate and refetch leads after successful upload
       queryClient.invalidateQueries({ queryKey: leadKeys.all });
+      // Also invalidate filter counts since new leads affect counts
+      queryClient.invalidateQueries({ queryKey: leadKeys.filterCounts() });
       
       // Optionally update the cache optimistically
       queryClient.setQueryData(leadKeys.lists(), (oldData: LeadsResponse | undefined) => {
@@ -203,6 +237,8 @@ export const useUpdateLead = () => {
     onSuccess: (response) => {
       // Invalidate and refetch leads
       queryClient.invalidateQueries({ queryKey: leadKeys.all });
+      // Also invalidate filter counts since lead updates might affect task relationships
+      queryClient.invalidateQueries({ queryKey: leadKeys.filterCounts() });
       
       // Optimistically update the lead in cache
       queryClient.setQueryData(leadKeys.lists(), (oldData: LeadsResponse | undefined) => {

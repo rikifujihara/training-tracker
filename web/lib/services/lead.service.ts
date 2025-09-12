@@ -205,6 +205,78 @@ export class LeadService {
   }
 
   /**
+   * Get filter counts for all prospect filters
+   */
+  static async getProspectFilterCounts(userId: string): Promise<{
+    today: number;
+    overdue: number;
+    upcoming: number;
+    all: number;
+  }> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const [todayCount, overdueCount, upcomingCount, allCount] = await Promise.all([
+      // Today count
+      prisma.lead.count({
+        where: {
+          userId,
+          tasks: {
+            some: {
+              status: TaskStatus.PENDING,
+              dueDate: {
+                gte: today,
+                lt: tomorrow,
+              },
+            },
+          },
+        },
+      }),
+      // Overdue count
+      prisma.lead.count({
+        where: {
+          userId,
+          tasks: {
+            some: {
+              status: TaskStatus.PENDING,
+              dueDate: {
+                lt: today,
+              },
+            },
+          },
+        },
+      }),
+      // Upcoming count
+      prisma.lead.count({
+        where: {
+          userId,
+          tasks: {
+            some: {
+              status: TaskStatus.PENDING,
+              dueDate: {
+                gte: tomorrow,
+              },
+            },
+          },
+        },
+      }),
+      // All count
+      prisma.lead.count({
+        where: { userId },
+      }),
+    ]);
+
+    return {
+      today: todayCount,
+      overdue: overdueCount,
+      upcoming: upcomingCount,
+      all: allCount,
+    };
+  }
+
+  /**
    * Get lead by ID (with user ownership check)
    */
   static async getLeadById(

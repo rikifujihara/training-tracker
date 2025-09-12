@@ -3,7 +3,11 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { ProspectCard } from "@/components/prospects/prospect-card";
 import { NotesSidePane } from "@/components/prospects/notes-side-pane";
 
-import { useInfiniteLeads, useLeadStats } from "@/lib/hooks/use-leads";
+import {
+  useInfiniteLeads,
+  useLeadStats,
+  useProspectFilterCounts,
+} from "@/lib/hooks/use-leads";
 import { useTasks } from "@/lib/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,15 +31,19 @@ export default function ProspectsPage() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteLeads(activeFilter, 10);
-  
+
   const { isLoading: statsLoading } = useLeadStats();
+
+  // Fetch filter counts for all filters
+  const { data: filterCounts, isLoading: filterCountsLoading } =
+    useProspectFilterCounts();
 
   // Fetch all tasks to determine next actions (we still need this for the action labels)
   const { data: allTasks, isLoading: tasksLoading } = useTasks();
 
   // Flatten all leads from all pages
   const allLeads = useMemo(() => {
-    return leadsData?.pages.flatMap(page => page.leads) || [];
+    return leadsData?.pages.flatMap((page) => page.leads) || [];
   }, [leadsData]);
 
   // Function to get next task for a lead
@@ -64,14 +72,22 @@ export default function ProspectsPage() {
   // Since filtering is now done server-side, we just use the leads directly
   const filteredProspects = allLeads;
 
-  // Get filter counts from the current active filter's total count
+  // Get filter counts from the dedicated filter counts query
   const getFilterCount = (filter: ProspectFilter): number => {
-    if (filter === activeFilter && leadsData?.pages[0]) {
-      return leadsData.pages[0].totalCount;
+    if (!filterCounts) return 0;
+
+    switch (filter) {
+      case "today":
+        return filterCounts.today;
+      case "overdue":
+        return filterCounts.overdue;
+      case "upcoming":
+        return filterCounts.upcoming;
+      case "all":
+        return filterCounts.all;
+      default:
+        return 0;
     }
-    // For non-active filters, we don't have the count readily available
-    // We could make separate queries for each filter, but for now, just return 0
-    return 0;
   };
 
   const getFilterLabel = (filter: ProspectFilter): string => {
@@ -118,7 +134,7 @@ export default function ProspectsPage() {
       },
       {
         threshold: 0.1,
-        rootMargin: '100px',
+        rootMargin: "100px",
       }
     );
 
@@ -134,7 +150,7 @@ export default function ProspectsPage() {
     setShowNotesSidePane(true);
   };
 
-  if (leadsLoading || statsLoading || tasksLoading) {
+  if (leadsLoading || statsLoading || tasksLoading || filterCountsLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
@@ -171,7 +187,7 @@ export default function ProspectsPage() {
           <h2 className="text-text-headings text-[20px] leading-[24px] font-semibold">
             Follow ups
           </h2>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 max-sm:flex-col-reverse">
             {(["today", "overdue", "upcoming", "all"] as ProspectFilter[]).map(
               (filter) => {
                 const count = getFilterCount(filter);
@@ -183,7 +199,7 @@ export default function ProspectsPage() {
                     variant={isActive ? "default" : "secondary"}
                     size="default"
                     onClick={() => setActiveFilter(filter)}
-                    className={`flex items-center gap-2 ${
+                    className={`flex items-center gap-2 max-sm:w-full ${
                       isActive
                         ? "bg-surface-action text-text-on-action hover:bg-surface-action/90"
                         : ""
@@ -223,7 +239,7 @@ export default function ProspectsPage() {
                 selectedForNotes={selectedLead?.id === lead.id}
               />
             ))}
-            
+
             {/* Load More Button and Intersection Observer Target */}
             {hasNextPage && (
               <div ref={loadMoreRef} className="flex justify-center pt-4">
@@ -237,11 +253,13 @@ export default function ProspectsPage() {
                 </Button>
               </div>
             )}
-            
+
             {/* Loading indicator for auto-loading */}
             {isFetchingNextPage && (
               <div className="flex justify-center py-4">
-                <div className="text-text-disabled">Loading more prospects...</div>
+                <div className="text-text-disabled">
+                  Loading more prospects...
+                </div>
               </div>
             )}
           </div>
