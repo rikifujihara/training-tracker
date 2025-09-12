@@ -96,7 +96,7 @@ export default function TemplatesPage() {
           {templates.map((template) => (
             <Card key={template.id}>
               <CardContent className="pt-6">
-                <div className="flex justify-between items-start max-sm:flex-col max-sm:gap-4 max-sm:items-end">
+                <div className="flex justify-between flex-col gap-4">
                   <div>
                     <h3 className="font-semibold text-text-headings mb-2">
                       {template.name}
@@ -105,7 +105,7 @@ export default function TemplatesPage() {
                       {template.content}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 justify-end">
                     <Button
                       variant="secondary"
                       size="sm"
