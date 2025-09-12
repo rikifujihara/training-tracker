@@ -16,10 +16,8 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Add this User model to your existing schema.prisma
-
 model User {
-  id        String   @id // This will be the UUID from auth.users.id
+  id        String   @id
   email     String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -39,12 +37,6 @@ model User {
   messageTemplates MessageTemplate[]
   tasks            Task[]
   Consultation     Consultation[]
-
-  // Future relationships (will uncomment later)
-  // workouts     Workout[]
-  // programs     Program[]
-  // clientBookings Booking[] @relation("ClientBookings")
-  // trainerBookings Booking[] @relation("TrainerBookings") 
 
   @@map("users")
 }
@@ -76,10 +68,18 @@ model Lead {
   tasks         Task[]
   consultations Consultation[]
 
+  status LeadStatus @default(PROSPECT)
+
   // Indexes
   @@index([userId])
   @@index([email])
   @@map("leads")
+}
+
+enum LeadStatus {
+  PROSPECT
+  NOT_INTERESTED
+  CONVERTED
 }
 
 model ContactPoint {
