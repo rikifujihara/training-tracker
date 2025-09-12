@@ -40,7 +40,8 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
     useMessageTemplates();
 
   // Fetch consultations for this lead
-  const { data: consultations, isLoading: consultationsLoading } = useConsultations(lead?.id || "", false);
+  const { data: consultations, isLoading: consultationsLoading } =
+    useConsultations(lead?.id || "", false);
 
   // Hook for updating lead
   const { mutate: updateLead, isPending: isUpdating } = useUpdateLead();
@@ -129,7 +130,7 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
 
   // Check if selected date is today
   const isSelectedDateToday = taskDueDate === getTodayDateString();
-  
+
   // Check if selected date is tomorrow
   const isSelectedDateTomorrow = taskDueDate === getTomorrowDateString();
 
@@ -254,12 +255,11 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                         </div>
                       )}
                     </div>
-                    <button
-                      onClick={() => setEditingTask(true)}
-                      className="absolute bottom-2.5 right-3 p-1 hover:bg-surface-action-secondary rounded"
-                    >
-                      <PenLine className="w-6 h-6 text-text-disabled" />
-                    </button>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button onClick={() => setEditingTask(true)}>
+                      Update follow up
+                    </Button>
                   </div>
                 </>
               ) : (
@@ -511,22 +511,26 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
                       </div>
                       <div className="text-[14px] leading-[20px] text-text-body">
                         <span className="font-bold">Status</span>:{" "}
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          consultation.status === 'SCHEDULED' 
-                            ? 'bg-blue-100 text-blue-800' 
-                            : 'bg-green-100 text-green-800'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded text-xs ${
+                            consultation.status === "SCHEDULED"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-green-100 text-green-800"
+                          }`}
+                        >
                           {consultation.status}
                         </span>
                       </div>
                       {consultation.outcome && (
                         <div className="text-[14px] leading-[20px] text-text-body">
                           <span className="font-bold">Outcome</span>:{" "}
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            consultation.outcome === 'CONVERTED' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
+                          <span
+                            className={`px-2 py-1 rounded text-xs ${
+                              consultation.outcome === "CONVERTED"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
                             {consultation.outcome}
                           </span>
                         </div>

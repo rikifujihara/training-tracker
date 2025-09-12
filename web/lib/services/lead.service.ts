@@ -97,11 +97,11 @@ export class LeadService {
     const { page, pageSize, filter } = options;
     const skip = page * pageSize;
 
-    // Build date filters based on the filter type
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Build date filters based on the filter type (using UTC to avoid timezone issues)
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
     const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
     if (filter === 'all') {
       // Simple case: all leads ordered by creation date
@@ -176,13 +176,15 @@ export class LeadService {
         if (!item.nextTaskDueDate) return false;
         
         const taskDate = new Date(item.nextTaskDueDate);
+        // Convert to UTC for consistent comparison
+        const taskDateUTC = new Date(Date.UTC(taskDate.getUTCFullYear(), taskDate.getUTCMonth(), taskDate.getUTCDate(), 0, 0, 0, 0));
         switch (filter) {
           case 'today':
-            return taskDate >= today && taskDate < tomorrow;
+            return taskDateUTC >= today && taskDateUTC < tomorrow;
           case 'overdue':
-            return taskDate < today;
+            return taskDateUTC < today;
           case 'upcoming':
-            return taskDate >= tomorrow;
+            return taskDateUTC >= tomorrow;
           default:
             return true;
         }
@@ -213,10 +215,10 @@ export class LeadService {
     upcoming: number;
     all: number;
   }> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
     const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
     const [todayCount, overdueCount, upcomingCount, allCount] = await Promise.all([
       // Today count
