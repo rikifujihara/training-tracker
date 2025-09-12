@@ -260,3 +260,31 @@ export const useUpdateLead = () => {
     },
   });
 };
+
+// Hook for prefetching all filter options
+export const usePrefetchLeadsFilters = (pageSize: number = 10) => {
+  const queryClient = useQueryClient();
+  
+  const prefetchFilter = async (filter: 'today' | 'overdue' | 'upcoming' | 'all') => {
+    await queryClient.prefetchInfiniteQuery({
+      queryKey: leadKeys.infinite(filter),
+      queryFn: ({ pageParam }) => fetchLeadsPaginated({ pageParam, filter, pageSize }),
+      getNextPageParam: (lastPage: PaginatedLeadsResponse) => {
+        const { hasNextPage } = lastPage.data;
+        return hasNextPage ? 1 : undefined; // Only prefetch first page
+      },
+      initialPageParam: 0,
+      staleTime: 2 * 60 * 1000, // Keep prefetched data fresh for 2 minutes
+    });
+  };
+
+  const prefetchAllFilters = async () => {
+    const filters: Array<'today' | 'overdue' | 'upcoming' | 'all'> = ['today', 'overdue', 'upcoming', 'all'];
+    await Promise.all(filters.map(filter => prefetchFilter(filter)));
+  };
+
+  return {
+    prefetchFilter,
+    prefetchAllFilters,
+  };
+};

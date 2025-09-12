@@ -7,6 +7,7 @@ import {
   useInfiniteLeads,
   useLeadStats,
   useProspectFilterCounts,
+  usePrefetchLeadsFilters,
 } from "@/lib/hooks/use-leads";
 import { useTasks } from "@/lib/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,9 @@ export default function ProspectsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showNotesSidePane, setShowNotesSidePane] = useState(false);
   const [activeFilter, setActiveFilter] = useState<ProspectFilter>("today");
+
+  // Initialize prefetching
+  const { prefetchAllFilters } = usePrefetchLeadsFilters(10);
 
   const {
     data: leadsData,
@@ -40,6 +44,14 @@ export default function ProspectsPage() {
 
   // Fetch all tasks to determine next actions (we still need this for the action labels)
   const { data: allTasks, isLoading: tasksLoading } = useTasks();
+
+  // Prefetch all filters on component mount
+  useEffect(() => {
+    // Only prefetch once filter counts are loaded
+    if (filterCounts) {
+      prefetchAllFilters().catch(console.error);
+    }
+  }, [filterCounts, prefetchAllFilters]);
 
   // Flatten all leads from all pages
   const allLeads = useMemo(() => {
@@ -150,7 +162,8 @@ export default function ProspectsPage() {
     setShowNotesSidePane(true);
   };
 
-  if (leadsLoading || statsLoading || tasksLoading || filterCountsLoading) {
+  // Show initial loading only if essential data is loading
+  if (statsLoading || tasksLoading || filterCountsLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
@@ -227,7 +240,40 @@ export default function ProspectsPage() {
       </div>
 
       {/* Prospects Content */}
-      {filteredProspects.length > 0 ? (
+      {leadsLoading ? (
+        // Show loading skeletons for prospects content
+        <div className="flex gap-6 max-sm:justify-center">
+          <div className="space-y-4 flex-shrink-0">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="animate-pulse w-80">
+                <CardHeader className="pb-2">
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2 mt-2"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-8 bg-muted rounded w-1/2 mb-2"></div>
+                  <div className="h-4 bg-muted rounded w-full"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          {/* Notes Side Pane - Desktop Only */}
+          <div className="hidden lg:block min-w-[400px] w-full">
+            <div className="sticky top-6 h-[calc(100vh-120px)]">
+              <Card className="animate-pulse h-full">
+                <CardHeader>
+                  <div className="h-5 bg-muted rounded w-1/2"></div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="h-4 bg-muted rounded w-full"></div>
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-20 bg-muted rounded w-full"></div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      ) : filteredProspects.length > 0 ? (
         <div className="flex gap-6 max-sm:justify-center">
           <div className="space-y-4 flex-shrink-0">
             {filteredProspects.map((lead) => (
