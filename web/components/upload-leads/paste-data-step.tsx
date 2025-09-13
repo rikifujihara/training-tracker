@@ -39,13 +39,16 @@ export function PasteDataStep({ rawData, setRawData, onNext, canProceed }: Paste
         <div className="flex items-start gap-3">
           <FileText className="w-5 h-5 text-surface-action mt-0.5 flex-shrink-0" />
           <div>
-            <h3 className="font-medium text-sm">How to copy your email table:</h3>
+            <h3 className="font-medium text-sm">How to copy your leads data:</h3>
             <ol className="text-sm text-muted-foreground mt-2 space-y-1 list-decimal list-inside">
-              <li>Open your email with the leads table</li>
-              <li>Select the entire table (drag from top-left to bottom-right)</li>
+              <li>Open your email or spreadsheet with the leads data</li>
+              <li>Select the data rows (no need to include headers)</li>
               <li>Copy it (Ctrl+C or Cmd+C)</li>
               <li>Paste it in the box below or click the &ldquo;Paste from Clipboard&rdquo; button</li>
             </ol>
+            <p className="text-xs text-muted-foreground mt-2">
+              ✨ Don&apos;t worry about headers - we&apos;ll help you map each column to the right field!
+            </p>
           </div>
         </div>
       </div>
@@ -72,10 +75,10 @@ export function PasteDataStep({ rawData, setRawData, onNext, canProceed }: Paste
           id="paste-area"
           placeholder="Paste your table data here... 
 
-Example format:
-First Name	Last Name	Age	Birthday	Gender	Phone	Email	Goals
-John	Smith	25	01/15/1999	Male	555-0123	john@email.com	Weight loss
-Jane	Doe	30	03/22/1994	Female	555-0456	jane@email.com	Muscle gain"
+Example format (no headers needed):
+Sarah Mitchell	412345678	30/06/2025	1989	PT Pack
+James Henderson	423456789	30/06/2025	1992	New Joiner
+Emma Rodriguez	434567890	30/06/2025	1985	New Joiner"
           value={rawData}
           onChange={handleTextareaChange}
           className="w-full h-64 p-4 border border-input rounded-lg bg-background font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-surface-action focus:border-surface-action"
@@ -96,11 +99,11 @@ Jane	Doe	30	03/22/1994	Female	555-0456	jane@email.com	Muscle gain"
       )}
 
       {/* Validation */}
-      {hasPasted && rawData.split('\n').length < 2 && (
+      {hasPasted && rawData.split('\n').length < 1 && (
         <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-lg">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span className="text-sm">
-            Make sure to include both the header row and data rows in your selection.
+            Please paste at least one row of lead data.
           </span>
         </div>
       )}

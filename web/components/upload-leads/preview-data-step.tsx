@@ -2,9 +2,26 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
+import {
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  autoMapColumns,
+  splitFullName,
+  formatAustralianMobile,
+  yearOfBirthToAge,
+  parseAustralianDate,
+} from "@/lib/utils/lead-data-processing";
 
 type Lead = {
   firstName: string;
@@ -29,12 +46,16 @@ interface PreviewDataStepProps {
 }
 
 const FIELD_OPTIONS = [
+  { value: "fullName", label: "Full Name" },
   { value: "firstName", label: "First Name" },
   { value: "lastName", label: "Last Name" },
+  { value: "phoneNumber", label: "Phone Number" },
+  { value: "dateJoined", label: "Date Joined" },
+  { value: "yearOfBirth", label: "Year of Birth" },
   { value: "age", label: "Age" },
   { value: "birthday", label: "Birthday" },
+  { value: "leadSource", label: "Lead Source/Category" },
   { value: "gender", label: "Gender" },
-  { value: "phoneNumber", label: "Phone Number" },
   { value: "email", label: "Email" },
   { value: "goals", label: "Goals" },
   { value: "", label: "Skip this column" },
@@ -55,39 +76,29 @@ export function PreviewDataStep({
 
   useEffect(() => {
     // Parse the raw data into rows and columns
-    const lines = rawData.trim().split('\n').filter(line => line.trim());
+    const lines = rawData
+      .trim()
+      .split("\n")
+      .filter((line) => line.trim());
     if (lines.length === 0) return;
 
-    const rows = lines.map(line => line.split('\t'));
-    const headerRow = rows[0] || [];
-    const dataRows = rows.slice(1);
+    const rows = lines.map((line) => line.split("\t"));
 
-    setHeaders(headerRow);
+    // Assume no headers - treat all rows as data
+    const dataRows = rows;
+
+    // Generate generic column headers
+    const numColumns = dataRows[0]?.length || 0;
+    const generatedHeaders = Array.from(
+      { length: numColumns },
+      (_, i) => `Column ${i + 1}`
+    );
+
+    setHeaders(generatedHeaders);
     setParsedData(dataRows);
 
-    // Auto-map columns based on header names
-    const autoMapping: Record<string, string> = {};
-    headerRow.forEach((header, index) => {
-      const lowerHeader = header.toLowerCase().trim();
-      if (lowerHeader.includes('first') && lowerHeader.includes('name')) {
-        autoMapping[index.toString()] = 'firstName';
-      } else if (lowerHeader.includes('last') && lowerHeader.includes('name')) {
-        autoMapping[index.toString()] = 'lastName';
-      } else if (lowerHeader.includes('age')) {
-        autoMapping[index.toString()] = 'age';
-      } else if (lowerHeader.includes('birthday') || lowerHeader.includes('birth')) {
-        autoMapping[index.toString()] = 'birthday';
-      } else if (lowerHeader.includes('gender') || lowerHeader.includes('sex')) {
-        autoMapping[index.toString()] = 'gender';
-      } else if (lowerHeader.includes('phone')) {
-        autoMapping[index.toString()] = 'phoneNumber';
-      } else if (lowerHeader.includes('email')) {
-        autoMapping[index.toString()] = 'email';
-      } else if (lowerHeader.includes('goal')) {
-        autoMapping[index.toString()] = 'goals';
-      }
-    });
-
+    // Auto-map columns based on data content analysis
+    const autoMapping = autoMapColumns(dataRows);
     setColumnMapping(autoMapping);
   }, [rawData, setColumnMapping]);
 
@@ -98,22 +109,53 @@ export function PreviewDataStep({
       return;
     }
 
-    const leads: Lead[] = parsedData.map(row => {
+    const leads: Lead[] = parsedData.map((row) => {
       const lead: Lead = {
-        firstName: '',
-        lastName: '',
-        age: '',
-        birthday: '',
-        gender: '',
-        phoneNumber: '',
-        email: '',
-        goals: '',
+        firstName: "",
+        lastName: "",
+        age: "",
+        birthday: "",
+        gender: "",
+        phoneNumber: "",
+        email: "",
+        goals: "",
       };
 
+      // First pass: collect raw values
+      const rawValues: Record<string, string> = {};
       Object.entries(columnMapping).forEach(([columnIndex, fieldName]) => {
-        if (fieldName && fieldName in lead) {
-          const value = row[parseInt(columnIndex)] || '';
-          (lead as Record<string, string>)[fieldName] = value.trim();
+        if (fieldName) {
+          const value = row[parseInt(columnIndex)] || "";
+          rawValues[fieldName] = value.trim();
+        }
+      });
+
+      // Second pass: process and assign values
+      Object.entries(rawValues).forEach(([fieldName, value]) => {
+        switch (fieldName) {
+          case "fullName":
+            const { firstName, lastName } = splitFullName(value);
+            lead.firstName = firstName;
+            lead.lastName = lastName;
+            break;
+          case "phoneNumber":
+            lead.phoneNumber = formatAustralianMobile(value);
+            break;
+          case "yearOfBirth":
+            lead.age = yearOfBirthToAge(value);
+            break;
+          case "dateJoined":
+            lead.birthday = parseAustralianDate(value);
+            break;
+          case "leadSource":
+            lead.goals = value; // Store lead source in goals field for now
+            break;
+          default:
+            // Direct mapping for standard fields
+            if (fieldName in lead) {
+              (lead as Record<string, string>)[fieldName] = value;
+            }
+            break;
         }
       });
 
@@ -123,7 +165,10 @@ export function PreviewDataStep({
     setParsedLeads(leads);
   }, [parsedData, columnMapping, setParsedLeads]);
 
-  const handleColumnMappingChange = (columnIndex: string, fieldName: string) => {
+  const handleColumnMappingChange = (
+    columnIndex: string,
+    fieldName: string
+  ) => {
     setColumnMapping({
       ...columnMapping,
       [columnIndex]: fieldName,
@@ -131,11 +176,11 @@ export function PreviewDataStep({
   };
 
   const getMappedFields = () => {
-    return Object.values(columnMapping).filter(field => field !== '');
+    return Object.values(columnMapping).filter((field) => field !== "");
   };
 
   const getUsedFields = () => {
-    return Object.values(columnMapping).filter(field => field !== '');
+    return Object.values(columnMapping).filter((field) => field !== "");
   };
 
   return (
@@ -159,8 +204,11 @@ export function PreviewDataStep({
                 {parsedData.slice(0, 5).map((row, rowIndex) => (
                   <tr key={rowIndex} className="border-t">
                     {row.map((cell, cellIndex) => (
-                      <td key={cellIndex} className="px-3 py-2 border-r last:border-r-0">
-                        {cell || '-'}
+                      <td
+                        key={cellIndex}
+                        className="px-3 py-2 border-r last:border-r-0"
+                      >
+                        {cell || "-"}
                       </td>
                     ))}
                   </tr>
@@ -183,19 +231,32 @@ export function PreviewDataStep({
           {headers.map((header, index) => (
             <div key={index} className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground">
-                Column: &ldquo;{header}&rdquo;
+                {header}{" "}
+                {parsedData[0] && parsedData[0][index] && (
+                  <span className="text-muted-foreground/70">
+                    (e.g., &ldquo;{parsedData[0][index]}&rdquo;)
+                  </span>
+                )}
               </Label>
               <Select
                 value={columnMapping[index.toString()] || ""}
-                onValueChange={(value) => handleColumnMappingChange(index.toString(), value)}
+                onValueChange={(value) =>
+                  handleColumnMappingChange(index.toString(), value)
+                }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select field..." />
+                  <div className="truncate">
+                    {columnMapping[index.toString()] 
+                      ? FIELD_OPTIONS.find(option => option.value === columnMapping[index.toString()])?.label || "Unknown field"
+                      : "Select field..."
+                    }
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   {FIELD_OPTIONS.map((option) => {
-                    const isUsed = getUsedFields().includes(option.value) && 
-                                 columnMapping[index.toString()] !== option.value;
+                    const isUsed =
+                      getUsedFields().includes(option.value) &&
+                      columnMapping[index.toString()] !== option.value;
                     return (
                       <SelectItem
                         key={option.value}
@@ -224,16 +285,21 @@ export function PreviewDataStep({
           )}
           <div>
             <p className="text-sm font-medium">
-              {getMappedFields().length > 0 
-                ? `${getMappedFields().length} columns mapped, ${parsedLeads.length} leads will be created`
-                : "Map at least one column to continue"
-              }
+              {getMappedFields().length > 0
+                ? `${getMappedFields().length} columns mapped, ${
+                    parsedLeads.length
+                  } leads will be created`
+                : "Map at least one column to continue"}
             </p>
             {getMappedFields().length > 0 && (
               <p className="text-xs text-muted-foreground mt-1">
-                Mapped fields: {getMappedFields().join(', ')}
+                Auto-detected and mapped: {getMappedFields().join(", ")}
               </p>
             )}
+            <p className="text-xs text-muted-foreground mt-1">
+              💡 Phone numbers will be automatically formatted for Australian
+              mobile (adding &apos;0&apos; if needed)
+            </p>
           </div>
         </div>
       </div>

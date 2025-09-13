@@ -36,8 +36,8 @@ const WIZARD_STEPS: WizardStep[] = [
   },
   {
     id: 2,
-    title: "Review & Map",
-    description: "Preview data and map columns to fields",
+    title: "Map Columns",
+    description: "Map each column to the correct lead field",
     icon: <Table className="w-5 h-5" />,
   },
   {
