@@ -37,7 +37,7 @@ const WIZARD_STEPS: WizardStep[] = [
   {
     id: 2,
     title: "Map Columns",
-    description: "Map each column to the correct lead field",
+    description: "Tell us what each column contains",
     icon: <Table className="w-5 h-5" />,
   },
   {
@@ -51,11 +51,12 @@ const WIZARD_STEPS: WizardStep[] = [
 export function UploadLeadsWizard() {
   const [currentStep, setCurrentStep] = useState(1);
   const [rawData, setRawData] = useState("");
+  const [hasHeaders, setHasHeaders] = useState(false);
   const [parsedLeads, setParsedLeads] = useState<Lead[]>([]);
   const [columnMapping, setColumnMapping] = useState<Record<string, string>>(
     {}
   );
-  
+
   const uploadLeadsMutation = useUploadLeads();
 
   const handleNext = () => {
@@ -77,6 +78,7 @@ export function UploadLeadsWizard() {
   const resetWizard = () => {
     setCurrentStep(1);
     setRawData("");
+    setHasHeaders(false);
     setParsedLeads([]);
     setColumnMapping({});
     uploadLeadsMutation.reset(); // Reset mutation state
@@ -89,6 +91,8 @@ export function UploadLeadsWizard() {
           <PasteDataStep
             rawData={rawData}
             setRawData={setRawData}
+            hasHeaders={hasHeaders}
+            setHasHeaders={setHasHeaders}
             onNext={handleNext}
             canProceed={canProceedFromStep1}
           />
@@ -97,6 +101,7 @@ export function UploadLeadsWizard() {
         return (
           <PreviewDataStep
             rawData={rawData}
+            hasHeaders={hasHeaders}
             parsedLeads={parsedLeads}
             setParsedLeads={setParsedLeads}
             columnMapping={columnMapping}
@@ -177,9 +182,12 @@ export function UploadLeadsWizard() {
                       <CheckCircle className="w-8 h-8 text-green-600" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-green-800">Success!</h3>
+                  <h3 className="text-xl font-semibold text-green-800">
+                    Success!
+                  </h3>
                   <p className="text-muted-foreground">
-                    {uploadLeadsMutation.data?.data.imported} leads have been successfully imported to your database.
+                    {uploadLeadsMutation.data?.data.imported} leads have been
+                    successfully imported to your database.
                   </p>
                   <button
                     onClick={resetWizard}
@@ -195,9 +203,12 @@ export function UploadLeadsWizard() {
                       <AlertTriangle className="w-8 h-8 text-red-600" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-red-800">Upload Failed</h3>
+                  <h3 className="text-xl font-semibold text-red-800">
+                    Upload Failed
+                  </h3>
                   <p className="text-muted-foreground">
-                    {uploadLeadsMutation.error?.message || "An unexpected error occurred"}
+                    {uploadLeadsMutation.error?.message ||
+                      "An unexpected error occurred"}
                   </p>
                   <div className="flex gap-3 justify-center">
                     <button

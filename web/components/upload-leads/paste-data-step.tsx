@@ -2,17 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronRight, Copy, FileText, AlertCircle } from "lucide-react";
 import { useState } from "react";
 
 interface PasteDataStepProps {
   rawData: string;
   setRawData: (data: string) => void;
+  hasHeaders: boolean;
+  setHasHeaders: (hasHeaders: boolean) => void;
   onNext: () => void;
   canProceed: boolean;
 }
 
-export function PasteDataStep({ rawData, setRawData, onNext, canProceed }: PasteDataStepProps) {
+export function PasteDataStep({ rawData, setRawData, hasHeaders, setHasHeaders, onNext, canProceed }: PasteDataStepProps) {
   const [hasPasted, setHasPasted] = useState(false);
 
   const handlePaste = async () => {
@@ -85,16 +88,44 @@ Emma Rodriguez	434567890	30/06/2025	1985	New Joiner"
         />
       </div>
 
+      {/* Headers Checkbox */}
+      {rawData && (
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="has-headers"
+            checked={hasHeaders}
+            onCheckedChange={(checked) => setHasHeaders(checked === true)}
+          />
+          <Label
+            htmlFor="has-headers"
+            className="text-sm font-normal cursor-pointer"
+          >
+            Tick here if your data already has column headings
+          </Label>
+        </div>
+      )}
+
       {/* Preview */}
       {rawData && (
         <div className="space-y-3">
           <Label className="text-sm font-medium">Preview (first few lines):</Label>
           <div className="bg-muted rounded-lg p-4">
             <pre className="text-xs overflow-x-auto whitespace-pre-wrap font-mono">
-              {rawData.split('\n').slice(0, 5).join('\n')}
-              {rawData.split('\n').length > 5 && '\n...'}
+              {(() => {
+                const lines = rawData.split('\n');
+                const startIndex = hasHeaders ? 1 : 0;
+                const previewLines = lines.slice(startIndex, startIndex + 5);
+                const result = previewLines.join('\n');
+                const totalDataLines = lines.length - (hasHeaders ? 1 : 0);
+                return result + (totalDataLines > 5 ? '\n...' : '');
+              })()}
             </pre>
           </div>
+          {hasHeaders && rawData.split('\n').length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Header row detected and excluded from preview. We&apos;ll use it for column mapping in the next step.
+            </p>
+          )}
         </div>
       )}
 

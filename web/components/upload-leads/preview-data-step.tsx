@@ -36,6 +36,7 @@ type Lead = {
 
 interface PreviewDataStepProps {
   rawData: string;
+  hasHeaders: boolean;
   parsedLeads: Lead[];
   setParsedLeads: (leads: Lead[]) => void;
   columnMapping: Record<string, string>;
@@ -63,6 +64,7 @@ const FIELD_OPTIONS = [
 
 export function PreviewDataStep({
   rawData,
+  hasHeaders,
   parsedLeads,
   setParsedLeads,
   columnMapping,
@@ -84,23 +86,32 @@ export function PreviewDataStep({
 
     const rows = lines.map((line) => line.split("\t"));
 
-    // Assume no headers - treat all rows as data
-    const dataRows = rows;
+    // Handle headers based on hasHeaders flag
+    let dataRows: string[][];
+    let columnHeaders: string[];
 
-    // Generate generic column headers
-    const numColumns = dataRows[0]?.length || 0;
-    const generatedHeaders = Array.from(
-      { length: numColumns },
-      (_, i) => `Column ${i + 1}`
-    );
+    if (hasHeaders && rows.length > 0) {
+      // First row is headers, rest are data
+      const headerRow = rows[0];
+      dataRows = rows.slice(1);
+      columnHeaders = headerRow.map((header, i) => header.trim() || `Column ${i + 1}`);
+    } else {
+      // All rows are data, generate generic headers
+      dataRows = rows;
+      const numColumns = dataRows[0]?.length || 0;
+      columnHeaders = Array.from(
+        { length: numColumns },
+        (_, i) => `Column ${i + 1}`
+      );
+    }
 
-    setHeaders(generatedHeaders);
+    setHeaders(columnHeaders);
     setParsedData(dataRows);
 
     // Auto-map columns based on data content analysis
     const autoMapping = autoMapColumns(dataRows);
     setColumnMapping(autoMapping);
-  }, [rawData, setColumnMapping]);
+  }, [rawData, hasHeaders, setColumnMapping]);
 
   useEffect(() => {
     // Generate leads based on column mapping
