@@ -224,6 +224,19 @@ export function ProspectCard({
                     size="icon"
                     className="h-6 w-6 p-3 rounded"
                     onClick={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => {
+                      e.currentTarget.dataset.touchStartY = e.touches[0].clientY.toString();
+                    }}
+                    onTouchEnd={(e) => {
+                      const touchStartY = parseFloat(e.currentTarget.dataset.touchStartY || '0');
+                      const touchEndY = e.changedTouches[0].clientY;
+                      const scrollThreshold = 10; // pixels
+                      
+                      if (Math.abs(touchEndY - touchStartY) > scrollThreshold) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }
+                    }}
                   >
                     <MoreHorizontal className="w-6 h-6 text-icon-body" />
                   </Button>
