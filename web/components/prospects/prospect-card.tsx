@@ -214,47 +214,6 @@ export function ProspectCard({
                 {lead.displayName}
               </div>
             </div>
-
-            {/* Status badge and more button */}
-            <div className="flex items-center gap-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 p-3 rounded"
-                    onClick={(e) => e.stopPropagation()}
-                    onTouchStart={(e) => {
-                      e.currentTarget.dataset.touchStartY = e.touches[0].clientY.toString();
-                    }}
-                    onTouchEnd={(e) => {
-                      const touchStartY = parseFloat(e.currentTarget.dataset.touchStartY || '0');
-                      const touchEndY = e.changedTouches[0].clientY;
-                      const scrollThreshold = 10; // pixels
-                      
-                      if (Math.abs(touchEndY - touchStartY) > scrollThreshold) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }
-                    }}
-                  >
-                    <MoreHorizontal className="w-6 h-6 text-icon-body" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setNotInterestedModalOpen(true);
-                    }}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <UserX className="mr-2 h-4 w-4" />
-                    Not interested
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
           </div>
           {/* Next action */}
           <div className="flex gap-2 items-center">
