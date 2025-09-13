@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { CreateLeadInput, Lead, LeadStatus } from "@/lib/types/lead";
+import { CreateLeadInput, UpdateLeadInput, Lead, LeadStatus } from "@/lib/types/lead";
 import { TaskType, TaskStatus } from "@/lib/types/task";
 import { Lead as PrismaLead, Task as PrismaTask } from "@prisma/client";
 
@@ -92,14 +92,21 @@ export class LeadService {
       page: number;
       pageSize: number;
       filter: 'today' | 'overdue' | 'upcoming' | 'all';
+      status?: LeadStatus;
     }
   ): Promise<{
     leads: Lead[];
     hasNextPage: boolean;
     totalCount: number;
   }> {
-    const { page, pageSize, filter } = options;
+    const { page, pageSize, filter, status } = options;
     const skip = page * pageSize;
+
+    // Build base where clause with userId and optional status
+    const baseWhere = {
+      userId,
+      ...(status && { status }),
+    };
 
     // Build date filters based on the filter type (using UTC to avoid timezone issues)
     const now = new Date();
@@ -111,12 +118,12 @@ export class LeadService {
       // Simple case: all leads ordered by creation date
       const [rawLeads, totalCount] = await Promise.all([
         prisma.lead.findMany({
-          where: { userId },
+          where: baseWhere,
           orderBy: { createdAt: 'desc' },
           skip,
           take: pageSize + 1, // Take one extra to check for next page
         }),
-        prisma.lead.count({ where: { userId } }),
+        prisma.lead.count({ where: baseWhere }),
       ]);
 
       const hasNextPage = rawLeads.length > pageSize;
@@ -149,7 +156,7 @@ export class LeadService {
     // First, get leads that have matching tasks
     const leadsWithTasks = await prisma.lead.findMany({
       where: {
-        userId,
+        ...baseWhere,
         tasks: {
           some: {
             status: TaskStatus.PENDING,
@@ -213,7 +220,10 @@ export class LeadService {
   /**
    * Get filter counts for all prospect filters
    */
-  static async getProspectFilterCounts(userId: string): Promise<{
+  static async getProspectFilterCounts(
+    userId: string,
+    status?: LeadStatus
+  ): Promise<{
     today: number;
     overdue: number;
     upcoming: number;
@@ -224,11 +234,17 @@ export class LeadService {
     const tomorrow = new Date(today);
     tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
+    // Build base where clause with userId and optional status
+    const baseWhere = {
+      userId,
+      ...(status && { status }),
+    };
+
     const [todayCount, overdueCount, upcomingCount, allCount] = await Promise.all([
       // Today count
       prisma.lead.count({
         where: {
-          userId,
+          ...baseWhere,
           tasks: {
             some: {
               status: TaskStatus.PENDING,
@@ -243,7 +259,7 @@ export class LeadService {
       // Overdue count
       prisma.lead.count({
         where: {
-          userId,
+          ...baseWhere,
           tasks: {
             some: {
               status: TaskStatus.PENDING,
@@ -257,7 +273,7 @@ export class LeadService {
       // Upcoming count
       prisma.lead.count({
         where: {
-          userId,
+          ...baseWhere,
           tasks: {
             some: {
               status: TaskStatus.PENDING,
@@ -270,7 +286,7 @@ export class LeadService {
       }),
       // All count
       prisma.lead.count({
-        where: { userId },
+        where: baseWhere,
       }),
     ]);
 
@@ -305,7 +321,7 @@ export class LeadService {
   static async updateLead(
     leadId: string,
     userId: string,
-    data: Partial<CreateLeadInput>
+    data: UpdateLeadInput
   ): Promise<Lead> {
     // First check if lead belongs to user
     const existingLead = await this.getLeadById(leadId, userId);
@@ -325,6 +341,7 @@ export class LeadService {
         email: data.email?.trim(),
         goals: data.goals?.trim(),
         generalNotes: data.generalNotes?.trim(),
+        status: data.status,
       },
     });
 

@@ -92,16 +92,22 @@ const fetchLeadsPaginated = async ({
   pageParam = 0,
   filter = 'all',
   pageSize = 10,
+  status,
 }: {
   pageParam?: number;
   filter?: 'today' | 'overdue' | 'upcoming' | 'all';
   pageSize?: number;
+  status?: LeadStatus;
 }): Promise<PaginatedLeadsResponse> => {
   const params = new URLSearchParams({
     page: pageParam.toString(),
     pageSize: pageSize.toString(),
     filter,
   });
+
+  if (status) {
+    params.append('status', status);
+  }
 
   const response = await fetch(`/api/leads?${params}`);
 
@@ -113,8 +119,17 @@ const fetchLeadsPaginated = async ({
   return response.json();
 };
 
-const fetchFilterCounts = async (): Promise<FilterCountsResponse> => {
-  const response = await fetch('/api/leads/filter-counts');
+const fetchFilterCounts = async (status?: LeadStatus): Promise<FilterCountsResponse> => {
+  const params = new URLSearchParams();
+  if (status) {
+    params.append('status', status);
+  }
+
+  const url = params.toString() 
+    ? `/api/leads/filter-counts?${params}` 
+    : '/api/leads/filter-counts';
+
+  const response = await fetch(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -161,11 +176,12 @@ export const useLeads = () => {
 
 export const useInfiniteLeads = (
   filter: 'today' | 'overdue' | 'upcoming' | 'all' = 'all',
-  pageSize: number = 10
+  pageSize: number = 10,
+  status?: LeadStatus
 ) => {
   return useInfiniteQuery({
-    queryKey: leadKeys.infinite(filter),
-    queryFn: ({ pageParam }) => fetchLeadsPaginated({ pageParam, filter, pageSize }),
+    queryKey: [...leadKeys.infinite(filter), { status }],
+    queryFn: ({ pageParam }) => fetchLeadsPaginated({ pageParam, filter, pageSize, status }),
     getNextPageParam: (lastPage, allPages) => {
       const { hasNextPage } = lastPage.data;
       return hasNextPage ? allPages.length : undefined;
@@ -178,10 +194,10 @@ export const useInfiniteLeads = (
   });
 };
 
-export const useProspectFilterCounts = () => {
+export const useProspectFilterCounts = (status?: LeadStatus) => {
   return useQuery({
-    queryKey: leadKeys.filterCounts(),
-    queryFn: fetchFilterCounts,
+    queryKey: [...leadKeys.filterCounts(), { status }],
+    queryFn: () => fetchFilterCounts(status),
     select: (data) => data.data,
     staleTime: 30 * 1000, // Cache for 30 seconds since counts can change frequently
   });
@@ -265,10 +281,10 @@ export const useUpdateLead = () => {
 export const usePrefetchLeadsFilters = (pageSize: number = 10) => {
   const queryClient = useQueryClient();
   
-  const prefetchFilter = async (filter: 'today' | 'overdue' | 'upcoming' | 'all') => {
+  const prefetchFilter = async (filter: 'today' | 'overdue' | 'upcoming' | 'all', status?: LeadStatus) => {
     await queryClient.prefetchInfiniteQuery({
-      queryKey: leadKeys.infinite(filter),
-      queryFn: ({ pageParam }) => fetchLeadsPaginated({ pageParam, filter, pageSize }),
+      queryKey: [...leadKeys.infinite(filter), { status }],
+      queryFn: ({ pageParam }) => fetchLeadsPaginated({ pageParam, filter, pageSize, status }),
       getNextPageParam: (lastPage: PaginatedLeadsResponse) => {
         const { hasNextPage } = lastPage.data;
         return hasNextPage ? 1 : undefined; // Only prefetch first page
@@ -278,9 +294,9 @@ export const usePrefetchLeadsFilters = (pageSize: number = 10) => {
     });
   };
 
-  const prefetchAllFilters = async () => {
+  const prefetchAllFilters = async (status?: LeadStatus) => {
     const filters: Array<'today' | 'overdue' | 'upcoming' | 'all'> = ['today', 'overdue', 'upcoming', 'all'];
-    await Promise.all(filters.map(filter => prefetchFilter(filter)));
+    await Promise.all(filters.map(filter => prefetchFilter(filter, status)));
   };
 
   return {

@@ -10,18 +10,18 @@ export async function PUT(
   try {
     // Check authentication
     const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const resolvedParams = await params;
     const leadId = resolvedParams.leadId;
-    
+
     // Parse request body
     const body = await request.json();
     const updateData: UpdateLeadInput = {
@@ -33,6 +33,7 @@ export async function PUT(
       phoneNumber: body.phoneNumber,
       email: body.email,
       goals: body.goals,
+      status: body.status,
       generalNotes: body.generalNotes,
     };
 
@@ -48,10 +49,9 @@ export async function PUT(
       success: true,
       data: lead,
     });
-
   } catch (error) {
     console.error("Update lead error:", error);
-    
+
     return NextResponse.json(
       { error: "Failed to update lead" },
       { status: 500 }

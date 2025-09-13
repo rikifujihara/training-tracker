@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { LeadService } from "@/lib/services/lead.service";
+import { LeadStatus } from "@/lib/types/lead";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Check authentication
     const supabase = await createClient();
@@ -15,8 +16,12 @@ export async function GET() {
       );
     }
 
+    // Parse query parameters
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status') as LeadStatus | null;
+
     // Get filter counts for the user
-    const filterCounts = await LeadService.getProspectFilterCounts(user.id);
+    const filterCounts = await LeadService.getProspectFilterCounts(user.id, status || undefined);
 
     return NextResponse.json({
       success: true,

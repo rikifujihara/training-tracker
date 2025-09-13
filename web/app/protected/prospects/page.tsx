@@ -13,7 +13,7 @@ import { useTasks } from "@/lib/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Lead } from "@/lib/types/lead";
+import { Lead, LeadStatus } from "@/lib/types/lead";
 import { TaskStatus, Task } from "@/lib/types/task";
 import { formatTaskType } from "@/lib/utils/task";
 
@@ -34,13 +34,13 @@ export default function ProspectsPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteLeads(activeFilter, 10);
+  } = useInfiniteLeads(activeFilter, 10, LeadStatus.PROSPECT);
 
   const { isLoading: statsLoading } = useLeadStats();
 
   // Fetch filter counts for all filters
   const { data: filterCounts, isLoading: filterCountsLoading } =
-    useProspectFilterCounts();
+    useProspectFilterCounts(LeadStatus.PROSPECT);
 
   // Fetch all tasks to determine next actions (we still need this for the action labels)
   const { data: allTasks, isLoading: tasksLoading } = useTasks();
@@ -49,7 +49,7 @@ export default function ProspectsPage() {
   useEffect(() => {
     // Only prefetch once filter counts are loaded
     if (filterCounts) {
-      prefetchAllFilters().catch(console.error);
+      prefetchAllFilters(LeadStatus.PROSPECT).catch(console.error);
     }
   }, [filterCounts, prefetchAllFilters]);
 

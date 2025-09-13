@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { LeadService } from "@/lib/services/lead.service";
+import { LeadStatus } from "@/lib/types/lead";
 
 export async function GET(request: Request) {
   try {
@@ -20,12 +21,14 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get('page') || '0');
     const pageSize = parseInt(searchParams.get('pageSize') || '10');
     const filter = searchParams.get('filter') as 'today' | 'overdue' | 'upcoming' | 'all' | null;
+    const status = searchParams.get('status') as LeadStatus | null;
 
     // Get leads for the user with pagination and filtering
     const result = await LeadService.getLeadsByUserIdPaginated(user.id, {
       page,
       pageSize,
       filter: filter || 'all',
+      ...(status && { status }),
     });
 
     // Get stats only on first page load
