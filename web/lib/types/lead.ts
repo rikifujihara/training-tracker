@@ -1,3 +1,5 @@
+import { LeadStatus } from '@prisma/client';
+
 export type CreateLeadInput = {
   firstName?: string;
   lastName?: string;
@@ -20,31 +22,11 @@ export type UpdateLeadInput = {
   email?: string;
   goals?: string;
   generalNotes?: string;
+  status?: LeadStatus;
 };
 
-export enum LeadStatus {
-  HOT = "status-hot",
-  WARM = "status-warm",
-  COLD = "status-cold",
-}
+export { LeadStatus };
 
-export type RawLead = {
-  id: string;
-  userId: string;
-  firstName: string | null;
-  lastName: string | null;
-  age: string | null;
-  birthday: string | null;
-  gender: string | null;
-  phoneNumber: string | null;
-  email: string | null;
-  goals: string | null;
-  generalNotes: string | null;
-  source: string;
-  importedAt: Date;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
 export type Lead = {
   id: string;
@@ -67,4 +49,3 @@ export type Lead = {
   status: LeadStatus;
   statusAgeDays: number;
 };
-

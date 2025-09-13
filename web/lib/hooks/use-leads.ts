@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { CreateLeadInput, UpdateLeadInput, Lead } from '@/lib/types/lead';
+import { CreateLeadInput, UpdateLeadInput, Lead, LeadStatus } from '@/lib/types/lead';
 
 // Types for API responses
 interface LeadUploadResponse {
@@ -287,4 +287,38 @@ export const usePrefetchLeadsFilters = (pageSize: number = 10) => {
     prefetchFilter,
     prefetchAllFilters,
   };
+};
+
+// Hook for marking lead as not interested
+export const useMarkLeadNotInterested = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (leadId: string) => 
+      updateLead(leadId, { status: LeadStatus.NOT_INTERESTED }),
+    onSuccess: (response) => {
+      // Invalidate and refetch leads
+      queryClient.invalidateQueries({ queryKey: leadKeys.all });
+      // Also invalidate filter counts since status change affects filtering
+      queryClient.invalidateQueries({ queryKey: leadKeys.filterCounts() });
+      
+      // Optimistically update the lead in cache
+      queryClient.setQueryData(leadKeys.lists(), (oldData: LeadsResponse | undefined) => {
+        if (!oldData) return oldData;
+        
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            leads: oldData.data.leads.map(lead => 
+              lead.id === response.data.id ? response.data : lead
+            ),
+          },
+        };
+      });
+    },
+    onError: (error) => {
+      console.error('Mark lead not interested error:', error);
+    },
+  });
 };

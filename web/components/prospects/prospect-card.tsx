@@ -3,13 +3,19 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Phone,
   History,
   MessageSquare,
   MoreHorizontal,
   Calendar,
+  UserX,
 } from "lucide-react";
 import { Lead, LeadStatus } from "@/lib/types/lead";
 import { NotesModal } from "@/components/contact-points/notes-modal";
@@ -23,8 +29,10 @@ import {
 } from "@/components/contact-points/log-text-message-modal";
 import { BookConsultationModal } from "@/components/consultations/book-consultation-modal";
 import { MobileMessageModal } from "@/components/prospects/mobile-message-modal";
+import { NotInterestedConfirmationModal } from "@/components/prospects/not-interested-confirmation-modal";
 import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 import { useCreateConsultation } from "@/lib/hooks/use-consultations";
+import { useMarkLeadNotInterested } from "@/lib/hooks/use-leads";
 import { CreateConsultationInput } from "@/lib/types/consultation";
 
 export interface ProspectCardProps
@@ -48,16 +56,14 @@ export function ProspectCard({
   const [logTextModalOpen, setLogTextModalOpen] = React.useState(false);
   const [consultationModalOpen, setConsultationModalOpen] =
     React.useState(false);
-  const [mobileMessageModalOpen, setMobileMessageModalOpen] = React.useState(false);
+  const [mobileMessageModalOpen, setMobileMessageModalOpen] =
+    React.useState(false);
+  const [notInterestedModalOpen, setNotInterestedModalOpen] =
+    React.useState(false);
   const createContactPointMutation = useCreateContactPoint();
   const createConsultationMutation = useCreateConsultation();
+  const markNotInterestedMutation = useMarkLeadNotInterested();
   const statusBarColor = getStatusBarColor(lead.status);
-  const statusAgeText =
-    lead.statusAgeDays === 0
-      ? "Today"
-      : lead.statusAgeDays === 1
-      ? "1 day old"
-      : `${lead.statusAgeDays} days old`;
 
   const handleLogContactPoint = (data: LogContactPointData) => {
     createContactPointMutation.mutate({
@@ -90,6 +96,11 @@ export function ProspectCard({
 
   const handleCall = () => {
     console.log("Call clicked for:", lead.displayName);
+  };
+
+  const handleMarkNotInterested = () => {
+    markNotInterestedMutation.mutate(lead.id);
+    setNotInterestedModalOpen(false);
   };
 
   return (
@@ -163,8 +174,31 @@ export function ProspectCard({
             </div>
           </div>
 
-          {/* Status badge */}
-          <Badge variant={lead.status}>{statusAgeText}</Badge>
+          {/* more button */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-6 w-6 p-3 rounded"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="w-6 h-6 text-icon-body" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setNotInterestedModalOpen(true);
+                }}
+                className="text-destructive focus:text-destructive"
+              >
+                <UserX className="mr-2 h-4 w-4" />
+                Not interested
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -183,14 +217,30 @@ export function ProspectCard({
 
             {/* Status badge and more button */}
             <div className="flex items-center gap-3">
-              <Badge variant={lead.status}>{statusAgeText}</Badge>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 p-3 rounded"
-              >
-                <MoreHorizontal className="w-6 h-6 text-icon-body" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 p-3 rounded"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreHorizontal className="w-6 h-6 text-icon-body" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setNotInterestedModalOpen(true);
+                    }}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <UserX className="mr-2 h-4 w-4" />
+                    Not interested
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
           {/* Next action */}
@@ -246,7 +296,7 @@ export function ProspectCard({
                 <MessageSquare className="w-6 h-6" />
                 Message
               </Button>
-              <a href={`tel:${lead.phoneNumber || ''}`} className="flex-1">
+              <a href={`tel:${lead.phoneNumber || ""}`} className="flex-1">
                 <Button
                   className="w-full justify-center gap-3 px-6 py-3 h-12"
                   onClick={handleCall}
@@ -296,17 +346,25 @@ export function ProspectCard({
         onOpenChange={setMobileMessageModalOpen}
         lead={lead}
       />
+
+      <NotInterestedConfirmationModal
+        open={notInterestedModalOpen}
+        onOpenChange={setNotInterestedModalOpen}
+        onConfirm={handleMarkNotInterested}
+        isPending={markNotInterestedMutation.isPending}
+        leadName={lead.displayName}
+      />
     </div>
   );
 
   function getStatusBarColor(status: LeadStatus): string {
     switch (status) {
-      case LeadStatus.HOT:
-        return "bg-red-500";
-      case LeadStatus.WARM:
-        return "bg-icon-warning";
-      case LeadStatus.COLD:
-        return "bg-blue-500";
+      case LeadStatus.PROSPECT:
+        return "bg-blue-500"; // Default prospect color
+      case LeadStatus.NOT_INTERESTED:
+        return "bg-gray-400";
+      case LeadStatus.CONVERTED:
+        return "bg-green-500";
       default:
         return "bg-border-warning";
     }

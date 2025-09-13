@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { CreateLeadInput, Lead, LeadStatus, RawLead } from "@/lib/types/lead";
+import { CreateLeadInput, Lead, LeadStatus } from "@/lib/types/lead";
 import { TaskType, TaskStatus } from "@/lib/types/task";
+import { Lead as PrismaLead, Task as PrismaTask } from "@prisma/client";
+
+// Type for the raw lead data that comes from Prisma queries
+type RawLeadData = PrismaLead | (PrismaLead & { tasks?: PrismaTask[] });
 
 export class LeadService {
   /**
@@ -381,11 +385,11 @@ export class LeadService {
   /**
    * Enrich a raw lead with computed display fields
    */
-  private static enrichLeadWithDisplayFields(rawLead: RawLead): Lead {
+  private static enrichLeadWithDisplayFields(rawLead: RawLeadData): Lead {
     return {
       ...rawLead,
       displayName: this.parseDisplayName(rawLead.firstName, rawLead.lastName),
-      status: this.calculateLeadStatus(rawLead.createdAt),
+      status: rawLead.status || LeadStatus.PROSPECT, // Default to PROSPECT if status is missing
       statusAgeDays: this.calculateStatusAgeDays(rawLead.createdAt),
     };
   }
@@ -402,27 +406,6 @@ export class LeadService {
     }`.trim();
   }
 
-  /**
-   * Calculate lead status based on creation date
-   */
-  private static calculateLeadStatus(createdAt: Date): LeadStatus {
-    const now = new Date();
-    const diffInMs = now.getTime() - new Date(createdAt).getTime();
-    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-    // Less than 1 day old - hot lead
-    if (diffInDays < 1) {
-      return LeadStatus.HOT;
-    }
-
-    // 1-3 days old - warm lead
-    if (diffInDays <= 3) {
-      return LeadStatus.WARM;
-    }
-
-    // Older than 3 days - cold lead
-    return LeadStatus.COLD;
-  }
 
   /**
    * Calculate status age in days
