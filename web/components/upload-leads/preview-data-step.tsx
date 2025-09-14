@@ -224,6 +224,17 @@ export function PreviewDataStep({
     return Object.values(columnMapping).filter((field) => field !== "");
   };
 
+  const getDisplayHeaders = () => {
+    return headers.map((originalHeader, index) => {
+      const mappedField = columnMapping[index.toString()];
+      if (mappedField) {
+        const fieldOption = FIELD_OPTIONS.find(option => option.value === mappedField);
+        return fieldOption ? fieldOption.label : originalHeader;
+      }
+      return originalHeader;
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Data Preview */}
@@ -234,7 +245,7 @@ export function PreviewDataStep({
             <table className="w-full text-sm">
               <thead className="bg-muted">
                 <tr>
-                  {headers.map((header, index) => (
+                  {getDisplayHeaders().map((header, index) => (
                     <th key={index} className="px-3 py-2 text-left font-medium">
                       {header}
                     </th>
