@@ -47,6 +47,7 @@
   --color-icon-body: var(--icon-body);
   --color-text-body: var(--text-body);
   --color-text-disabled: var(--text-disabled);
+  --color-icon-success: var(--text-success);
   --color-icon-on-action: var(--icon-on-action);
   --color-text-on-action: var(--text-on-action);
   --color-surface-action: var(--surface-action);
@@ -134,6 +135,7 @@
     --icon-body: #333740;
     --text-body: #333740;
     --text-disabled: #737780;
+    --text-success: #E7F6E5;
     --icon-on-action: #ffffff;
     --text-on-action: #ffffff;
     --surface-action: #398af0;
@@ -142,7 +144,6 @@
     --surface-action-secondary: #f5f6f7;
     --surface-primary: #ffffff;
     --surface-success: #E7F6E5;
-    /* --surface-success: #C3E9BF; */
     --icon-warning: #ff6b00;
     --border-warning: #ff9040;
     --border-primary: #d0d1d4;

@@ -13,6 +13,7 @@ import {
   ChevronRight,
   AlertCircle,
   CheckCircle2,
+  Check,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -244,7 +245,9 @@ export function PreviewDataStep({
     }
 
     // Check if the mapped field exists in our field options
-    const fieldExists = FIELD_OPTIONS.some(option => option.value === mappedField);
+    const fieldExists = FIELD_OPTIONS.some(
+      (option) => option.value === mappedField
+    );
     return fieldExists;
   };
 
@@ -293,17 +296,20 @@ export function PreviewDataStep({
 
       {/* Column Mapping */}
       <div className="space-y-4">
-        <Label className="text-sm font-medium">Map Your Columns:</Label>
+        <Label className="text-sm font-normal text-muted-foreground">
+          For each column, select information it contains:
+        </Label>
         <div className="grid gap-4 md:grid-cols-2">
           {headers.map((header, index) => (
             <div key={index} className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">
-                {header}{" "}
+              <Label className="flex gap-2">
+                <span className="font-normal">{header}</span>{" "}
                 {parsedData[0] && parsedData[0][index] && (
-                  <span className="text-muted-foreground/70">
+                  <span className="font-normal text-muted-foreground">
                     (e.g., &ldquo;{parsedData[0][index]}&rdquo;)
                   </span>
                 )}
+                {isColumnMapped(index) && <Check className="text-[#0DA500]" />}
               </Label>
               <Select
                 value={columnMapping[index.toString()] || ""}
