@@ -321,12 +321,20 @@ export function PreviewDataStep({
                   className={isColumnMapped(index) ? "bg-surface-success" : ""}
                 >
                   <div className="truncate">
-                    {columnMapping[index.toString()]
-                      ? FIELD_OPTIONS.find(
-                          (option) =>
-                            option.value === columnMapping[index.toString()]
-                        )?.label || "Unknown field"
-                      : "Select field..."}
+                    {(() => {
+                      const mappedValue = columnMapping[index.toString()];
+                      if (!mappedValue) {
+                        return "Select field...";
+                      }
+
+                      const fieldOption = FIELD_OPTIONS.find(
+                        (option) => option.value === mappedValue
+                      );
+
+                      return fieldOption
+                        ? fieldOption.label
+                        : "Select field...";
+                    })()}
                   </div>
                 </SelectTrigger>
                 <SelectContent>
@@ -368,11 +376,11 @@ export function PreviewDataStep({
                   } leads will be created`
                 : "Map at least one column to continue"}
             </p>
-            {getMappedFields().length > 0 && (
+            {/* {getMappedFields().length > 0 && (
               <p className="text-xs text-muted-foreground mt-1">
                 Auto-detected and mapped: {getMappedFields().join(", ")}
               </p>
-            )}
+            )} */}
             <p className="text-xs text-muted-foreground mt-1">
               💡 Phone numbers will be automatically formatted for Australian
               mobile (adding &apos;0&apos; if needed)
