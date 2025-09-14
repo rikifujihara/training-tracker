@@ -52,6 +52,9 @@ model Lead {
   lastName     String? @map("last_name")
   age          String?
   birthday     String?
+  joinDate     DateTime? @map("join_date") // When they joined the gym
+  yearOfBirth  Int?      @map("year_of_birth") // Year only (e.g., 1985)
+  dateOfBirth  DateTime? @map("date_of_birth") // Full birth date when available
   gender       String?
   phoneNumber  String? @map("phone_number")
   email        String?
@@ -68,7 +71,9 @@ model Lead {
   tasks         Task[]
   consultations Consultation[]
 
-  status LeadStatus @default(PROSPECT)
+  status   LeadStatus @default(PROSPECT)
+  // This is whether they're a new joiner, PT pack etc
+  leadType String?
 
   // Indexes
   @@index([userId])

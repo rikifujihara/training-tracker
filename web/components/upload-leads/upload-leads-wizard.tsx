@@ -14,6 +14,9 @@ type Lead = {
   lastName: string;
   age: string;
   birthday: string;
+  joinDate: string;
+  yearOfBirth: string;
+  dateOfBirth: string;
   gender: string;
   phoneNumber: string;
   email: string;

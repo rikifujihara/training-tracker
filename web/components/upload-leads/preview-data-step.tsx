@@ -28,6 +28,9 @@ type Lead = {
   lastName: string;
   age: string;
   birthday: string;
+  joinDate: string;
+  yearOfBirth: string;
+  dateOfBirth: string;
   gender: string;
   phoneNumber: string;
   email: string;
@@ -51,8 +54,9 @@ const FIELD_OPTIONS = [
   { value: "firstName", label: "First Name" },
   { value: "lastName", label: "Last Name" },
   { value: "phoneNumber", label: "Phone Number" },
-  { value: "dateJoined", label: "Date Joined" },
+  { value: "joinDate", label: "Join Date" },
   { value: "yearOfBirth", label: "Year of Birth" },
+  { value: "dateOfBirth", label: "Date of Birth" },
   { value: "age", label: "Age" },
   { value: "birthday", label: "Birthday" },
   { value: "leadSource", label: "Lead Source/Category" },
@@ -126,6 +130,9 @@ export function PreviewDataStep({
         lastName: "",
         age: "",
         birthday: "",
+        joinDate: "",
+        yearOfBirth: "",
+        dateOfBirth: "",
         gender: "",
         phoneNumber: "",
         email: "",
@@ -153,10 +160,15 @@ export function PreviewDataStep({
             lead.phoneNumber = formatAustralianMobile(value);
             break;
           case "yearOfBirth":
+            lead.yearOfBirth = value;
+            // Also calculate age from year of birth
             lead.age = yearOfBirthToAge(value);
             break;
-          case "dateJoined":
-            lead.birthday = parseAustralianDate(value);
+          case "joinDate":
+            lead.joinDate = parseAustralianDate(value);
+            break;
+          case "dateOfBirth":
+            lead.dateOfBirth = parseAustralianDate(value);
             break;
           case "leadSource":
             lead.goals = value; // Store lead source in goals field for now

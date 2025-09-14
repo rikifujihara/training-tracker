@@ -5,6 +5,9 @@ export type CreateLeadInput = {
   lastName?: string;
   age?: string;
   birthday?: string;
+  joinDate?: Date;
+  yearOfBirth?: number;
+  dateOfBirth?: Date;
   gender?: string;
   phoneNumber?: string;
   email?: string;
@@ -17,6 +20,9 @@ export type UpdateLeadInput = {
   lastName?: string;
   age?: string;
   birthday?: string;
+  joinDate?: Date;
+  yearOfBirth?: number;
+  dateOfBirth?: Date;
   gender?: string;
   phoneNumber?: string;
   email?: string;
@@ -35,6 +41,9 @@ export type Lead = {
   lastName: string | null;
   age: string | null;
   birthday: string | null;
+  joinDate: Date | null;
+  yearOfBirth: number | null;
+  dateOfBirth: Date | null;
   gender: string | null;
   phoneNumber: string | null;
   email: string | null;

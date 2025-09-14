@@ -5,12 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, CheckCircle2, Users, Mail, Phone, AlertTriangle } from "lucide-react";
 import { UseMutationResult } from "@tanstack/react-query";
 import { CreateLeadInput } from "@/lib/types/lead";
+import { parseAustralianDateToDate, parseYearOfBirth } from "@/lib/utils/lead-data-processing";
 
 type Lead = {
   firstName: string;
   lastName: string;
   age: string;
   birthday: string;
+  joinDate: string;
+  yearOfBirth: string;
+  dateOfBirth: string;
   gender: string;
   phoneNumber: string;
   email: string;
@@ -26,7 +30,22 @@ interface ConfirmationStepProps {
 export function ConfirmationStep({ leads, onPrevious, uploadMutation }: ConfirmationStepProps) {
 
   const handleConfirm = () => {
-    uploadMutation.mutate(leads);
+    // Convert string-based lead data to properly typed API data
+    const convertedLeads: CreateLeadInput[] = leads.map((lead) => ({
+      firstName: lead.firstName.trim() || undefined,
+      lastName: lead.lastName.trim() || undefined,
+      age: lead.age.trim() || undefined,
+      birthday: lead.birthday.trim() || undefined,
+      joinDate: lead.joinDate.trim() ? parseAustralianDateToDate(lead.joinDate.trim()) || undefined : undefined,
+      yearOfBirth: lead.yearOfBirth.trim() ? parseYearOfBirth(lead.yearOfBirth.trim()) || undefined : undefined,
+      dateOfBirth: lead.dateOfBirth.trim() ? parseAustralianDateToDate(lead.dateOfBirth.trim()) || undefined : undefined,
+      gender: lead.gender.trim() || undefined,
+      phoneNumber: lead.phoneNumber.trim() || undefined,
+      email: lead.email.trim() || undefined,
+      goals: lead.goals.trim() || undefined,
+    }));
+
+    uploadMutation.mutate(convertedLeads);
   };
 
   // Validation checks

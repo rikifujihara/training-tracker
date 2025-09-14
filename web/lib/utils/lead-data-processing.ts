@@ -78,28 +78,52 @@ export function yearOfBirthToAge(yearOfBirth: string): string {
 export function parseAustralianDate(dateString: string): string {
   const trimmed = dateString.trim();
   const dateParts = trimmed.split('/');
-  
+
   if (dateParts.length !== 3) {
     return '';
   }
-  
+
   const [day, month, year] = dateParts;
   const dayNum = parseInt(day);
   const monthNum = parseInt(month);
   const yearNum = parseInt(year);
-  
+
   if (isNaN(dayNum) || isNaN(monthNum) || isNaN(yearNum)) {
     return '';
   }
-  
+
   if (dayNum < 1 || dayNum > 31 || monthNum < 1 || monthNum > 12) {
     return '';
   }
-  
+
   // Create ISO date string (YYYY-MM-DD)
   const isoDate = `${yearNum}-${monthNum.toString().padStart(2, '0')}-${dayNum.toString().padStart(2, '0')}`;
-  
+
   return isoDate;
+}
+
+/**
+ * Converts Australian date string to Date object for database storage
+ */
+export function parseAustralianDateToDate(dateString: string): Date | null {
+  const isoDateString = parseAustralianDate(dateString);
+  if (!isoDateString) {
+    return null;
+  }
+
+  const date = new Date(isoDateString);
+  return isNaN(date.getTime()) ? null : date;
+}
+
+/**
+ * Converts year of birth string to number for database storage
+ */
+export function parseYearOfBirth(yearString: string): number | null {
+  const year = parseInt(yearString.trim());
+  if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
+    return null;
+  }
+  return year;
 }
 
 /**
@@ -133,11 +157,12 @@ export function detectColumnType(values: string[]): Record<string, number> {
     scores.yearOfBirth = yearMatches / nonEmptyValues.length;
   }
   
-  // Check for Australian dates (DD/MM/YYYY)
+  // Check for Australian dates (DD/MM/YYYY) - could be join date or date of birth
   const datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
   const dateMatches = nonEmptyValues.filter(v => datePattern.test(v.trim())).length;
   if (dateMatches > 0) {
-    scores.dateJoined = dateMatches / nonEmptyValues.length;
+    scores.joinDate = dateMatches / nonEmptyValues.length;
+    scores.dateOfBirth = dateMatches / nonEmptyValues.length * 0.8; // Slightly lower score for birth date
   }
   
   // Check for lead source/category (common terms)
