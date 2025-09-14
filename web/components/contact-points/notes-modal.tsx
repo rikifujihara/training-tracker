@@ -217,7 +217,7 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
           </DialogHeader>
 
           {/* Body - Scrollable */}
-          <div className="bg-surface-page p-3 flex-1 overflow-y-auto max-h-[70vh] space-y-3">
+          <div className="bg-surface-page p-3 flex-1 overflow-y-auto max-h-[60vh] space-y-3">
             {/* Next Follow-Up Task */}
             <div className="bg-surface-primary p-3 rounded-lg space-y-3">
               <div className="flex items-center gap-2">
@@ -291,8 +291,12 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value={TaskType.CALL}>Call</SelectItem>
-                            <SelectItem value={TaskType.SEND_TEXT}>Send Text</SelectItem>
-                            <SelectItem value={TaskType.OTHER}>Other</SelectItem>
+                            <SelectItem value={TaskType.SEND_TEXT}>
+                              Send Text
+                            </SelectItem>
+                            <SelectItem value={TaskType.OTHER}>
+                              Other
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -334,7 +338,10 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
                               <SelectContent>
                                 <SelectItem value="">No template</SelectItem>
                                 {messageTemplates?.map((template) => (
-                                  <SelectItem key={template.id} value={template.id}>
+                                  <SelectItem
+                                    key={template.id}
+                                    value={template.id}
+                                  >
                                     {template.name}
                                   </SelectItem>
                                 ))}
@@ -376,7 +383,9 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
                           <Button
                             type="button"
                             size="sm"
-                            variant={isSelectedDateToday ? "default" : "outline"}
+                            variant={
+                              isSelectedDateToday ? "default" : "outline"
+                            }
                             className="flex-1 text-xs"
                             onClick={() => setTaskDueDate(getTodayDateString())}
                           >
@@ -385,9 +394,13 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
                           <Button
                             type="button"
                             size="sm"
-                            variant={isSelectedDateTomorrow ? "default" : "outline"}
+                            variant={
+                              isSelectedDateTomorrow ? "default" : "outline"
+                            }
                             className="flex-1 text-xs"
-                            onClick={() => setTaskDueDate(getTomorrowDateString())}
+                            onClick={() =>
+                              setTaskDueDate(getTomorrowDateString())
+                            }
                           >
                             Tomorrow
                           </Button>
@@ -400,7 +413,9 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
                               if (taskDueDate) {
                                 const currentDate = new Date(taskDueDate);
                                 currentDate.setDate(currentDate.getDate() + 1);
-                                setTaskDueDate(currentDate.toISOString().split("T")[0]);
+                                setTaskDueDate(
+                                  currentDate.toISOString().split("T")[0]
+                                );
                               }
                             }}
                             disabled={!taskDueDate}
@@ -422,9 +437,15 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
                               setTaskDescription(nextTask.description || "");
                               setTaskType(nextTask.taskType);
                               const dueDate = new Date(nextTask.dueDate);
-                              setTaskDueDate(dueDate.toISOString().split("T")[0]);
-                              setTaskDueTime(dueDate.toTimeString().slice(0, 5));
-                              setSelectedTemplateId(nextTask.messageTemplateId || "");
+                              setTaskDueDate(
+                                dueDate.toISOString().split("T")[0]
+                              );
+                              setTaskDueTime(
+                                dueDate.toTimeString().slice(0, 5)
+                              );
+                              setSelectedTemplateId(
+                                nextTask.messageTemplateId || ""
+                              );
                             }
                           }}
                         >
@@ -445,7 +466,9 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
               ) : (
                 <div className="text-center text-text-disabled py-3">
                   <Calendar className="w-6 h-6 mx-auto mb-1 text-text-disabled/50" />
-                  <p className="text-[12px] leading-[16px]">No follow-up task scheduled</p>
+                  <p className="text-[12px] leading-[16px]">
+                    No follow-up task scheduled
+                  </p>
                 </div>
               )}
             </div>
@@ -519,7 +542,9 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
               ) : (
                 <div className="text-center text-text-disabled py-3">
                   <Calendar className="w-6 h-6 mx-auto mb-1 text-text-disabled/50" />
-                  <p className="text-[12px] leading-[16px]">No consultations scheduled</p>
+                  <p className="text-[12px] leading-[16px]">
+                    No consultations scheduled
+                  </p>
                 </div>
               )}
             </div>
