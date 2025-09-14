@@ -7,6 +7,74 @@ import { UseMutationResult } from "@tanstack/react-query";
 import { CreateLeadInput } from "@/lib/types/lead";
 import { parseAustralianDateToDate, parseYearOfBirth } from "@/lib/utils/lead-data-processing";
 
+// Field configuration for dynamic columns
+type FieldConfig = {
+  key: keyof Lead;
+  label: string;
+  getValue: (lead: Lead) => string;
+  render?: (lead: Lead, value: string) => React.ReactNode;
+};
+
+const FIELD_CONFIGS: FieldConfig[] = [
+  {
+    key: 'firstName',
+    label: 'Name',
+    getValue: (lead) => {
+      const fullName = `${lead.firstName} ${lead.lastName}`.trim();
+      return fullName || '-';
+    }
+  },
+  {
+    key: 'email',
+    label: 'Email',
+    getValue: (lead) => lead.email || '-',
+    render: (lead, value) => {
+      // We'll handle duplicate highlighting here if needed
+      return <span>{value}</span>;
+    }
+  },
+  {
+    key: 'phoneNumber',
+    label: 'Phone',
+    getValue: (lead) => lead.phoneNumber || '-'
+  },
+  {
+    key: 'age',
+    label: 'Age',
+    getValue: (lead) => lead.age || '-'
+  },
+  {
+    key: 'joinDate',
+    label: 'Join Date',
+    getValue: (lead) => lead.joinDate || '-'
+  },
+  {
+    key: 'yearOfBirth',
+    label: 'Year of Birth',
+    getValue: (lead) => lead.yearOfBirth || '-'
+  },
+  {
+    key: 'dateOfBirth',
+    label: 'Date of Birth',
+    getValue: (lead) => lead.dateOfBirth || '-'
+  },
+  {
+    key: 'leadType',
+    label: 'Lead Type',
+    getValue: (lead) => lead.leadType || '-'
+  },
+  {
+    key: 'gender',
+    label: 'Gender',
+    getValue: (lead) => lead.gender || '-'
+  },
+  {
+    key: 'goals',
+    label: 'Goals',
+    getValue: (lead) => lead.goals || '-'
+  }
+];
+
 type Lead = {
   firstName: string;
   lastName: string;
@@ -29,6 +97,18 @@ interface ConfirmationStepProps {
 }
 
 export function ConfirmationStep({ leads, onPrevious, uploadMutation }: ConfirmationStepProps) {
+
+  // Determine which fields have data across all leads
+  const getActiveFields = (): FieldConfig[] => {
+    return FIELD_CONFIGS.filter((fieldConfig) => {
+      return leads.some((lead) => {
+        const value = fieldConfig.getValue(lead);
+        return value !== '-' && value.trim().length > 0;
+      });
+    });
+  };
+
+  const activeFields = getActiveFields();
 
   const handleConfirm = () => {
     // Convert string-based lead data to properly typed API data
@@ -70,6 +150,19 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
       }
     }
   });
+
+  // Update email field config to handle duplicate highlighting
+  const emailFieldIndex = activeFields.findIndex(field => field.key === 'email');
+  if (emailFieldIndex !== -1 && duplicateEmails.size > 0) {
+    activeFields[emailFieldIndex] = {
+      ...activeFields[emailFieldIndex],
+      render: (lead, value) => (
+        <span className={duplicateEmails.has(lead.email) ? "text-amber-600" : ""}>
+          {value}
+        </span>
+      )
+    };
+  }
 
   const hasIssues = duplicateEmails.size > 0;
 
@@ -161,37 +254,31 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
           <table className="w-full text-sm">
             <thead className="bg-muted sticky top-0">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">Name</th>
-                <th className="px-3 py-2 text-left font-medium">Email</th>
-                <th className="px-3 py-2 text-left font-medium">Phone</th>
-                <th className="px-3 py-2 text-left font-medium">Age</th>
-                <th className="px-3 py-2 text-left font-medium">Join Date</th>
-                <th className="px-3 py-2 text-left font-medium">Year of Birth</th>
-                <th className="px-3 py-2 text-left font-medium">Lead Type</th>
-                <th className="px-3 py-2 text-left font-medium">Goals</th>
+                {activeFields.map((field) => (
+                  <th key={field.key} className="px-3 py-2 text-left font-medium">
+                    {field.label}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {leads.map((lead, index) => (
                 <tr key={index} className="border-t">
-                  <td className="px-3 py-2">
-                    {lead.firstName || lead.lastName
-                      ? `${lead.firstName} ${lead.lastName}`.trim()
-                      : '-'}
-                  </td>
-                  <td className="px-3 py-2">
-                    <span className={duplicateEmails.has(lead.email) ? "text-amber-600" : ""}>
-                      {lead.email || '-'}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2">{lead.phoneNumber || '-'}</td>
-                  <td className="px-3 py-2">{lead.age || '-'}</td>
-                  <td className="px-3 py-2">{lead.joinDate || '-'}</td>
-                  <td className="px-3 py-2">{lead.yearOfBirth || '-'}</td>
-                  <td className="px-3 py-2">{lead.leadType || '-'}</td>
-                  <td className="px-3 py-2 max-w-xs truncate" title={lead.goals}>
-                    {lead.goals || '-'}
-                  </td>
+                  {activeFields.map((field) => {
+                    const value = field.getValue(lead);
+                    const content = field.render ? field.render(lead, value) : value;
+                    const isGoalsField = field.key === 'goals';
+
+                    return (
+                      <td
+                        key={field.key}
+                        className={`px-3 py-2 ${isGoalsField ? 'max-w-xs truncate' : ''}`}
+                        title={isGoalsField ? value : undefined}
+                      >
+                        {content}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>
