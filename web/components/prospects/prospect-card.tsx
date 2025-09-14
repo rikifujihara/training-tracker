@@ -209,8 +209,9 @@ export function ProspectCard({
             {/* Main content */}
             <div className="flex-1 flex flex-col gap-4 min-w-0 justify-center">
               {/* Name */}
-              <div className="text-text-body text-[20px] leading-[23px] font-normal">
+              <div className="text-text-body text-[20px] leading-[23px] font-normal flex justify-between">
                 {lead.displayName}
+                <MoreHorizontal />
               </div>
             </div>
           </div>
@@ -228,15 +229,17 @@ export function ProspectCard({
           {/* Actions section */}
           <div className="flex flex-col gap-2.5 w-full">
             {/* Notes button */}
-            {/* <Button
+            <Button
               variant="secondary"
               size="default"
-              className="justify-center"
-              onClick={() => setNotesModalOpen(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setConsultationModalOpen(true);
+              }}
             >
-              <History className="w-6 h-6" />
-              Notes
-            </Button> */}
+              <Calendar className="w-6 h-6" />
+              Consult
+            </Button>
 
             {/* Log button */}
             <Button

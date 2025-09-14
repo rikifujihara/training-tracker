@@ -160,7 +160,7 @@ export function BookConsultationModal({
       <DialogPortal>
         <DialogOverlay className="bg-black/80" />
         <DialogContent
-          className="max-w-[440px] p-0 gap-0 rounded-lg overflow-hidden"
+          className="max-w-[440px]  p-0 gap-0 rounded-lg overflow-hidden"
           showCloseButton={false}
         >
           {/* Header */}
@@ -184,7 +184,7 @@ export function BookConsultationModal({
           </DialogHeader>
 
           {/* Body */}
-          <div className="bg-surface-page p-4 flex-1 space-y-6">
+          <div className="bg-surface-page max-h-[70vh] max-sm:max-h-[60vh] overflow-y-auto p-4 flex-1 space-y-6">
             {/* Lead Summary */}
             <div className="bg-surface-primary p-4 rounded-lg">
               <h3 className="text-[16px] leading-[24px] font-semibold text-text-body">
