@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Phone,
-  History,
   MessageSquare,
   MoreHorizontal,
   Calendar,
@@ -107,7 +106,7 @@ export function ProspectCard({
     <div
       className={cn(
         "relative bg-surface-primary rounded border border-border-primary overflow-hidden shadow-sm cursor-pointer",
-        selectedForNotes ? "outline-2" : "",
+        selectedForNotes ? "sm:outline-2" : "",
         className
       )}
       onClick={() =>
@@ -203,7 +202,7 @@ export function ProspectCard({
       </div>
 
       {/* Mobile Layout - visible on mobile only */}
-      <div className="block sm:hidden">
+      <div className="block sm:hidden" onClick={() => setNotesModalOpen(true)}>
         <div className="flex flex-col gap-[11px] px-4 py-5">
           {/* Header with name, badge, and more button */}
           <div className="flex gap-[11px]">
@@ -229,7 +228,7 @@ export function ProspectCard({
           {/* Actions section */}
           <div className="flex flex-col gap-2.5 w-full">
             {/* Notes button */}
-            <Button
+            {/* <Button
               variant="secondary"
               size="default"
               className="justify-center"
@@ -237,7 +236,7 @@ export function ProspectCard({
             >
               <History className="w-6 h-6" />
               Notes
-            </Button>
+            </Button> */}
 
             {/* Log button */}
             <Button

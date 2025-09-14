@@ -275,7 +275,7 @@ export default function ProspectsPage() {
         </div>
       ) : filteredProspects.length > 0 ? (
         <div className="flex gap-6 max-sm:justify-center">
-          <div className="space-y-4 flex-shrink-0">
+          <div className="space-y-4 flex-shrink-0 max-sm:w-full">
             {filteredProspects.map((lead) => (
               <ProspectCard
                 key={lead.id}
