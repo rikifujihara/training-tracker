@@ -53,6 +53,7 @@
   --color-surface-action-hover: var(--surface-action-hover);
   --color-surface-action-hover-2: var(--surface-action-hover-2);
   --color-surface-action-secondary: var(--surface-action-secondary);
+  --color-surface-success: var(--surface-action-secondary);
   --color-surface-primary: var(--surface-primary);
   --color-icon-warning: var(--icon-warning);
   --color-border-warning: var(--border-warning);
@@ -140,6 +141,7 @@
     --surface-action-hover-2: #d7e8fc;
     --surface-action-secondary: #f5f6f7;
     --surface-primary: #ffffff;
+    --surface-success: #C3E9BF;
     --icon-warning: #ff6b00;
     --border-warning: #ff9040;
     --border-primary: #d0d1d4;
