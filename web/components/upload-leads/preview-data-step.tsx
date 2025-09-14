@@ -228,11 +228,24 @@ export function PreviewDataStep({
     return headers.map((originalHeader, index) => {
       const mappedField = columnMapping[index.toString()];
       if (mappedField) {
-        const fieldOption = FIELD_OPTIONS.find(option => option.value === mappedField);
+        const fieldOption = FIELD_OPTIONS.find(
+          (option) => option.value === mappedField
+        );
         return fieldOption ? fieldOption.label : originalHeader;
       }
       return originalHeader;
     });
+  };
+
+  const isColumnMapped = (columnIndex: number): boolean => {
+    const mappedField = columnMapping[columnIndex.toString()];
+    if (!mappedField || mappedField === "") {
+      return false;
+    }
+
+    // Check if the mapped field exists in our field options
+    const fieldExists = FIELD_OPTIONS.some(option => option.value === mappedField);
+    return fieldExists;
   };
 
   return (
@@ -258,7 +271,9 @@ export function PreviewDataStep({
                     {row.map((cell, cellIndex) => (
                       <td
                         key={cellIndex}
-                        className="px-3 py-2 border-r last:border-r-0"
+                        className={`px-3 py-2 border-r last:border-r-0 ${
+                          isColumnMapped(cellIndex) ? "bg-surface-success" : ""
+                        }`}
                       >
                         {cell || "-"}
                       </td>
@@ -296,7 +311,9 @@ export function PreviewDataStep({
                   handleColumnMappingChange(index.toString(), value)
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger
+                  className={isColumnMapped(index) ? "bg-surface-success" : ""}
+                >
                   <div className="truncate">
                     {columnMapping[index.toString()]
                       ? FIELD_OPTIONS.find(
