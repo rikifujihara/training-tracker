@@ -20,6 +20,7 @@ type Lead = {
   gender: string;
   phoneNumber: string;
   email: string;
+  leadType: string;
   goals: string;
 };
 

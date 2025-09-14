@@ -34,6 +34,7 @@ type Lead = {
   gender: string;
   phoneNumber: string;
   email: string;
+  leadType: string;
   goals: string;
 };
 
@@ -59,7 +60,7 @@ const FIELD_OPTIONS = [
   { value: "dateOfBirth", label: "Date of Birth" },
   { value: "age", label: "Age" },
   { value: "birthday", label: "Birthday" },
-  { value: "leadSource", label: "Lead Source/Category" },
+  { value: "leadType", label: "Lead Type" },
   { value: "gender", label: "Gender" },
   { value: "email", label: "Email" },
   { value: "goals", label: "Goals" },
@@ -98,7 +99,9 @@ export function PreviewDataStep({
       // First row is headers, rest are data
       const headerRow = rows[0];
       dataRows = rows.slice(1);
-      columnHeaders = headerRow.map((header, i) => header.trim() || `Column ${i + 1}`);
+      columnHeaders = headerRow.map(
+        (header, i) => header.trim() || `Column ${i + 1}`
+      );
     } else {
       // All rows are data, generate generic headers
       dataRows = rows;
@@ -124,6 +127,20 @@ export function PreviewDataStep({
       return;
     }
 
+    // First, check which columns have any non-empty values across all rows
+    const columnsWithData = new Set<string>();
+    Object.entries(columnMapping).forEach(([columnIndex, fieldName]) => {
+      if (fieldName) {
+        const hasData = parsedData.some((row) => {
+          const value = row[parseInt(columnIndex)] || "";
+          return value.trim().length > 0;
+        });
+        if (hasData) {
+          columnsWithData.add(fieldName);
+        }
+      }
+    });
+
     const leads: Lead[] = parsedData.map((row) => {
       const lead: Lead = {
         firstName: "",
@@ -137,12 +154,13 @@ export function PreviewDataStep({
         phoneNumber: "",
         email: "",
         goals: "",
+        leadType: "",
       };
 
-      // First pass: collect raw values
+      // First pass: collect raw values (only for columns with data)
       const rawValues: Record<string, string> = {};
       Object.entries(columnMapping).forEach(([columnIndex, fieldName]) => {
-        if (fieldName) {
+        if (fieldName && columnsWithData.has(fieldName)) {
           const value = row[parseInt(columnIndex)] || "";
           rawValues[fieldName] = value.trim();
         }
@@ -171,7 +189,7 @@ export function PreviewDataStep({
             lead.dateOfBirth = parseAustralianDate(value);
             break;
           case "leadSource":
-            lead.goals = value; // Store lead source in goals field for now
+            lead.leadType = value; // Store lead source in leadType field
             break;
           default:
             // Direct mapping for standard fields
@@ -269,10 +287,12 @@ export function PreviewDataStep({
               >
                 <SelectTrigger>
                   <div className="truncate">
-                    {columnMapping[index.toString()] 
-                      ? FIELD_OPTIONS.find(option => option.value === columnMapping[index.toString()])?.label || "Unknown field"
-                      : "Select field..."
-                    }
+                    {columnMapping[index.toString()]
+                      ? FIELD_OPTIONS.find(
+                          (option) =>
+                            option.value === columnMapping[index.toString()]
+                        )?.label || "Unknown field"
+                      : "Select field..."}
                   </div>
                 </SelectTrigger>
                 <SelectContent>

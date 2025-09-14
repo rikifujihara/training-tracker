@@ -27,6 +27,7 @@ export class LeadService {
       gender: lead.gender?.trim() || null,
       phoneNumber: lead.phoneNumber?.trim() || null,
       email: lead.email?.trim() || null,
+      leadType: lead.leadType?.trim() || null,
       goals: lead.goals?.trim() || null,
       source: "email_upload",
     }));
@@ -345,6 +346,7 @@ export class LeadService {
         gender: data.gender?.trim(),
         phoneNumber: data.phoneNumber?.trim(),
         email: data.email?.trim(),
+        leadType: data.leadType?.trim(),
         goals: data.goals?.trim(),
         generalNotes: data.generalNotes?.trim(),
         status: data.status,

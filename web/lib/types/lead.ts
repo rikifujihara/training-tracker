@@ -11,6 +11,7 @@ export type CreateLeadInput = {
   gender?: string;
   phoneNumber?: string;
   email?: string;
+  leadType?: string;
   goals?: string;
   generalNotes?: string;
 };
@@ -26,6 +27,7 @@ export type UpdateLeadInput = {
   gender?: string;
   phoneNumber?: string;
   email?: string;
+  leadType?: string;
   goals?: string;
   generalNotes?: string;
   status?: LeadStatus;
@@ -47,6 +49,7 @@ export type Lead = {
   gender: string | null;
   phoneNumber: string | null;
   email: string | null;
+  leadType: string | null;
   goals: string | null;
   generalNotes: string | null;
   source: string;

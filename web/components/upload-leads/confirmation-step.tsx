@@ -18,6 +18,7 @@ type Lead = {
   gender: string;
   phoneNumber: string;
   email: string;
+  leadType: string;
   goals: string;
 };
 
@@ -42,6 +43,7 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
       gender: lead.gender.trim() || undefined,
       phoneNumber: lead.phoneNumber.trim() || undefined,
       email: lead.email.trim() || undefined,
+      leadType: lead.leadType.trim() || undefined,
       goals: lead.goals.trim() || undefined,
     }));
 
@@ -51,9 +53,11 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
   // Validation checks
   const leadsWithEmail = leads.filter(lead => lead.email.trim() !== '').length;
   const leadsWithPhone = leads.filter(lead => lead.phoneNumber.trim() !== '').length;
-  const leadsWithFullName = leads.filter(lead => 
+  const leadsWithFullName = leads.filter(lead =>
     lead.firstName.trim() !== '' && lead.lastName.trim() !== ''
   ).length;
+  const leadsWithJoinDate = leads.filter(lead => lead.joinDate.trim() !== '').length;
+  const leadsWithYearOfBirth = leads.filter(lead => lead.yearOfBirth.trim() !== '').length;
   
   const duplicateEmails = new Set();
   const emailCounts = new Map();
@@ -72,7 +76,7 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
   return (
     <div className="space-y-6">
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div className="bg-surface-primary border rounded-lg p-4 text-center">
           <div className="flex items-center justify-center w-8 h-8 bg-surface-action-hover-2 rounded-full mx-auto mb-2">
             <Users className="w-4 h-4 text-surface-action" />
@@ -80,7 +84,7 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
           <div className="text-2xl font-bold">{leads.length}</div>
           <div className="text-xs text-muted-foreground">Total Leads</div>
         </div>
-        
+
         <div className="bg-surface-primary border rounded-lg p-4 text-center">
           <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mx-auto mb-2">
             <CheckCircle2 className="w-4 h-4 text-green-600" />
@@ -103,6 +107,26 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
           </div>
           <div className="text-2xl font-bold">{leadsWithPhone}</div>
           <div className="text-xs text-muted-foreground">With Phone</div>
+        </div>
+
+        <div className="bg-surface-primary border rounded-lg p-4 text-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-orange-100 rounded-full mx-auto mb-2">
+            <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v8m6-8v8M5 7h14l-1 10H6L5 7z" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold">{leadsWithJoinDate}</div>
+          <div className="text-xs text-muted-foreground">With Join Date</div>
+        </div>
+
+        <div className="bg-surface-primary border rounded-lg p-4 text-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-teal-100 rounded-full mx-auto mb-2">
+            <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="text-2xl font-bold">{leadsWithYearOfBirth}</div>
+          <div className="text-xs text-muted-foreground">With Birth Year</div>
         </div>
       </div>
 
@@ -141,6 +165,9 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
                 <th className="px-3 py-2 text-left font-medium">Email</th>
                 <th className="px-3 py-2 text-left font-medium">Phone</th>
                 <th className="px-3 py-2 text-left font-medium">Age</th>
+                <th className="px-3 py-2 text-left font-medium">Join Date</th>
+                <th className="px-3 py-2 text-left font-medium">Year of Birth</th>
+                <th className="px-3 py-2 text-left font-medium">Lead Type</th>
                 <th className="px-3 py-2 text-left font-medium">Goals</th>
               </tr>
             </thead>
@@ -148,8 +175,8 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
               {leads.map((lead, index) => (
                 <tr key={index} className="border-t">
                   <td className="px-3 py-2">
-                    {lead.firstName || lead.lastName 
-                      ? `${lead.firstName} ${lead.lastName}`.trim() 
+                    {lead.firstName || lead.lastName
+                      ? `${lead.firstName} ${lead.lastName}`.trim()
                       : '-'}
                   </td>
                   <td className="px-3 py-2">
@@ -159,6 +186,9 @@ export function ConfirmationStep({ leads, onPrevious, uploadMutation }: Confirma
                   </td>
                   <td className="px-3 py-2">{lead.phoneNumber || '-'}</td>
                   <td className="px-3 py-2">{lead.age || '-'}</td>
+                  <td className="px-3 py-2">{lead.joinDate || '-'}</td>
+                  <td className="px-3 py-2">{lead.yearOfBirth || '-'}</td>
+                  <td className="px-3 py-2">{lead.leadType || '-'}</td>
                   <td className="px-3 py-2 max-w-xs truncate" title={lead.goals}>
                     {lead.goals || '-'}
                   </td>
