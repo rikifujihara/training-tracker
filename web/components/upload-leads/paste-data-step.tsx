@@ -3,8 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronRight, Copy, FileText, AlertCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ChevronRight, Copy, FileText, AlertCircle, Upload, Table } from "lucide-react";
 import { useState } from "react";
+import * as React from "react";
 
 interface PasteDataStepProps {
   rawData: string;
@@ -15,12 +17,110 @@ interface PasteDataStepProps {
   canProceed: boolean;
 }
 
+// Smart table parser - detects various data formats
+const parseTableData = (text: string, delimiter?: string): string[][] => {
+  if (!text.trim()) return [];
+
+  // Try to parse HTML tables first (from emails/web pages)
+  const htmlMatch = text.match(/<table[\s\S]*?<\/table>/i);
+  if (htmlMatch) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlMatch[0], 'text/html');
+    const rows = Array.from(doc.querySelectorAll('tr'));
+    return rows.map(row =>
+      Array.from(row.querySelectorAll('td, th')).map(cell => cell.textContent?.trim() || '')
+    ).filter(row => row.length > 0);
+  }
+
+  // If delimiter is specified, use it
+  if (delimiter) {
+    return text.split('\n')
+      .filter(line => line.trim())
+      .map(line => line.split(delimiter).map(cell => cell.trim()));
+  }
+
+  // Auto-detect delimiter by testing common ones
+  const delimiters = ['\t', ',', '|', ';', ' '];
+  const lines = text.split('\n').filter(line => line.trim());
+
+  if (lines.length === 0) return [];
+
+  let bestDelimiter = '\t';
+  let bestScore = 0;
+
+  for (const delim of delimiters) {
+    const parsed = lines.map(line => line.split(delim).map(cell => cell.trim()));
+
+    // Calculate consistency score
+    const fieldCounts = parsed.map(row => row.length);
+    const avgFields = fieldCounts.reduce((a, b) => a + b, 0) / fieldCounts.length;
+    const consistency = fieldCounts.filter(count => Math.abs(count - avgFields) <= 1).length / fieldCounts.length;
+
+    // Prefer delimiters that create more fields and better consistency
+    const score = avgFields * consistency;
+
+    if (score > bestScore && avgFields >= 2) {
+      bestScore = score;
+      bestDelimiter = delim;
+    }
+  }
+
+  // Parse with best delimiter
+  return lines.map(line => bestDelimiter === ' '
+    ? line.split(/\s+/).filter(cell => cell.length > 0)
+    : line.split(bestDelimiter).map(cell => cell.trim())
+  );
+};
+
+
 export function PasteDataStep({ rawData, setRawData, hasHeaders, setHasHeaders, onNext, canProceed }: PasteDataStepProps) {
   const [hasPasted, setHasPasted] = useState(false);
+  const [delimiter, setDelimiter] = useState<string>('auto');
+  const [parsedData, setParsedData] = useState<string[][]>([]);
+
+  // Parse data whenever rawData or delimiter changes
+  React.useEffect(() => {
+    if (rawData) {
+      const detectedDelimiter = delimiter === 'auto' ? undefined : delimiter;
+      const parsed = parseTableData(rawData, detectedDelimiter);
+      setParsedData(parsed);
+
+      // Convert parsed data back to tab-separated format for downstream compatibility
+      const tabSeparated = parsed.map(row => row.join('\t')).join('\n');
+      if (tabSeparated !== rawData) {
+        setRawData(tabSeparated);
+      }
+    } else {
+      setParsedData([]);
+    }
+  }, [rawData, delimiter, setRawData]);
 
   const handlePaste = async () => {
     try {
-      const clipboardData = await navigator.clipboard.readText();
+      let clipboardData = '';
+
+      // Try to get rich content first (HTML from emails/web)
+      if (navigator.clipboard.read) {
+        try {
+          const clipboardItems = await navigator.clipboard.read();
+          for (const item of clipboardItems) {
+            if (item.types.includes('text/html')) {
+              const htmlBlob = await item.getType('text/html');
+              const htmlText = await htmlBlob.text();
+              clipboardData = htmlText;
+              break;
+            }
+          }
+        } catch {
+          // Fallback to plain text
+        }
+      }
+
+      // Fallback to plain text if HTML wasn't available
+      if (!clipboardData) {
+        clipboardData = await navigator.clipboard.readText();
+      }
+
       setRawData(clipboardData);
       setHasPasted(true);
     } catch (err) {
@@ -34,6 +134,15 @@ export function PasteDataStep({ rawData, setRawData, hasHeaders, setHasHeaders, 
       setHasPasted(true);
     }
   };
+
+  const delimiterOptions = [
+    { value: 'auto', label: 'Auto-detect' },
+    { value: '\t', label: 'Tab' },
+    { value: ',', label: 'Comma' },
+    { value: '|', label: 'Pipe' },
+    { value: ';', label: 'Semicolon' },
+    { value: ' ', label: 'Space' }
+  ];
 
   return (
     <div className="space-y-6">
@@ -56,36 +165,122 @@ export function PasteDataStep({ rawData, setRawData, hasHeaders, setHasHeaders, 
         </div>
       </div>
 
-      {/* Paste Area */}
-      <div className="space-y-3">
+      {/* Smart Paste Area */}
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Label htmlFor="paste-area" className="text-sm font-medium">
-            Paste your table data here:
+          <Label className="text-sm font-medium">
+            Paste your data:
           </Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handlePaste}
-            className="flex items-center gap-2"
-          >
-            <Copy className="w-4 h-4" />
-            Paste from Clipboard
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={delimiter} onValueChange={setDelimiter}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Delimiter" />
+              </SelectTrigger>
+              <SelectContent>
+                {delimiterOptions.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handlePaste}
+              className="flex items-center gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              Paste
+            </Button>
+          </div>
         </div>
-        
-        <textarea
-          id="paste-area"
-          placeholder="Paste your table data here... 
 
-Example format (no headers needed):
-Sarah Mitchell	412345678	30/06/2025	1989	PT Pack
-James Henderson	423456789	30/06/2025	1992	New Joiner
-Emma Rodriguez	434567890	30/06/2025	1985	New Joiner"
-          value={rawData}
-          onChange={handleTextareaChange}
-          className="w-full h-64 p-4 border border-input rounded-lg bg-background font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-surface-action focus:border-surface-action"
-        />
+        {/* Paste Area */}
+        {!rawData ? (
+          <div
+            className="border-2 border-dashed border-border-primary rounded-lg p-8 text-center bg-surface-action-hover-2 cursor-pointer hover:border-surface-action transition-colors"
+            onClick={handlePaste}
+          >
+            <Upload className="w-8 h-8 mx-auto mb-3 text-text-disabled" />
+            <p className="text-sm font-medium text-text-body mb-2">
+              Click to paste or drag data here
+            </p>
+            <p className="text-xs text-text-disabled">
+              Supports spreadsheets, email tables, CSV, and more
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {/* Table Preview */}
+            <div className="bg-surface-primary rounded-lg border border-border-primary overflow-hidden">
+              <div className="bg-surface-action-hover-2 px-4 py-2 border-b border-border-primary">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Table className="w-4 h-4 text-text-body" />
+                    <span className="text-sm font-medium text-text-body">
+                      Parsed Table ({parsedData.length} rows)
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setRawData('');
+                      setParsedData([]);
+                      setHasPasted(false);
+                    }}
+                    className="text-text-disabled hover:text-text-body"
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto max-h-64">
+                <table className="w-full text-sm">
+                  <tbody>
+                    {parsedData.slice(0, 10).map((row, rowIndex) => (
+                      <tr key={rowIndex} className={`border-b border-border-primary last:border-b-0 ${
+                        hasHeaders && rowIndex === 0 ? 'bg-surface-action-hover-2 font-medium' : ''
+                      }`}>
+                        {row.map((cell, cellIndex) => (
+                          <td
+                            key={cellIndex}
+                            className="px-3 py-2 border-r border-border-primary last:border-r-0"
+                          >
+                            {cell || '-'}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {parsedData.length > 10 && (
+                  <div className="px-3 py-2 text-xs text-text-disabled bg-surface-action-hover-2 text-center border-t border-border-primary">
+                    ... and {parsedData.length - 10} more rows
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Edit Raw Data (fallback) */}
+            <details className="group">
+              <summary className="cursor-pointer text-sm text-text-disabled hover:text-text-body">
+                Edit raw data manually
+              </summary>
+              <div className="mt-2">
+                <textarea
+                  value={rawData}
+                  onChange={handleTextareaChange}
+                  className="w-full h-32 p-3 border border-border-primary rounded-lg bg-background font-mono text-xs resize-none focus:outline-none focus:ring-2 focus:ring-surface-action focus:border-surface-action"
+                  placeholder="Raw data will appear here..."
+                />
+              </div>
+            </details>
+          </div>
+        )}
       </div>
 
       {/* Headers Checkbox */}
@@ -105,36 +300,12 @@ Emma Rodriguez	434567890	30/06/2025	1985	New Joiner"
         </div>
       )}
 
-      {/* Preview */}
-      {rawData && (
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Preview (first few lines):</Label>
-          <div className="bg-muted rounded-lg p-4">
-            <pre className="text-xs overflow-x-auto whitespace-pre-wrap font-mono">
-              {(() => {
-                const lines = rawData.split('\n');
-                const startIndex = hasHeaders ? 1 : 0;
-                const previewLines = lines.slice(startIndex, startIndex + 5);
-                const result = previewLines.join('\n');
-                const totalDataLines = lines.length - (hasHeaders ? 1 : 0);
-                return result + (totalDataLines > 5 ? '\n...' : '');
-              })()}
-            </pre>
-          </div>
-          {hasHeaders && rawData.split('\n').length > 0 && (
-            <p className="text-xs text-muted-foreground">
-              Header row detected and excluded from preview. We&apos;ll use it for column mapping in the next step.
-            </p>
-          )}
-        </div>
-      )}
-
       {/* Validation */}
-      {hasPasted && rawData.split('\n').length < 1 && (
+      {hasPasted && parsedData.length === 0 && (
         <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-lg">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span className="text-sm">
-            Please paste at least one row of lead data.
+            Could not parse the data. Try adjusting the delimiter or check your data format.
           </span>
         </div>
       )}
