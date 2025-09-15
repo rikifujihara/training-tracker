@@ -102,26 +102,26 @@ export function LogContactPointModal({
 
   // Auto-populate notes with template content when template is selected
   React.useEffect(() => {
+    // Parse template content by replacing placeholders
+    const parseTemplate = (template: string): string => {
+      const firstName = lead.firstName || lead.displayName?.split(" ")[0] || "";
+      const lastName = lead.lastName || lead.displayName?.split(" ").slice(1).join(" ") || "";
+      const fullName = lead.displayName || "";
+
+      let parsed = template;
+      parsed = parsed.replace(/first_name/g, firstName);
+      parsed = parsed.replace(/last_name/g, lastName);
+      parsed = parsed.replace(/name/g, fullName);
+      return parsed;
+    };
+
     if (messageTemplateId && messageTemplates) {
       const selectedTemplate = messageTemplates.find(
         (t) => t.id === messageTemplateId
       );
       if (selectedTemplate) {
-        // Replace template variables with lead data
-        let templateContent = selectedTemplate.content;
-        templateContent = templateContent.replace(
-          /\{first_name\}/g,
-          lead.firstName || lead.displayName || ""
-        );
-        templateContent = templateContent.replace(
-          /\{last_name\}/g,
-          lead.lastName || ""
-        );
-        templateContent = templateContent.replace(
-          /\{name\}/g,
-          lead.displayName || ""
-        );
-        setNotes(templateContent);
+        const parsedContent = parseTemplate(selectedTemplate.content);
+        setNotes(parsedContent);
       }
     } else if (
       messageTemplateId === "" &&
