@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { TaskService } from "@/lib/services/task.service";
 import { CreateTaskInput } from "@/lib/types/task";
+import { requireAuth } from "@/lib/utils/auth";
+import { handleApiError, createBadRequestResponse } from "@/lib/utils/error-handling";
 
 export async function GET(request: NextRequest) {
   try {
     // Check authentication
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const user = await requireAuth();
 
     const { searchParams } = new URL(request.url);
     const leadId = searchParams.get('leadId');
@@ -39,27 +32,14 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Get tasks error:", error);
-    
-    return NextResponse.json(
-      { error: "Failed to fetch tasks" },
-      { status: 500 }
-    );
+    return handleApiError(error, "Get tasks error");
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const user = await requireAuth();
 
     // Parse request body
     const body = await request.json();
@@ -74,10 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!taskData.leadId || !taskData.title || !taskData.dueDate || !taskData.taskType) {
-      return NextResponse.json(
-        { error: "Missing required fields: leadId, title, dueDate, taskType" },
-        { status: 400 }
-      );
+      return createBadRequestResponse("Missing required fields: leadId, title, dueDate, taskType");
     }
 
     // Create task
@@ -89,18 +66,6 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error("Create task error:", error);
-    
-    if (error instanceof Error && error.message.includes("not found")) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 404 }
-      );
-    }
-    
-    return NextResponse.json(
-      { error: "Failed to create task" },
-      { status: 500 }
-    );
+    return handleApiError(error, "Create task error");
   }
 }
