@@ -3,19 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Phone,
-  MessageSquare,
-  MoreHorizontal,
-  Calendar,
-  UserX,
-} from "lucide-react";
+import { Phone, MessageSquare, Calendar } from "lucide-react";
 import { Lead, LeadStatus } from "@/lib/types/lead";
 import { NotesModal } from "@/components/contact-points/notes-modal";
 import {
@@ -149,32 +137,6 @@ export function ProspectCard({
               </Button>
             </div>
           </div>
-
-          {/* more button */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-0 h-6 w-6 p-3 rounded"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreHorizontal className="w-6 h-6 text-icon-body" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setNotInterestedModalOpen(true);
-                }}
-                className="text-destructive focus:text-destructive"
-              >
-                <UserX className="mr-2 h-4 w-4" />
-                Not interested
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
@@ -188,7 +150,6 @@ export function ProspectCard({
               {/* Name */}
               <div className="text-text-body text-[20px] leading-[23px] font-normal flex justify-between">
                 {lead.displayName}
-                <MoreHorizontal />
               </div>
             </div>
           </div>
@@ -266,7 +227,6 @@ export function ProspectCard({
         onSave={handleLogContactPoint}
         isLoading={createContactPointMutation.isPending}
       />
-
 
       <BookConsultationModal
         open={consultationModalOpen}

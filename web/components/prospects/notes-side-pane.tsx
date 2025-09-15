@@ -15,17 +15,17 @@ import { NotebookPen, Save, PenLine, Clock, Calendar } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { TaskType } from "@/lib/types/task";
 import { useContactPointsByLeadId } from "@/lib/hooks/use-contact-points";
-import { useUpdateLead } from "@/lib/hooks/use-leads";
+import { useMarkLeadNotInterested, useUpdateLead } from "@/lib/hooks/use-leads";
 import { useNextFollowUpTask, useUpdateTask } from "@/lib/hooks/use-tasks";
 import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
 import { useConsultations } from "@/lib/hooks/use-consultations";
+import { NotInterestedConfirmationModal } from "./not-interested-confirmation-modal";
 
 export interface NotesSidePaneProps {
-  lead: Lead | null;
-  isVisible: boolean;
+  lead: Lead;
 }
 
-export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
+export function NotesSidePane({ lead }: NotesSidePaneProps) {
   // Fetch contact points for this lead
   const { data: contactPointsData, isLoading: contactPointsLoading } =
     useContactPointsByLeadId(lead?.id || "");
@@ -47,6 +47,8 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   const { mutate: updateLead, isPending: isUpdating } = useUpdateLead();
   const { mutate: updateTask, isPending: isUpdatingTask } = useUpdateTask();
 
+  const markNotInterestedMutation = useMarkLeadNotInterested();
+
   const contactPoints = contactPointsData?.contactPoints || [];
   const [editingNotes, setEditingNotes] = React.useState(false);
   const [localNotes, setLocalNotes] = React.useState(lead?.generalNotes || "");
@@ -60,6 +62,15 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
   const [selectedTemplateId, setSelectedTemplateId] =
     React.useState<string>("");
   const [notificationEnabled, setNotificationEnabled] = React.useState(false);
+
+  // Not interested modal
+  const [notInterestedModalOpen, setNotInterestedModalOpen] =
+    React.useState(false);
+
+  const handleMarkNotInterested = () => {
+    markNotInterestedMutation.mutate(lead.id);
+    setNotInterestedModalOpen(false);
+  };
 
   React.useEffect(() => {
     setLocalNotes(lead?.generalNotes || "");
@@ -184,18 +195,6 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
       }
     );
   };
-
-  if (!isVisible || !lead) {
-    return (
-      <div className="w-full h-full bg-surface-primary rounded-lg border border-border-primary flex items-center justify-center">
-        <div className="text-center text-text-disabled">
-          <NotebookPen className="w-12 h-12 mx-auto mb-4 text-text-disabled/50" />
-          <p className="text-lg font-medium">Select a prospect</p>
-          <p className="text-sm">to view their notes and contact history</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full h-full bg-surface-primary rounded-lg border border-border-primary flex flex-col">
@@ -653,7 +652,28 @@ export function NotesSidePane({ lead, isVisible }: NotesSidePaneProps) {
             No contact history yet
           </div>
         )}
+        <hr />
+        <div className="flex justify-end">
+          <Button
+            variant="destructive"
+            onClick={(e) => {
+              e.stopPropagation();
+              setNotInterestedModalOpen(true);
+            }}
+          >
+            Not interested
+          </Button>
+        </div>
       </div>
+
+      {/* Modals */}
+      <NotInterestedConfirmationModal
+        open={notInterestedModalOpen}
+        onOpenChange={setNotInterestedModalOpen}
+        onConfirm={handleMarkNotInterested}
+        isPending={markNotInterestedMutation.isPending}
+        leadName={lead.displayName}
+      />
     </div>
   );
 }

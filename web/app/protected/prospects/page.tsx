@@ -16,12 +16,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Lead, LeadStatus } from "@/lib/types/lead";
 import { TaskStatus, Task } from "@/lib/types/task";
 import { formatTaskType } from "@/lib/utils/task";
+import { NotebookPen } from "lucide-react";
 
 type ProspectFilter = "today" | "overdue" | "upcoming" | "all";
 
 export default function ProspectsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [showNotesSidePane, setShowNotesSidePane] = useState(false);
   const [activeFilter, setActiveFilter] = useState<ProspectFilter>("today");
 
   // Initialize prefetching
@@ -159,7 +159,6 @@ export default function ProspectsPage() {
 
   const handleShowNotes = (lead: Lead) => {
     setSelectedLead(lead);
-    setShowNotesSidePane(true);
   };
 
   // Show initial loading only if essential data is loading
@@ -312,10 +311,19 @@ export default function ProspectsPage() {
           {/* Notes Side Pane - Desktop Only */}
           <div className="hidden lg:block min-w-[400px] w-full">
             <div className="sticky top-6 h-[calc(100vh-120px)]">
-              <NotesSidePane
-                lead={selectedLead}
-                isVisible={showNotesSidePane || !!selectedLead}
-              />
+              {selectedLead ? (
+                <NotesSidePane lead={selectedLead} />
+              ) : (
+                <div className="w-full h-full bg-surface-primary rounded-lg border border-border-primary flex items-center justify-center">
+                  <div className="text-center text-text-disabled">
+                    <NotebookPen className="w-12 h-12 mx-auto mb-4 text-text-disabled/50" />
+                    <p className="text-lg font-medium">Select a prospect</p>
+                    <p className="text-sm">
+                      to view their notes and contact history
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
