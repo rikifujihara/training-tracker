@@ -16,13 +16,18 @@ import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
 
 export interface MobileMessageModalProps {
   open: boolean;
+  // this is so we know whether to default to 'sent message'
+  setWasMessageTemplateSelected: (open: boolean) => void;
   onOpenChange: (open: boolean) => void;
+  setLogModalOpen: (open: boolean) => void;
   lead: Lead;
 }
 
 export function MobileMessageModal({
   open,
+  setWasMessageTemplateSelected,
   onOpenChange,
+  setLogModalOpen,
   lead,
 }: MobileMessageModalProps) {
   const { data: messageTemplates, isLoading: templatesLoading } =
@@ -55,6 +60,9 @@ export function MobileMessageModal({
 
     // Close modal
     onOpenChange(false);
+    // Open log contact point modal
+    setLogModalOpen(true);
+    setWasMessageTemplateSelected(true);
   };
 
   return (

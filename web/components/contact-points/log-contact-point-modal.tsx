@@ -29,6 +29,7 @@ export interface LogContactPointModalProps {
   lead: Lead;
   onSave?: (data: LogContactPointData) => void;
   isLoading?: boolean;
+  wasMessageTemplateSelected: boolean;
 }
 
 export interface LogContactPointData {
@@ -67,6 +68,7 @@ export function LogContactPointModal({
   lead,
   onSave,
   isLoading = false,
+  wasMessageTemplateSelected,
 }: LogContactPointModalProps) {
   const [contactType, setContactType] = React.useState<ContactType>(
     ContactType.PHONE
@@ -93,6 +95,12 @@ export function LogContactPointModal({
     }
   }, [open]);
 
+  React.useEffect(() => {
+    if (wasMessageTemplateSelected) {
+      setOutcome(ContactPointOutcome.SENT_MESSAGE);
+    }
+  }, [wasMessageTemplateSelected]);
+
   // Auto-set contact type to TEXT when "Sent Message" is selected
   React.useEffect(() => {
     if (outcome === ContactPointOutcome.SENT_MESSAGE) {
@@ -105,7 +113,8 @@ export function LogContactPointModal({
     // Parse template content by replacing placeholders
     const parseTemplate = (template: string): string => {
       const firstName = lead.firstName || lead.displayName?.split(" ")[0] || "";
-      const lastName = lead.lastName || lead.displayName?.split(" ").slice(1).join(" ") || "";
+      const lastName =
+        lead.lastName || lead.displayName?.split(" ").slice(1).join(" ") || "";
       const fullName = lead.displayName || "";
 
       let parsed = template;

@@ -41,6 +41,8 @@ export function ProspectCard({
     React.useState(false);
   const [mobileMessageModalOpen, setMobileMessageModalOpen] =
     React.useState(false);
+  const [wasMessageTemplateSelected, setWasMessageTemplateSelected] =
+    React.useState(false);
   const [notInterestedModalOpen, setNotInterestedModalOpen] =
     React.useState(false);
   const createContactPointMutation = useCreateContactPoint();
@@ -170,7 +172,7 @@ export function ProspectCard({
 
           {/* Actions section */}
           <div className="flex flex-col gap-2.5 w-full">
-            {/* Notes button */}
+            {/* Book consult button */}
             <Button
               variant="secondary"
               size="default"
@@ -188,7 +190,11 @@ export function ProspectCard({
               variant="secondary"
               size="default"
               className="justify-center"
-              onClick={() => setLogModalOpen(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setWasMessageTemplateSelected(false);
+                setLogModalOpen(true);
+              }}
             >
               <Phone className="w-6 h-6" />
               Log
@@ -198,7 +204,10 @@ export function ProspectCard({
             <div className="flex gap-2.5 w-full">
               <Button
                 className="flex-1 w-full justify-center gap-3 px-6 py-3 h-12"
-                onClick={handleSendMessage}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSendMessage();
+                }}
               >
                 <MessageSquare className="w-6 h-6" />
                 Message
@@ -206,7 +215,12 @@ export function ProspectCard({
               <a href={`tel:${lead.phoneNumber || ""}`} className="flex-1">
                 <Button
                   className="w-full justify-center gap-3 px-6 py-3 h-12"
-                  onClick={handleCall}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCall();
+                    setWasMessageTemplateSelected(true);
+                    setLogModalOpen(true);
+                  }}
                 >
                   <Phone className="w-6 h-6" />
                   Call
@@ -230,6 +244,7 @@ export function ProspectCard({
         lead={lead}
         onSave={handleLogContactPoint}
         isLoading={createContactPointMutation.isPending}
+        wasMessageTemplateSelected={wasMessageTemplateSelected}
       />
 
       <BookConsultationModal
@@ -242,7 +257,9 @@ export function ProspectCard({
 
       <MobileMessageModal
         open={mobileMessageModalOpen}
+        setWasMessageTemplateSelected={setWasMessageTemplateSelected}
         onOpenChange={setMobileMessageModalOpen}
+        setLogModalOpen={setLogModalOpen}
         lead={lead}
       />
 
