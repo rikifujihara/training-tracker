@@ -162,14 +162,6 @@ export function ProspectCard({
                 <Phone className="w-6 h-6" />
                 Log
               </Button>
-              <Button
-                variant="secondary"
-                size="default"
-                onClick={() => setLogTextModalOpen(true)}
-              >
-                <MessageSquare className="w-6 h-6" />
-                Log
-              </Button>
             </div>
           </div>
 
@@ -249,15 +241,6 @@ export function ProspectCard({
               onClick={() => setLogModalOpen(true)}
             >
               <Phone className="w-6 h-6" />
-              Log
-            </Button>
-            <Button
-              variant="secondary"
-              size="default"
-              className="justify-center"
-              onClick={() => setLogTextModalOpen(true)}
-            >
-              <MessageSquare className="w-6 h-6" />
               Log
             </Button>
 

@@ -33,6 +33,10 @@ const outcomeConfig: Record<
   ContactPointOutcome,
   { label: string; bgColor: string }
 > = {
+  [ContactPointOutcome.SENT_MESSAGE]: {
+    label: "Sent Message",
+    bgColor: "bg-surface-action",
+  },
   [ContactPointOutcome.NO_ANSWER]: {
     label: "No Answer",
     bgColor: "bg-surface-action",

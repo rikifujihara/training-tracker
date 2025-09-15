@@ -43,6 +43,7 @@ const contactTypeOptions = [
 ];
 
 const outcomeOptions = [
+  { value: ContactPointOutcome.NO_ANSWER, label: "Sent Message" },
   { value: ContactPointOutcome.NO_ANSWER, label: "No Answer" },
   { value: ContactPointOutcome.LEFT_VOICEMAIL, label: "Left Voicemail" },
   { value: ContactPointOutcome.BUSY, label: "Busy" },
@@ -118,7 +119,7 @@ export function LogContactPointModal({
               <div className="flex items-center gap-3">
                 <SelectedIcon className="w-6 h-6 text-text-body" />
                 <DialogTitle className="text-[16px] leading-[24px] font-semibold text-black">
-                  Log Phone Call
+                  Log Reach Out
                 </DialogTitle>
               </div>
               <Button

@@ -48,18 +48,18 @@ model Lead {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Lead fields
-  firstName    String? @map("first_name")
-  lastName     String? @map("last_name")
+  firstName    String?   @map("first_name")
+  lastName     String?   @map("last_name")
   age          String?
   birthday     String?
   joinDate     DateTime? @map("join_date") // When they joined the gym
   yearOfBirth  Int?      @map("year_of_birth") // Year only (e.g., 1985)
   dateOfBirth  DateTime? @map("date_of_birth") // Full birth date when available
   gender       String?
-  phoneNumber  String? @map("phone_number")
+  phoneNumber  String?   @map("phone_number")
   email        String?
   goals        String?
-  generalNotes String? @map("general_notes")
+  generalNotes String?   @map("general_notes")
 
   // Import metadata
   importedAt DateTime @default(now()) @map("imported_at")
@@ -126,6 +126,7 @@ enum ContactType {
 }
 
 enum ContactPointOutcome {
+  SENT_MESSAGE
   NO_ANSWER
   NOT_INTERESTED
   REQUESTED_CALLBACK
@@ -145,7 +146,7 @@ model MessageTemplate {
 
   // Template fields
   name      String // "Initial Contact", "Follow Up", etc.
-  content   String // "Hi #{firstName}, this is Riki from..."
+  content   String // "Hi first_name, this is Riki from..."
   sortOrder Int    @default(0) @map("sort_order") // for custom ordering
 
   // Relationships
