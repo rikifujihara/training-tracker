@@ -151,7 +151,7 @@ export function ProspectCard({
                 }}
               >
                 <Calendar className="w-6 h-6" />
-                Consult
+                Book
               </Button>
 
               <Button
@@ -238,7 +238,7 @@ export function ProspectCard({
               }}
             >
               <Calendar className="w-6 h-6" />
-              Consult
+              Book
             </Button>
 
             {/* Log button */}
