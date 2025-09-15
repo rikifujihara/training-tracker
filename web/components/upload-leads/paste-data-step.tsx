@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronRight, Copy, FileText, AlertCircle, Upload, Table } from "lucide-react";
 import { useState } from "react";
 import * as React from "react";
@@ -75,14 +74,12 @@ const parseTableData = (text: string, delimiter?: string): string[][] => {
 
 export function PasteDataStep({ rawData, setRawData, hasHeaders, setHasHeaders, onNext, canProceed }: PasteDataStepProps) {
   const [hasPasted, setHasPasted] = useState(false);
-  const [delimiter, setDelimiter] = useState<string>('auto');
   const [parsedData, setParsedData] = useState<string[][]>([]);
 
-  // Parse data whenever rawData or delimiter changes
+  // Parse data whenever rawData changes (always auto-detect)
   React.useEffect(() => {
     if (rawData) {
-      const detectedDelimiter = delimiter === 'auto' ? undefined : delimiter;
-      const parsed = parseTableData(rawData, detectedDelimiter);
+      const parsed = parseTableData(rawData); // Always auto-detect
       setParsedData(parsed);
 
       // Convert parsed data back to tab-separated format for downstream compatibility
@@ -93,7 +90,7 @@ export function PasteDataStep({ rawData, setRawData, hasHeaders, setHasHeaders, 
     } else {
       setParsedData([]);
     }
-  }, [rawData, delimiter, setRawData]);
+  }, [rawData, setRawData]);
 
   const handlePaste = async () => {
     try {
@@ -135,14 +132,6 @@ export function PasteDataStep({ rawData, setRawData, hasHeaders, setHasHeaders, 
     }
   };
 
-  const delimiterOptions = [
-    { value: 'auto', label: 'Auto-detect' },
-    { value: '\t', label: 'Tab' },
-    { value: ',', label: 'Comma' },
-    { value: '|', label: 'Pipe' },
-    { value: ';', label: 'Semicolon' },
-    { value: ' ', label: 'Space' }
-  ];
 
   return (
     <div className="space-y-6">
@@ -171,30 +160,16 @@ export function PasteDataStep({ rawData, setRawData, hasHeaders, setHasHeaders, 
           <Label className="text-sm font-medium">
             Paste your data:
           </Label>
-          <div className="flex items-center gap-2">
-            <Select value={delimiter} onValueChange={setDelimiter}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Delimiter" />
-              </SelectTrigger>
-              <SelectContent>
-                {delimiterOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handlePaste}
-              className="flex items-center gap-2"
-            >
-              <Copy className="w-4 h-4" />
-              Paste
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handlePaste}
+            className="flex items-center gap-2"
+          >
+            <Copy className="w-4 h-4" />
+            Paste
+          </Button>
         </div>
 
         {/* Paste Area */}
