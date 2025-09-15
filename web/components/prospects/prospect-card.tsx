@@ -21,11 +21,7 @@ import { NotesModal } from "@/components/contact-points/notes-modal";
 import {
   LogContactPointModal,
   LogContactPointData,
-} from "@/components/contact-points/log-phone-call-modal";
-import {
-  LogTextMessageModal,
-  LogTextMessageData,
-} from "@/components/contact-points/log-text-message-modal";
+} from "@/components/contact-points/log-contact-point-modal";
 import { BookConsultationModal } from "@/components/consultations/book-consultation-modal";
 import { MobileMessageModal } from "@/components/prospects/mobile-message-modal";
 import { NotInterestedConfirmationModal } from "@/components/prospects/not-interested-confirmation-modal";
@@ -52,7 +48,6 @@ export function ProspectCard({
 }: ProspectCardProps) {
   const [notesModalOpen, setNotesModalOpen] = React.useState(false);
   const [logModalOpen, setLogModalOpen] = React.useState(false);
-  const [logTextModalOpen, setLogTextModalOpen] = React.useState(false);
   const [consultationModalOpen, setConsultationModalOpen] =
     React.useState(false);
   const [mobileMessageModalOpen, setMobileMessageModalOpen] =
@@ -65,16 +60,6 @@ export function ProspectCard({
   const statusBarColor = getStatusBarColor(lead.status);
 
   const handleLogContactPoint = (data: LogContactPointData) => {
-    createContactPointMutation.mutate({
-      leadId: lead.id,
-      contactType: data.contactType,
-      contactDate: data.contactDate,
-      outcome: data.outcome,
-      notes: data.notes,
-    });
-  };
-
-  const handleLogTextMessage = (data: LogTextMessageData) => {
     createContactPointMutation.mutate({
       leadId: lead.id,
       contactType: data.contactType,
@@ -282,13 +267,6 @@ export function ProspectCard({
         isLoading={createContactPointMutation.isPending}
       />
 
-      <LogTextMessageModal
-        open={logTextModalOpen}
-        onOpenChange={setLogTextModalOpen}
-        lead={lead}
-        onSave={handleLogTextMessage}
-        isLoading={createContactPointMutation.isPending}
-      />
 
       <BookConsultationModal
         open={consultationModalOpen}

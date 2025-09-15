@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Phone, MessageSquareText, X, Save } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { ContactType, ContactPointOutcome } from "@/lib/types/contactPoint";
+import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
 
 export interface LogContactPointModalProps {
   open: boolean;
@@ -35,6 +36,7 @@ export interface LogContactPointData {
   outcome?: ContactPointOutcome;
   notes?: string;
   contactDate: Date;
+  messageTemplateId?: string;
 }
 
 const contactTypeOptions = [
@@ -43,7 +45,7 @@ const contactTypeOptions = [
 ];
 
 const outcomeOptions = [
-  { value: ContactPointOutcome.NO_ANSWER, label: "Sent Message" },
+  { value: ContactPointOutcome.SENT_MESSAGE, label: "Sent Message" },
   { value: ContactPointOutcome.NO_ANSWER, label: "No Answer" },
   { value: ContactPointOutcome.LEFT_VOICEMAIL, label: "Left Voicemail" },
   { value: ContactPointOutcome.BUSY, label: "Busy" },
@@ -74,6 +76,11 @@ export function LogContactPointModal({
   >();
   const [notes, setNotes] = React.useState("");
   const [contactDate, setContactDate] = React.useState(new Date());
+  const [messageTemplateId, setMessageTemplateId] = React.useState<string>("");
+
+  // Fetch message templates
+  const { data: messageTemplates, isLoading: templatesLoading } =
+    useMessageTemplates();
 
   React.useEffect(() => {
     if (open) {
@@ -82,15 +89,56 @@ export function LogContactPointModal({
       setOutcome(undefined);
       setNotes("");
       setContactDate(new Date());
+      setMessageTemplateId("");
     }
   }, [open]);
+
+  // Auto-set contact type to TEXT when "Sent Message" is selected
+  React.useEffect(() => {
+    if (outcome === ContactPointOutcome.SENT_MESSAGE) {
+      setContactType(ContactType.TEXT);
+    }
+  }, [outcome]);
+
+  // Auto-populate notes with template content when template is selected
+  React.useEffect(() => {
+    if (messageTemplateId && messageTemplates) {
+      const selectedTemplate = messageTemplates.find(
+        (t) => t.id === messageTemplateId
+      );
+      if (selectedTemplate) {
+        // Replace template variables with lead data
+        let templateContent = selectedTemplate.content;
+        templateContent = templateContent.replace(
+          /\{first_name\}/g,
+          lead.firstName || lead.displayName || ""
+        );
+        templateContent = templateContent.replace(
+          /\{last_name\}/g,
+          lead.lastName || ""
+        );
+        templateContent = templateContent.replace(
+          /\{name\}/g,
+          lead.displayName || ""
+        );
+        setNotes(templateContent);
+      }
+    } else if (
+      messageTemplateId === "" &&
+      outcome === ContactPointOutcome.SENT_MESSAGE
+    ) {
+      // Clear notes when template is deselected
+      setNotes("");
+    }
+  }, [messageTemplateId, messageTemplates, lead, outcome]);
 
   const handleSave = () => {
     const data: LogContactPointData = {
       contactType,
       outcome,
-      notes: notes.trim() || undefined,
+      notes: notes,
       contactDate,
+      messageTemplateId: messageTemplateId || undefined,
     };
     onSave?.(data);
     onOpenChange(false);
@@ -157,7 +205,7 @@ export function LogContactPointModal({
                     displayText={
                       selectedCallOutcome
                         ? selectedCallOutcome.label
-                        : "Please select a call outcome"
+                        : "Please select an outcome"
                     }
                   />
                 </SelectTrigger>
@@ -171,6 +219,43 @@ export function LogContactPointModal({
               </Select>
             </div>
 
+            {/* Message Template - Only shown when "Sent Message" is selected */}
+            {outcome === ContactPointOutcome.SENT_MESSAGE && (
+              <div className="space-y-2">
+                <Label htmlFor="messageTemplate">
+                  Message Template (Optional)
+                </Label>
+                {templatesLoading ? (
+                  <div className="h-12 bg-surface-primary border border-border-primary rounded animate-pulse"></div>
+                ) : (
+                  <Select
+                    value={messageTemplateId}
+                    onValueChange={setMessageTemplateId}
+                  >
+                    <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary">
+                      <SelectValue
+                        displayText={
+                          messageTemplateId && messageTemplates
+                            ? messageTemplates.find(
+                                (t) => t.id === messageTemplateId
+                              )?.name || "Select a template..."
+                            : "Select a template..."
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">No template</SelectItem>
+                      {messageTemplates?.map((template) => (
+                        <SelectItem key={template.id} value={template.id}>
+                          {template.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            )}
+
             {/* Notes */}
             <div className="space-y-2">
               <Label htmlFor="notes">Notes</Label>
@@ -178,7 +263,11 @@ export function LogContactPointModal({
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add details about the call..."
+                placeholder={
+                  outcome === ContactPointOutcome.SENT_MESSAGE
+                    ? "Add details about the message..."
+                    : "Add details about the call..."
+                }
                 className="w-full min-h-[96px] p-3 bg-surface-primary border border-border-primary rounded resize-none text-[16px] leading-[24px] text-text-body placeholder:text-text-disabled"
               />
             </div>
