@@ -17,6 +17,7 @@ import { useCreateContactPoint } from "@/lib/hooks/use-contact-points";
 import { useCreateConsultation } from "@/lib/hooks/use-consultations";
 import { useMarkLeadNotInterested } from "@/lib/hooks/use-leads";
 import { CreateConsultationInput } from "@/lib/types/consultation";
+import { Badge } from "../ui/badge";
 
 export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -98,9 +99,12 @@ export function ProspectCard({
           {/* Main content */}
           <div className="flex-1 flex flex-col gap-4 min-w-0">
             {/* Name and details */}
-            <div className="text-text-body text-[20px] leading-[23px] font-normal">
-              {lead.displayName}
-              {lead.age && lead.gender && `: ${lead.age} yo ${lead.gender}`}
+            <div className="flex text-text-body text-[20px] leading-[23px] font-normal justify-between">
+              <span>
+                {lead.displayName}
+                {lead.age && lead.gender && `: ${lead.age} yo ${lead.gender}`}
+              </span>
+              <Badge className="bg-icon-action">{lead.leadType}</Badge>
             </div>
 
             {/* Next action */}

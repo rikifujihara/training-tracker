@@ -8,12 +8,10 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          " bg-primary text-primary-foreground shadow-sm hover:bg-primary/80",
-        secondary:
-          " font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        default: " bg-primary text-primary-foreground shadow-sm",
+        secondary: " font-semibold bg-secondary text-secondary-foreground",
         destructive:
-          " font-semibold bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/80",
+          " font-semibold bg-destructive text-destructive-foreground shadow-sm",
         outline: " font-semibold text-foreground border border-border",
         "status-hot":
           "px-1 py-0 text-[12px] leading-[20px] font-normal rounded-[50px] bg-icon-error text-text-on-action whitespace-nowrap",

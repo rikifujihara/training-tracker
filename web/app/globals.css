@@ -49,6 +49,7 @@
   --color-text-disabled: var(--text-disabled);
   --color-icon-success: var(--text-success);
   --color-icon-on-action: var(--icon-on-action);
+  --color-icon-action: var(--icon-action);
   --color-text-on-action: var(--text-on-action);
   --color-surface-action: var(--surface-action);
   --color-surface-action-hover: var(--surface-action-hover);
@@ -137,6 +138,7 @@
     --text-disabled: #737780;
     --text-success: #E7F6E5;
     --icon-on-action: #ffffff;
+    --icon-action: #398af0;
     --text-on-action: #ffffff;
     --surface-action: #398af0;
     --surface-action-hover: #2d6ec0;
