@@ -283,13 +283,15 @@ export function NotesContent({ lead, variant }: NotesContentProps) {
                     </div>
                   )}
                 </div>
-                <Button
-                  size={variant === "modal" ? "sm" : "default"}
-                  className="w-full"
-                  onClick={() => setEditingTask(true)}
-                >
-                  Update follow up
-                </Button>
+                <div className="flex justify-end">
+                  <Button
+                    size={variant === "modal" ? "sm" : "default"}
+                    className="max-sm:w-full"
+                    onClick={() => setEditingTask(true)}
+                  >
+                    Update follow up
+                  </Button>
+                </div>
               </>
             ) : (
               /* Task Edit Form */

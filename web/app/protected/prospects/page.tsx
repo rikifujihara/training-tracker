@@ -14,8 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Lead, LeadStatus } from "@/lib/types/lead";
-import { TaskStatus, Task } from "@/lib/types/task";
-import { formatTaskType } from "@/lib/utils/task";
 import { NotebookPen } from "lucide-react";
 
 type ProspectFilter = "today" | "overdue" | "upcoming" | "all";
@@ -43,7 +41,7 @@ export default function ProspectsPage() {
     useProspectFilterCounts(LeadStatus.PROSPECT);
 
   // Fetch all tasks to determine next actions (we still need this for the action labels)
-  const { data: allTasks, isLoading: tasksLoading } = useTasks();
+  const { isLoading: tasksLoading } = useTasks();
 
   // Prefetch all filters on component mount
   useEffect(() => {
@@ -57,29 +55,6 @@ export default function ProspectsPage() {
   const allLeads = useMemo(() => {
     return leadsData?.pages.flatMap((page) => page.leads) || [];
   }, [leadsData]);
-
-  // Function to get next task for a lead
-  const getNextTaskForLead = (leadId: string): Task | null => {
-    if (!allTasks) return null;
-
-    // Find the first pending task for this lead, sorted by due date
-    const leadTasks = allTasks
-      .filter(
-        (task) => task.leadId === leadId && task.status === TaskStatus.PENDING
-      )
-      .sort(
-        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-      );
-
-    return leadTasks[0] || null;
-  };
-
-  // Function to get next action for a lead
-  const getNextActionForLead = (leadId: string): string => {
-    const nextTask = getNextTaskForLead(leadId);
-    if (!nextTask) return "First Call";
-    return formatTaskType(nextTask.taskType);
-  };
 
   // Since filtering is now done server-side, we just use the leads directly
   const filteredProspects = allLeads;
@@ -279,7 +254,6 @@ export default function ProspectsPage() {
               <ProspectCard
                 key={lead.id}
                 lead={lead}
-                nextAction={getNextActionForLead(lead.id)}
                 onShowNotes={handleShowNotes}
                 selectedForNotes={selectedLead?.id === lead.id}
               />

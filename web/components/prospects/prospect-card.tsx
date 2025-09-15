@@ -18,11 +18,11 @@ import { useCreateConsultation } from "@/lib/hooks/use-consultations";
 import { useMarkLeadNotInterested } from "@/lib/hooks/use-leads";
 import { CreateConsultationInput } from "@/lib/types/consultation";
 import { Badge } from "../ui/badge";
+import { useNextFollowUpTask } from "@/lib/hooks/use-tasks";
 
 export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
   lead: Lead;
-  nextAction?: string;
   onShowNotes?: (lead: Lead) => void;
   selectedForNotes?: boolean;
 }
@@ -30,7 +30,6 @@ export interface ProspectCardProps
 export function ProspectCard({
   className,
   lead,
-  nextAction = "First Call",
   onShowNotes,
   selectedForNotes = false,
   ...props
@@ -49,6 +48,20 @@ export function ProspectCard({
   const createConsultationMutation = useCreateConsultation();
   const markNotInterestedMutation = useMarkLeadNotInterested();
   const statusBarColor = getStatusBarColor(lead.status);
+  // Format date for display
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
+  };
+
+  // Fetch next follow-up task for this lead
+  const { data: nextTask } = useNextFollowUpTask(lead?.id || "");
 
   const handleLogContactPoint = (data: LogContactPointData) => {
     createContactPointMutation.mutate({
@@ -110,12 +123,12 @@ export function ProspectCard({
             </div>
 
             {/* Next action */}
-            <div className="flex gap-2 items-center">
+            <div className="flex flex-col gap-2 items-start">
               <span className="text-text-disabled text-[16px] leading-[24px]">
-                Next:
+                Next follow up due:
               </span>
               <span className="text-text-body text-[16px] leading-[24px] font-semibold">
-                {nextAction}
+                {nextTask ? formatDate(new Date(nextTask.dueDate)) : ""}
               </span>
             </div>
 
@@ -160,14 +173,13 @@ export function ProspectCard({
             </div>
           </div>
           {/* Next action */}
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-col gap-2 items-start">
             <span className="text-text-disabled text-[16px] leading-[24px]">
-              Next:
+              Next follow up due:
             </span>
             <span className="text-text-body text-[16px] leading-[24px] font-semibold">
-              {nextAction}
+              {nextTask ? formatDate(new Date(nextTask.dueDate)) : ""}
             </span>
-            <Phone className="w-6 h-6 text-icon-body" />
           </div>
 
           {/* Actions section */}
