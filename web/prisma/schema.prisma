@@ -73,7 +73,7 @@ model Lead {
 
   status   LeadStatus @default(PROSPECT)
   // This is whether they're a new joiner, PT pack etc
-  leadType String?
+  leadType String?    @map("lead_type")
 
   // Indexes
   @@index([userId])
