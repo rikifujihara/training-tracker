@@ -19,6 +19,7 @@ import { useMarkLeadNotInterested } from "@/lib/hooks/use-leads";
 import { CreateConsultationInput } from "@/lib/types/consultation";
 import { Badge } from "../ui/badge";
 import { useNextFollowUpTask } from "@/lib/hooks/use-tasks";
+import { formatDateTimeAustralian } from "@/lib/utils/date";
 
 export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -48,17 +49,7 @@ export function ProspectCard({
   const createConsultationMutation = useCreateConsultation();
   const markNotInterestedMutation = useMarkLeadNotInterested();
   const statusBarColor = getStatusBarColor(lead.status);
-  // Format date for display
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    }).format(date);
-  };
+  // Format date for display - removed local function, using imported utility
 
   // Fetch next follow-up task for this lead
   const { data: nextTask } = useNextFollowUpTask(lead?.id || "");
@@ -128,7 +119,7 @@ export function ProspectCard({
                 Next follow up due:
               </span>
               <span className="text-text-body text-[16px] leading-[24px] font-semibold">
-                {nextTask ? formatDate(new Date(nextTask.dueDate)) : ""}
+                {nextTask ? formatDateTimeAustralian(nextTask.dueDate) : ""}
               </span>
             </div>
 
@@ -178,7 +169,7 @@ export function ProspectCard({
               Next follow up due:
             </span>
             <span className="text-text-body text-[16px] leading-[24px] font-semibold">
-              {nextTask ? formatDate(new Date(nextTask.dueDate)) : ""}
+              {nextTask ? formatDateTimeAustralian(nextTask.dueDate) : ""}
             </span>
           </div>
 

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Phone, MessageSquareText } from "lucide-react";
 import { ContactType, ContactPointOutcome } from "@/lib/types/contactPoint";
+import { formatDateTimeLongAustralian } from "@/lib/utils/date";
 
 export interface ContactHistoryCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -77,25 +78,7 @@ export function ContactHistoryCard({
   const typeConfig = contactTypeConfig[contactType];
   const TypeIcon = typeConfig.icon;
 
-  const formatDate = (date: Date | string) => {
-    // Ensure we have a valid Date object
-    const dateObj = date instanceof Date ? date : new Date(date);
-
-    // Check if the date is valid
-    if (isNaN(dateObj.getTime())) {
-      return "Invalid date";
-    }
-
-    return new Intl.DateTimeFormat("en-US", {
-      weekday: "long",
-      day: "numeric",
-      month: "numeric",
-      year: "2-digit",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    }).format(dateObj);
-  };
+  // Removed local formatDate function - using imported Australian formatter
 
   return (
     <div
@@ -127,7 +110,7 @@ export function ContactHistoryCard({
 
         {/* Date */}
         <div className="text-text-disabled text-[16px] leading-[24px] font-normal">
-          {formatDate(contactDate)}
+          {formatDateTimeLongAustralian(contactDate)}
         </div>
       </div>
 

@@ -50,7 +50,7 @@ export function NotesModal({ open, onOpenChange, lead }: NotesModalProps) {
           </DialogHeader>
 
           {/* Body - Scrollable Content */}
-          <div className="bg-surface-page flex-1 overflow-hidden flex flex-col max-h-[60vh]">
+          <div className="bg-surface-page flex-1 overflow-y-auto flex flex-col max-h-[60vh]">
             <NotesContent lead={lead} variant="modal" />
           </div>
 
