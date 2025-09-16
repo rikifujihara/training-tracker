@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { MessageTemplateService, CreateTemplateInput } from "@/lib/services/messageTemplate.service";
+import { MessageTemplateService, CreateTemplateInput } from "@/lib/services/messageTemplate";
 
 export async function PUT(
   request: NextRequest,

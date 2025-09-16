@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { TaskService } from "@/lib/services/task.service";
+import { TaskService } from "@/lib/services/task";
 import { UpdateTaskInput } from "@/lib/types/task";
 
 export async function GET(

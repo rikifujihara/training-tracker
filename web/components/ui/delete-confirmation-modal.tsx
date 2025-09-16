@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogPortal,
   DialogOverlay,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
@@ -43,11 +44,9 @@ export function DeleteConfirmationModal({
           showCloseButton={false}
         >
           {/* Title */}
-          <div className="text-center">
-            <h2 className="text-sm font-normal text-text-body leading-normal">
-              {title}
-            </h2>
-          </div>
+          <DialogTitle className="text-center text-sm font-normal text-text-body leading-normal">
+            {title}
+          </DialogTitle>
 
           {/* Description - hidden but keeping prop for flexibility */}
           {description && (

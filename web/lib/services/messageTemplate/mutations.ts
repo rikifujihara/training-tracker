@@ -6,17 +6,7 @@ export interface CreateTemplateInput {
   content: string;
 }
 
-export class MessageTemplateService {
-  /**
-   * Get all templates for a user
-   */
-  static async getTemplatesForUser(userId: string): Promise<MessageTemplate[]> {
-    return prisma.messageTemplate.findMany({
-      where: { userId },
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-    });
-  }
-
+export class MessageTemplateMutations {
   /**
    * Create a template for user
    */
