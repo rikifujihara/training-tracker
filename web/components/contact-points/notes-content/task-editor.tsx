@@ -11,7 +11,7 @@ import {
 import { Save, PenLine, Calendar } from "lucide-react";
 import { TaskType, Task } from "@/lib/types/task";
 import { MessageTemplate } from "@prisma/client";
-import { getTodayFormatted, getTomorrowFormatted, formatDateForInput, formatTimeForInput } from "@/lib/utils/date";
+import { getTodayFormatted, getTomorrowFormatted, formatDateForInput, formatTimeForInput, formatDateTimeAustralian } from "@/lib/utils/date";
 
 interface TaskEditorProps {
   variant: "modal" | "sidepane";
@@ -76,17 +76,7 @@ export function TaskEditor({
       .replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
-  // Format date for display
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    }).format(date);
-  };
+  // Removed local formatDate function - using imported Australian formatter
 
   // Check if selected date is today/tomorrow
   const isSelectedDateToday = taskDueDate === getTodayFormatted();
@@ -320,7 +310,7 @@ export function TaskEditor({
             <span className="text-sm font-medium text-foreground">Due:</span>
             <span className="text-sm text-muted-foreground flex items-center">
               <Calendar className="h-3 w-3 mr-1" />
-              {formatDate(new Date(nextTask.dueDate))}
+              {formatDateTimeAustralian(nextTask.dueDate)}
             </span>
           </div>
 

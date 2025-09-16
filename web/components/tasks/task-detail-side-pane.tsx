@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { DummyTask } from "@/components/tasks/task-card";
 import { TaskType, TaskStatus } from "@/lib/types/task";
+import { formatDateAustralian } from "@/lib/utils/date";
 
 export interface TaskDetailSidePaneProps {
   task: DummyTask | null;
@@ -186,7 +187,7 @@ export function TaskDetailSidePane({
             Task Information
           </h4>
           <div className="space-y-2 text-[14px] leading-[20px] text-text-disabled">
-            <div>Created: {new Date(task.dueDate).toLocaleDateString()}</div>
+            <div>Created: {formatDateAustralian(task.dueDate)}</div>
             <div>Priority: {task.isOverdue ? "High" : "Normal"}</div>
             <div>Category: {getTaskTypeCategory(task.taskType)}</div>
           </div>

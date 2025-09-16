@@ -23,7 +23,7 @@ export function NotesSidePane({ lead }: NotesSidePaneProps) {
       </div>
 
       {/* Body - Scrollable */}
-      <div className="bg-surface-page flex-1 overflow-hidden flex flex-col">
+      <div className="bg-surface-page flex-1 overflow-y-auto flex flex-col">
         <NotesContent lead={lead} variant="sidepane" />
       </div>
     </div>

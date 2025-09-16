@@ -2,6 +2,7 @@ import * as React from "react";
 import { ContactHistoryCard } from "../contact-history-card";
 import { ContactPoint } from "@/lib/types/contactPoint";
 import { Consultation } from "@/lib/types/consultation";
+import { formatDateAustralian } from "@/lib/utils/date";
 
 interface ContactHistoryProps {
   variant: "modal" | "sidepane";
@@ -106,7 +107,7 @@ export function ContactHistory({
                       </span>
                     </div>
                     <span className="text-xs text-blue-700">
-                      {new Date(consultation.scheduledTime).toLocaleDateString()}
+                      {formatDateAustralian(consultation.scheduledTime)}
                     </span>
                   </div>
                   {consultation.notes && (
