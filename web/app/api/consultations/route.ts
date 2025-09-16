@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { ConsultationService } from "@/lib/services/consultation.service";
+import { ConsultationService } from "@/lib/services/consultation";
 import { CreateConsultationInput } from "@/lib/types/consultation";
 
 export async function GET(request: NextRequest) {

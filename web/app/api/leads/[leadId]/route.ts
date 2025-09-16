@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { LeadService } from "@/lib/services/lead.service";
+import { LeadService } from "@/lib/services/lead";
 import { UpdateLeadInput } from "@/lib/types/lead";
 
 export async function PUT(

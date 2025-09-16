@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TaskService } from "@/lib/services/task.service";
+import { TaskService } from "@/lib/services/task";
 import { requireAuth } from "@/lib/utils/auth";
 import { handleApiError } from "@/lib/utils/error-handling";
 

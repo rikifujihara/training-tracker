@@ -26,23 +26,27 @@ export function ContactHistory({
 
   // Combine contact points and consultations for chronological display
   const allHistoryItems = React.useMemo(() => {
-    const items: Array<{ type: 'contact' | 'consultation'; data: ContactPoint | Consultation; date: Date }> = [];
+    const items: Array<{
+      type: "contact" | "consultation";
+      data: ContactPoint | Consultation;
+      date: Date;
+    }> = [];
 
     // Add contact points
-    contactPoints.forEach(cp => {
+    contactPoints.forEach((cp) => {
       items.push({
-        type: 'contact',
+        type: "contact",
         data: cp,
-        date: new Date(cp.createdAt)
+        date: new Date(cp.createdAt),
       });
     });
 
     // Add consultations
-    consultations?.forEach(consultation => {
+    consultations?.forEach((consultation) => {
       items.push({
-        type: 'consultation',
+        type: "consultation",
         data: consultation,
-        date: new Date(consultation.scheduledTime)
+        date: new Date(consultation.scheduledTime),
       });
     });
 
@@ -78,7 +82,7 @@ export function ContactHistory({
       ) : (
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {allHistoryItems.map((item) => {
-            if (item.type === 'contact') {
+            if (item.type === "contact") {
               const contactPoint = item.data as ContactPoint;
               return (
                 <ContactHistoryCard

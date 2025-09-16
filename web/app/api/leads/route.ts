@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { LeadService } from "@/lib/services/lead.service";
+import { LeadService } from "@/lib/services/lead";
 import { LeadStatus } from "@/lib/types/lead";
 import { requireAuth } from "@/lib/utils/auth";
 import { handleApiError } from "@/lib/utils/error-handling";
