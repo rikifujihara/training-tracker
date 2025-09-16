@@ -87,6 +87,7 @@ export function ContactHistory({
               return (
                 <ContactHistoryCard
                   key={`contact-${contactPoint.id}`}
+                  id={contactPoint.id}
                   contactType={contactPoint.contactType}
                   outcome={contactPoint.outcome}
                   contactDate={contactPoint.createdAt}
