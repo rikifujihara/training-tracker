@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
 import {
   Home,
-  Users,
   MessageSquare,
   Settings,
   Menu,
   X,
   UserPlus,
+  Phone,
 } from "lucide-react";
 import { Button } from "./button";
 
@@ -24,8 +24,8 @@ export interface DesktopSidebarProps
 const navigationItems = [
   { icon: Home, label: "Dashboard", href: "/protected", badge: undefined },
   {
-    icon: Users,
-    label: "Prospects",
+    icon: Phone,
+    label: "Follow ups",
     href: "/protected/prospects",
     badge: undefined,
   },

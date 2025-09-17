@@ -77,9 +77,18 @@ export function formatDateAustralian(date: Date | string): string {
 }
 
 /**
+ * Checks if a date is tomorrow
+ */
+export function isTomorrow(date: Date): boolean {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return formatDateForInput(date) === formatDateForInput(tomorrow);
+}
+
+/**
  * Formats a date and time in Australian format with time
  */
-export function formatDateTimeAustralian(date: Date | string): string {
+export function formatDateTimeAustralian(date: Date | string, moreReadable: boolean = false): string {
   const dateObj = date instanceof Date ? date : new Date(date);
 
   // Check if the date is valid
@@ -87,6 +96,24 @@ export function formatDateTimeAustralian(date: Date | string): string {
     return "Invalid date";
   }
 
+  // If moreReadable is true, check for today/tomorrow
+  if (moreReadable) {
+    const timeFormat = new Intl.DateTimeFormat("en-AU", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(dateObj);
+
+    if (isToday(dateObj)) {
+      return `Today, ${timeFormat}`;
+    }
+
+    if (isTomorrow(dateObj)) {
+      return `Tomorrow, ${timeFormat}`;
+    }
+  }
+
+  // Default format
   return new Intl.DateTimeFormat("en-AU", {
     weekday: "short",
     day: "2-digit",

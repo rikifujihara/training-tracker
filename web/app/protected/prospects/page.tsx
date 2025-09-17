@@ -84,9 +84,9 @@ export default function ProspectsPage() {
       case "overdue":
         return "Overdue";
       case "upcoming":
-        return "Upcoming";
+        return "Due Later";
       case "all":
-        return "All Prospects";
+        return "Search";
       default:
         return "";
     }

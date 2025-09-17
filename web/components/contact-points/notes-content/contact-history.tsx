@@ -76,7 +76,8 @@ export function ContactHistory({
       {allHistoryItems.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-sm text-muted-foreground">
-            No contact history yet. Start by making a call or sending a text.
+            No contact history yet. Start by logging a call or text with the
+            &apos;log&apos; button.
           </p>
         </div>
       ) : (

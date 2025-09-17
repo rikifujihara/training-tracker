@@ -6,7 +6,6 @@ import { UserX } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { NotInterestedConfirmationModal } from "@/components/prospects/not-interested-confirmation-modal";
 import { useNotesContent } from "./use-notes-content";
-import { NotesEditor } from "./notes-editor";
 import { TaskEditor } from "./task-editor";
 import { ContactHistory } from "./contact-history";
 
@@ -20,37 +19,20 @@ export function NotesContent({ lead, variant }: NotesContentProps) {
     // Data
     contactPoints,
     nextTask,
-    messageTemplates,
     consultations,
 
     // Loading states
     contactPointsLoading,
-    templatesLoading,
     consultationsLoading,
-    isUpdating,
     isUpdatingTask,
-
-    // Notes state
-    editingNotes,
-    setEditingNotes,
-    localNotes,
-    hasNotesChanges,
-    handleNotesChange,
-    handleSaveNotes,
 
     // Task state
     editingTask,
     setEditingTask,
-    taskDescription,
-    setTaskDescription,
-    taskType,
-    setTaskType,
     taskDueDate,
     setTaskDueDate,
     taskDueTime,
     setTaskDueTime,
-    selectedTemplateId,
-    setSelectedTemplateId,
     hasTaskChanges,
     handleSaveTask,
 
@@ -67,39 +49,18 @@ export function NotesContent({ lead, variant }: NotesContentProps) {
 
   return (
     <div className={containerClasses}>
-      {/* Notes Editor Section */}
-      <NotesEditor
-        lead={lead}
-        variant={variant}
-        editingNotes={editingNotes}
-        setEditingNotes={setEditingNotes}
-        localNotes={localNotes}
-        hasNotesChanges={hasNotesChanges}
-        isUpdating={isUpdating}
-        onNotesChange={handleNotesChange}
-        onSaveNotes={handleSaveNotes}
-      />
-
       {/* Task Editor Section */}
       <TaskEditor
         variant={variant}
         nextTask={nextTask || null}
         editingTask={editingTask}
         setEditingTask={setEditingTask}
-        taskDescription={taskDescription}
-        setTaskDescription={setTaskDescription}
-        taskType={taskType}
-        setTaskType={setTaskType}
         taskDueDate={taskDueDate}
         setTaskDueDate={setTaskDueDate}
         taskDueTime={taskDueTime}
         setTaskDueTime={setTaskDueTime}
-        selectedTemplateId={selectedTemplateId}
-        setSelectedTemplateId={setSelectedTemplateId}
         hasTaskChanges={hasTaskChanges || false}
         isUpdatingTask={isUpdatingTask}
-        messageTemplates={messageTemplates}
-        templatesLoading={templatesLoading}
         onSaveTask={handleSaveTask}
       />
 
@@ -113,7 +74,7 @@ export function NotesContent({ lead, variant }: NotesContentProps) {
       />
 
       {/* Not Interested Section */}
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-end max-sm:justify-center pt-4">
         <Button
           onClick={() => setNotInterestedModalOpen(true)}
           variant="destructive"
@@ -122,7 +83,7 @@ export function NotesContent({ lead, variant }: NotesContentProps) {
           disabled={markNotInterestedMutation.isPending}
         >
           <UserX className="h-4 w-4" />
-          <span>Mark as Not Interested</span>
+          <span>Not Interested</span>
         </Button>
       </div>
 

@@ -136,7 +136,7 @@ export function ProspectCard({
             {/* Action buttons */}
             <div className="flex gap-4 items-start">
               <Button
-                variant="secondary"
+                // variant="secondary"
                 size="default"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -148,7 +148,7 @@ export function ProspectCard({
               </Button>
 
               <Button
-                variant="secondary"
+                // variant="secondary"
                 size="default"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -191,7 +191,6 @@ export function ProspectCard({
           <div className="flex flex-col gap-2.5 w-full">
             {/* Book consult button */}
             <Button
-              variant="secondary"
               size="default"
               onClick={(e) => {
                 e.stopPropagation();
@@ -204,7 +203,6 @@ export function ProspectCard({
 
             {/* Log button */}
             <Button
-              variant="secondary"
               size="default"
               className="justify-center"
               onClick={(e) => {
@@ -223,6 +221,7 @@ export function ProspectCard({
             {/* Message and Call buttons */}
             <div className="flex gap-2.5 w-full">
               <Button
+                variant="secondary"
                 className="flex-1 w-full justify-center gap-3 px-6 py-3 h-12"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -234,6 +233,7 @@ export function ProspectCard({
               </Button>
               <a href={`tel:${lead.phoneNumber || ""}`} className="flex-1">
                 <Button
+                  variant="secondary"
                   className="w-full justify-center gap-3 px-6 py-3 h-12"
                   onClick={(e) => {
                     e.stopPropagation();

@@ -175,7 +175,7 @@ model Task {
   dueDate     DateTime @map("due_date")
 
   // Task type and status
-  taskType TaskType   @map("task_type")
+  taskType TaskType   @default(OTHER) @map("task_type")
   status   TaskStatus @default(PENDING)
 
   // For message template tasks
