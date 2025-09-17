@@ -52,7 +52,7 @@ export function TaskEditor({
   if (!nextTask) {
     return (
       <div className={sectionClasses}>
-        <h3 className="text-lg font-semibold">Next Follow-up Task</h3>
+        <h3 className="text-lg font-medium">Next follow up due:</h3>
         <p className="text-sm text-muted-foreground">
           No follow-up task scheduled for this lead.
         </p>
@@ -63,7 +63,7 @@ export function TaskEditor({
   return (
     <div className={sectionClasses}>
       <div className="flex flex-wrap gap-3 items-center justify-between">
-        <h3 className="text-lg font-medium">Next follow-up is due:</h3>
+        <h3 className="text-lg font-medium">Next follow up due:</h3>
       </div>
 
       {editingTask ? (

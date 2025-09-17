@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Phone, MessageSquareText, Trash2 } from "lucide-react";
 import { ContactType, ContactPointOutcome } from "@/lib/types/contactPoint";
-import { formatDateTimeLongAustralian } from "@/lib/utils/date";
+import { formatDateTimeAustralian } from "@/lib/utils/date";
 import { useDeleteContactPoint } from "@/lib/hooks/use-contact-points";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 
@@ -148,22 +148,22 @@ export function ContactHistoryCard({
 
         {/* Header with badges and date */}
         <div className="flex items-start justify-between w-full max-sm:flex-col-reverse gap-2 pr-10">
-        <div className="flex flex-col gap-2 items-start">
-          {/* Contact type badge */}
-          <Badge variant="default" className={cn(typeConfig.bgColor)}>
-            <TypeIcon className="w-4 h-4" />
-            {typeConfig.label}
-          </Badge>
+          <div className="flex flex-col gap-2 items-start">
+            {/* Contact type badge */}
+            <Badge variant="default" className={cn(typeConfig.bgColor)}>
+              <TypeIcon className="w-4 h-4" />
+              {typeConfig.label}
+            </Badge>
 
-          {/* Outcome badge or Template badge */}
-          {renderSecondBadge()}
-        </div>
+            {/* Outcome badge or Template badge */}
+            {renderSecondBadge()}
+          </div>
 
-        {/* Date */}
-        <div className="text-text-disabled text-[16px] leading-[24px] font-normal">
-          {formatDateTimeLongAustralian(contactDate)}
+          {/* Date */}
+          <div className="text-text-disabled text-[16px] leading-[24px] font-normal">
+            {formatDateTimeAustralian(contactDate, true)}
+          </div>
         </div>
-      </div>
 
         {/* Notes */}
         {showNotes && notes && (

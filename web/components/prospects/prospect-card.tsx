@@ -129,7 +129,9 @@ export function ProspectCard({
                 Next follow up due:
               </span>
               <span className="text-text-body text-[16px] leading-[24px] font-semibold">
-                {nextTask ? formatDateTimeAustralian(nextTask.dueDate) : ""}
+                {nextTask
+                  ? formatDateTimeAustralian(nextTask.dueDate, true)
+                  : ""}
               </span>
             </div>
 
@@ -183,7 +185,7 @@ export function ProspectCard({
               Next follow up due:
             </span>
             <span className="text-text-body text-[16px] leading-[24px] font-semibold">
-              {nextTask ? formatDateTimeAustralian(nextTask.dueDate) : ""}
+              {nextTask ? formatDateTimeAustralian(nextTask.dueDate, true) : ""}
             </span>
           </div>
 

@@ -35,7 +35,10 @@ export function getTomorrowFormatted(): string {
 /**
  * Combines date and time strings into a Date object (UTC)
  */
-export function combineDateAndTime(dateString: string, timeString: string): Date {
+export function combineDateAndTime(
+  dateString: string,
+  timeString: string
+): Date {
   // Create UTC date to avoid timezone interpretation issues
   return new Date(`${dateString}T${timeString}:00.000Z`);
 }
@@ -53,8 +56,12 @@ export function isToday(date: Date): boolean {
  */
 export function isPastDate(date: Date): boolean {
   const today = new Date();
-  const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-  const compareDateUTC = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const todayUTC = new Date(
+    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
+  );
+  const compareDateUTC = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
   return compareDateUTC < todayUTC;
 }
 
@@ -72,7 +79,7 @@ export function formatDateAustralian(date: Date | string): string {
   return new Intl.DateTimeFormat("en-AU", {
     day: "2-digit",
     month: "2-digit",
-    year: "numeric"
+    year: "numeric",
   }).format(dateObj);
 }
 
@@ -88,7 +95,10 @@ export function isTomorrow(date: Date): boolean {
 /**
  * Formats a date and time in Australian format with time
  */
-export function formatDateTimeAustralian(date: Date | string, moreReadable: boolean = false): string {
+export function formatDateTimeAustralian(
+  date: Date | string,
+  moreReadable: boolean = false
+): string {
   const dateObj = date instanceof Date ? date : new Date(date);
 
   // Check if the date is valid
@@ -118,28 +128,6 @@ export function formatDateTimeAustralian(date: Date | string, moreReadable: bool
     weekday: "short",
     day: "2-digit",
     month: "2-digit",
-    year: "2-digit",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  }).format(dateObj);
-}
-
-/**
- * Formats a date and time in Australian format for detailed display
- */
-export function formatDateTimeLongAustralian(date: Date | string): string {
-  const dateObj = date instanceof Date ? date : new Date(date);
-
-  // Check if the date is valid
-  if (isNaN(dateObj.getTime())) {
-    return "Invalid date";
-  }
-
-  return new Intl.DateTimeFormat("en-AU", {
-    weekday: "long",
-    day: "numeric",
-    month: "numeric",
     year: "2-digit",
     hour: "numeric",
     minute: "2-digit",
