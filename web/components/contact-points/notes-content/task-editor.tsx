@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectTrigger,
@@ -11,7 +10,13 @@ import {
 import { Save, PenLine, Calendar } from "lucide-react";
 import { TaskType, Task } from "@/lib/types/task";
 import { MessageTemplate } from "@prisma/client";
-import { getTodayFormatted, getTomorrowFormatted, formatDateForInput, formatTimeForInput, formatDateTimeAustralian } from "@/lib/utils/date";
+import {
+  getTodayFormatted,
+  getTomorrowFormatted,
+  formatDateForInput,
+  formatTimeForInput,
+  formatDateTimeAustralian,
+} from "@/lib/utils/date";
 
 interface TaskEditorProps {
   variant: "modal" | "sidepane";
@@ -28,8 +33,6 @@ interface TaskEditorProps {
   setTaskDueTime: (time: string) => void;
   selectedTemplateId: string;
   setSelectedTemplateId: (id: string) => void;
-  notificationEnabled: boolean;
-  setNotificationEnabled: (enabled: boolean) => void;
   hasTaskChanges: boolean;
   isUpdatingTask: boolean;
   messageTemplates?: MessageTemplate[];
@@ -52,8 +55,6 @@ export function TaskEditor({
   setTaskDueTime,
   selectedTemplateId,
   setSelectedTemplateId,
-  notificationEnabled,
-  setNotificationEnabled,
   hasTaskChanges,
   isUpdatingTask,
   messageTemplates,
@@ -75,8 +76,6 @@ export function TaskEditor({
       .toLowerCase()
       .replace(/\b\w/g, (l) => l.toUpperCase());
   };
-
-  // Removed local formatDate function - using imported Australian formatter
 
   // Check if selected date is today/tomorrow
   const isSelectedDateToday = taskDueDate === getTodayFormatted();
@@ -139,7 +138,10 @@ export function TaskEditor({
             <label className="text-sm font-medium text-foreground">
               Task Type
             </label>
-            <Select value={taskType} onValueChange={(value) => setTaskType(value as TaskType)}>
+            <Select
+              value={taskType}
+              onValueChange={(value) => setTaskType(value as TaskType)}
+            >
               <SelectTrigger className={inputClasses}>
                 <span>{formatTaskType(taskType)}</span>
               </SelectTrigger>
@@ -244,8 +246,9 @@ export function TaskEditor({
                 <SelectTrigger className={inputClasses}>
                   <span>
                     {selectedTemplateId
-                      ? messageTemplates?.find((t) => t.id === selectedTemplateId)
-                          ?.name || "Select template"
+                      ? messageTemplates?.find(
+                          (t) => t.id === selectedTemplateId
+                        )?.name || "Select template"
                       : "Select template"}
                   </span>
                 </SelectTrigger>
@@ -280,22 +283,6 @@ export function TaskEditor({
           >
             Reset to Current
           </Button>
-
-          {/* Notification Toggle */}
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="notification"
-              checked={notificationEnabled}
-              onCheckedChange={(checked) => setNotificationEnabled(!!checked)}
-              disabled={isUpdatingTask}
-            />
-            <label
-              htmlFor="notification"
-              className="text-sm font-medium text-foreground cursor-pointer"
-            >
-              Enable notifications for this task
-            </label>
-          </div>
         </div>
       ) : (
         <div className="space-y-3">
@@ -331,8 +318,9 @@ export function TaskEditor({
                 Template:
               </span>
               <span className="text-sm text-muted-foreground">
-                {messageTemplates?.find((t) => t.id === nextTask.messageTemplateId)
-                  ?.name || "Unknown template"}
+                {messageTemplates?.find(
+                  (t) => t.id === nextTask.messageTemplateId
+                )?.name || "Unknown template"}
               </span>
             </div>
           )}

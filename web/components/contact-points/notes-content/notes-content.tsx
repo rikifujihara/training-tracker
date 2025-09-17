@@ -51,8 +51,6 @@ export function NotesContent({ lead, variant }: NotesContentProps) {
     setTaskDueTime,
     selectedTemplateId,
     setSelectedTemplateId,
-    notificationEnabled,
-    setNotificationEnabled,
     hasTaskChanges,
     handleSaveTask,
 
@@ -98,8 +96,6 @@ export function NotesContent({ lead, variant }: NotesContentProps) {
         setTaskDueTime={setTaskDueTime}
         selectedTemplateId={selectedTemplateId}
         setSelectedTemplateId={setSelectedTemplateId}
-        notificationEnabled={notificationEnabled}
-        setNotificationEnabled={setNotificationEnabled}
         hasTaskChanges={hasTaskChanges || false}
         isUpdatingTask={isUpdatingTask}
         messageTemplates={messageTemplates}
