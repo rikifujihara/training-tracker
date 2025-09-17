@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectTrigger,
@@ -34,8 +33,6 @@ interface TaskEditorProps {
   setTaskDueTime: (time: string) => void;
   selectedTemplateId: string;
   setSelectedTemplateId: (id: string) => void;
-  notificationEnabled: boolean;
-  setNotificationEnabled: (enabled: boolean) => void;
   hasTaskChanges: boolean;
   isUpdatingTask: boolean;
   messageTemplates?: MessageTemplate[];
@@ -58,8 +55,6 @@ export function TaskEditor({
   setTaskDueTime,
   selectedTemplateId,
   setSelectedTemplateId,
-  notificationEnabled,
-  setNotificationEnabled,
   hasTaskChanges,
   isUpdatingTask,
   messageTemplates,

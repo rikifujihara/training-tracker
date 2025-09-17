@@ -20,7 +20,7 @@ import { CreateConsultationInput } from "@/lib/types/consultation";
 import { Badge } from "../ui/badge";
 import { useNextFollowUpTask } from "@/lib/hooks/use-tasks";
 import { formatDateTimeAustralian } from "@/lib/utils/date";
-import { ContactPointOutcome } from "@/lib/types/contactPoint";
+import { ContactPointOutcome, ContactType } from "@/lib/types/contactPoint";
 
 export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -54,6 +54,10 @@ export function ProspectCard({
   const [outcome, setOutcome] = React.useState<
     ContactPointOutcome | undefined
   >();
+  const [notes, setNotes] = React.useState("");
+  const [contactType, setContactType] = React.useState<ContactType>(
+    ContactType.PHONE
+  );
 
   // Fetch next follow-up task for this lead
   const { data: nextTask } = useNextFollowUpTask(lead?.id || "");
@@ -75,10 +79,6 @@ export function ProspectCard({
   // Handler for mobile message button
   const handleSendMessage = () => {
     setMobileMessageModalOpen(true);
-  };
-
-  const handleCall = () => {
-    console.log("Call clicked for:", lead.displayName);
   };
 
   const handleMarkNotInterested = () => {
@@ -144,7 +144,13 @@ export function ProspectCard({
               <Button
                 variant="secondary"
                 size="default"
-                onClick={() => setLogModalOpen(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setNotes("");
+                  setContactType(ContactType.PHONE);
+                  setOutcome(undefined);
+                  setLogModalOpen(true);
+                }}
               >
                 <Phone className="w-6 h-6" />
                 Log
@@ -200,6 +206,9 @@ export function ProspectCard({
               onClick={(e) => {
                 e.stopPropagation();
                 setWasMessageTemplateSelected(false);
+                setNotes("");
+                setContactType(ContactType.PHONE);
+                setOutcome(undefined);
                 setLogModalOpen(true);
               }}
             >
@@ -224,7 +233,10 @@ export function ProspectCard({
                   className="w-full justify-center gap-3 px-6 py-3 h-12"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleCall();
+                    setContactType(ContactType.PHONE);
+                    setOutcome(undefined);
+                    setNotes("");
+                    setMessageTemplateId("");
                     setLogModalOpen(true);
                   }}
                 >
@@ -255,6 +267,10 @@ export function ProspectCard({
         messageTemplateId={messageTemplateId}
         setOutcome={setOutcome}
         outcome={outcome}
+        notes={notes}
+        setNotes={setNotes}
+        contactType={contactType}
+        setContactType={setContactType}
       />
 
       <BookConsultationModal

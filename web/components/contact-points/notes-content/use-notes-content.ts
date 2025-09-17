@@ -39,7 +39,6 @@ export function useNotesContent(lead: Lead) {
   const [taskDueDate, setTaskDueDate] = React.useState("");
   const [taskDueTime, setTaskDueTime] = React.useState("");
   const [selectedTemplateId, setSelectedTemplateId] = React.useState<string>("");
-  const [notificationEnabled, setNotificationEnabled] = React.useState(false);
 
   // Not interested modal state
   const [notInterestedModalOpen, setNotInterestedModalOpen] = React.useState(false);
@@ -58,7 +57,6 @@ export function useNotesContent(lead: Lead) {
       setTaskDueDate(formatDateForInput(dueDate));
       setTaskDueTime(formatTimeForInput(dueDate));
       setSelectedTemplateId(nextTask.messageTemplateId || "");
-      setNotificationEnabled(false);
     }
   }, [nextTask]);
 
@@ -170,8 +168,6 @@ export function useNotesContent(lead: Lead) {
     setTaskDueTime,
     selectedTemplateId,
     setSelectedTemplateId,
-    notificationEnabled,
-    setNotificationEnabled,
     hasTaskChanges,
     handleSaveTask,
 

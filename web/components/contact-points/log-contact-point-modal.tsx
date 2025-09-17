@@ -64,6 +64,10 @@ export interface LogContactPointModalProps {
   setMessageTemplateId: (data: string) => void;
   setOutcome: (data: ContactPointOutcome) => void;
   outcome: ContactPointOutcome | undefined;
+  notes: string;
+  setNotes: (notes: string) => void;
+  contactType: ContactType;
+  setContactType: (contactType: ContactType) => void;
 }
 
 export function LogContactPointModal({
@@ -77,11 +81,11 @@ export function LogContactPointModal({
   setMessageTemplateId,
   setOutcome,
   outcome,
+  notes,
+  setNotes,
+  contactType,
+  setContactType,
 }: LogContactPointModalProps) {
-  const [contactType, setContactType] = React.useState<ContactType>(
-    ContactType.PHONE
-  );
-  const [notes, setNotes] = React.useState("");
   const contactDate = new Date();
 
   // Fetch message templates
@@ -92,14 +96,17 @@ export function LogContactPointModal({
     if (wasMessageTemplateSelected) {
       setOutcome(ContactPointOutcome.SENT_MESSAGE);
     }
-  }, [wasMessageTemplateSelected]);
+  }, [wasMessageTemplateSelected, setOutcome]);
 
-  // Auto-set contact type to TEXT when "Sent Message" is selected
+  // Set the contact type based on outcome
   React.useEffect(() => {
     if (outcome === ContactPointOutcome.SENT_MESSAGE) {
       setContactType(ContactType.TEXT);
+    } else {
+      setContactType(ContactType.PHONE);
+      setMessageTemplateId("");
     }
-  }, [outcome]);
+  }, [outcome, setContactType, setMessageTemplateId]);
 
   // Auto-populate notes with template content when template is selected
   React.useEffect(() => {
@@ -132,7 +139,7 @@ export function LogContactPointModal({
       // Clear notes when template is deselected
       setNotes("");
     }
-  }, [messageTemplateId, messageTemplates, lead, outcome]);
+  }, [messageTemplateId, messageTemplates, lead, outcome, setNotes]);
 
   const handleSave = () => {
     const data: LogContactPointData = {
