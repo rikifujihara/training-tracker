@@ -20,6 +20,7 @@ import { CreateConsultationInput } from "@/lib/types/consultation";
 import { Badge } from "../ui/badge";
 import { useNextFollowUpTask } from "@/lib/hooks/use-tasks";
 import { formatDateTimeAustralian } from "@/lib/utils/date";
+import { ContactPointOutcome } from "@/lib/types/contactPoint";
 
 export interface ProspectCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -49,7 +50,10 @@ export function ProspectCard({
   const createConsultationMutation = useCreateConsultation();
   const markNotInterestedMutation = useMarkLeadNotInterested();
   const statusBarColor = getStatusBarColor(lead.status);
-  // Format date for display - removed local function, using imported utility
+  const [messageTemplateId, setMessageTemplateId] = React.useState<string>("");
+  const [outcome, setOutcome] = React.useState<
+    ContactPointOutcome | undefined
+  >();
 
   // Fetch next follow-up task for this lead
   const { data: nextTask } = useNextFollowUpTask(lead?.id || "");
@@ -221,7 +225,6 @@ export function ProspectCard({
                   onClick={(e) => {
                     e.stopPropagation();
                     handleCall();
-                    setWasMessageTemplateSelected(true);
                     setLogModalOpen(true);
                   }}
                 >
@@ -248,6 +251,10 @@ export function ProspectCard({
         onSave={handleLogContactPoint}
         isLoading={createContactPointMutation.isPending}
         wasMessageTemplateSelected={wasMessageTemplateSelected}
+        setMessageTemplateId={setMessageTemplateId}
+        messageTemplateId={messageTemplateId}
+        setOutcome={setOutcome}
+        outcome={outcome}
       />
 
       <BookConsultationModal
@@ -261,6 +268,7 @@ export function ProspectCard({
       <MobileMessageModal
         open={mobileMessageModalOpen}
         setWasMessageTemplateSelected={setWasMessageTemplateSelected}
+        setMessageTemplateId={setMessageTemplateId}
         onOpenChange={setMobileMessageModalOpen}
         setLogModalOpen={setLogModalOpen}
         lead={lead}

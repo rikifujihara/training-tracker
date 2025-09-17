@@ -23,15 +23,6 @@ import { Lead } from "@/lib/types/lead";
 import { ContactType, ContactPointOutcome } from "@/lib/types/contactPoint";
 import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
 
-export interface LogContactPointModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  lead: Lead;
-  onSave?: (data: LogContactPointData) => void;
-  isLoading?: boolean;
-  wasMessageTemplateSelected: boolean;
-}
-
 export interface LogContactPointData {
   contactType: ContactType;
   outcome?: ContactPointOutcome;
@@ -62,6 +53,19 @@ const outcomeOptions = [
   },
 ];
 
+export interface LogContactPointModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  lead: Lead;
+  onSave?: (data: LogContactPointData) => void;
+  isLoading?: boolean;
+  wasMessageTemplateSelected: boolean;
+  messageTemplateId: string;
+  setMessageTemplateId: (data: string) => void;
+  setOutcome: (data: ContactPointOutcome) => void;
+  outcome: ContactPointOutcome | undefined;
+}
+
 export function LogContactPointModal({
   open,
   onOpenChange,
@@ -69,31 +73,20 @@ export function LogContactPointModal({
   onSave,
   isLoading = false,
   wasMessageTemplateSelected,
+  messageTemplateId,
+  setMessageTemplateId,
+  setOutcome,
+  outcome,
 }: LogContactPointModalProps) {
   const [contactType, setContactType] = React.useState<ContactType>(
     ContactType.PHONE
   );
-  const [outcome, setOutcome] = React.useState<
-    ContactPointOutcome | undefined
-  >();
   const [notes, setNotes] = React.useState("");
-  const [contactDate, setContactDate] = React.useState(new Date());
-  const [messageTemplateId, setMessageTemplateId] = React.useState<string>("");
+  const contactDate = new Date();
 
   // Fetch message templates
   const { data: messageTemplates, isLoading: templatesLoading } =
     useMessageTemplates();
-
-  React.useEffect(() => {
-    if (open) {
-      // Reset form when modal opens
-      setContactType(ContactType.PHONE);
-      setOutcome(undefined);
-      setNotes("");
-      setContactDate(new Date());
-      setMessageTemplateId("");
-    }
-  }, [open]);
 
   React.useEffect(() => {
     if (wasMessageTemplateSelected) {

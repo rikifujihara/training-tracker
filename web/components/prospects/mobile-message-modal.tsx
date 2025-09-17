@@ -18,6 +18,7 @@ export interface MobileMessageModalProps {
   open: boolean;
   // this is so we know whether to default to 'sent message'
   setWasMessageTemplateSelected: (open: boolean) => void;
+  setMessageTemplateId: (data: string) => void;
   onOpenChange: (open: boolean) => void;
   setLogModalOpen: (open: boolean) => void;
   lead: Lead;
@@ -26,6 +27,7 @@ export interface MobileMessageModalProps {
 export function MobileMessageModal({
   open,
   setWasMessageTemplateSelected,
+  setMessageTemplateId,
   onOpenChange,
   setLogModalOpen,
   lead,
@@ -141,7 +143,10 @@ export function MobileMessageModal({
                       key={template.id}
                       variant="outline"
                       className="w-full h-auto p-4 justify-start text-left"
-                      onClick={() => handleSendSMS(template.content)}
+                      onClick={() => {
+                        setMessageTemplateId(template.id);
+                        handleSendSMS(template.content);
+                      }}
                     >
                       <div className="flex flex-col items-start w-full">
                         <span className="font-semibold text-[16px] leading-[24px]">
