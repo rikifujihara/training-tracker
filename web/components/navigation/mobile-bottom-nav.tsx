@@ -28,28 +28,24 @@ export function MobileBottomNav({ onMenuClick }: MobileBottomNavProps) {
   const getNavStyles = () => {
     let containerClasses =
       "fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border-primary md:hidden";
-    let heightClasses = "h-[84px]";
-    let paddingClasses = "px-0 pt-2";
+    let heightClasses = "h-22";
+    let paddingClasses = "px-0 py-0";
 
     if (isPWA) {
       if (isIOS) {
         // iOS PWA: Use CSS environment variables for proper safe area handling
         if (hasHomeIndicator) {
           // Modern iOS devices with Face ID - use CSS env() for precise spacing
-          heightClasses = "h-safe-nav-extended";
-          paddingClasses = "px-0 pt-2 pb-2";
+          paddingClasses = "px-0 pt-0 pb-2";
         } else {
           // Older iOS devices with home button
           heightClasses = "h-safe-nav";
           paddingClasses = "px-0 pt-2 pb-2";
         }
-      } else if (isAndroid) {
-        // Android PWA: account for gesture navigation
-        heightClasses = "h-[96px]";
-        paddingClasses = "px-0 pt-2 pb-[12px]";
-        // Add safe area support for Android too
-        containerClasses +=
-          " supports-[padding:env(safe-area-inset-bottom)]:pb-safe";
+      }
+    } else if (!isPWA) {
+      if (isAndroid) {
+        paddingClasses = "px-0 pt-0 pb-2";
       }
     }
 
