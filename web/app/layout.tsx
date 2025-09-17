@@ -15,11 +15,45 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "Trainer Base",
+    startupImage: [
+      {
+        url: "/icon-512x512.png",
+        media:
+          "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)",
+      },
+      {
+        url: "/icon-512x512.png",
+        media:
+          "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)",
+      },
+      {
+        url: "/icon-512x512.png",
+        media:
+          "(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)",
+      },
+    ],
   },
   icons: {
-    apple: "/icon-192x192.svg",
+    apple: [
+      {
+        url: "/touch-icon-iphone.svg",
+        sizes: "180x180",
+        type: "image/svg+xml",
+      },
+      { url: "/touch-icon-ipad.svg", sizes: "152x152", type: "image/svg+xml" },
+      {
+        url: "/touch-icon-iphone-retina.svg",
+        sizes: "180x180",
+        type: "image/svg+xml",
+      },
+      {
+        url: "/touch-icon-ipad-retina.svg",
+        sizes: "167x167",
+        type: "image/svg+xml",
+      },
+    ],
   },
 };
 
@@ -28,8 +62,9 @@ export function generateViewport() {
     themeColor: "#ffffff",
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+    maximumScale: 5,
+    userScalable: true,
+    viewportFit: "cover",
   };
 }
 
