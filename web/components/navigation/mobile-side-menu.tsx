@@ -34,7 +34,7 @@ export function MobileSideMenu({ open, onOpenChange }: MobileSideMenuProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-80 max-w-[320px] p-0 bg-surface-primary"
+        className="w-80 max-w-[320px] p-0 bg-surface-primary pt-[env(safe-area-inset-top)]"
       >
         <SheetHeader className="sr-only">
           <SheetTitle>Mobile Navigation Menu</SheetTitle>
