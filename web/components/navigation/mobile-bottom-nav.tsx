@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Menu, User } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface MobileBottomNavProps {
@@ -19,12 +19,6 @@ export function MobileBottomNav({ onMenuClick }: MobileBottomNavProps) {
       icon: User,
       label: "Prospects",
       isActive: pathname === "/protected/prospects",
-    },
-    {
-      href: "/protected",
-      icon: Home,
-      label: "Home",
-      isActive: pathname === "/protected",
     },
   ];
 

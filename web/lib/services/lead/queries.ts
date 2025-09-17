@@ -186,6 +186,87 @@ export class LeadQueries {
   }
 
   /**
+   * Search leads by firstName, lastName, and mobile number
+   */
+  static async searchLeads(
+    userId: string,
+    searchQuery: string,
+    options: {
+      page: number;
+      pageSize: number;
+      status?: LeadStatus;
+    }
+  ): Promise<{
+    leads: Lead[];
+    hasNextPage: boolean;
+    totalCount: number;
+  }> {
+    const { page, pageSize, status } = options;
+    const skip = page * pageSize;
+
+    // Build search conditions
+    const searchConditions = {
+      OR: [
+        {
+          firstName: {
+            contains: searchQuery,
+            mode: 'insensitive' as const,
+          },
+        },
+        {
+          lastName: {
+            contains: searchQuery,
+            mode: 'insensitive' as const,
+          },
+        },
+        {
+          phoneNumber: {
+            contains: searchQuery,
+            mode: 'insensitive' as const,
+          },
+        },
+      ],
+    };
+
+    // Base query conditions
+    const whereConditions: Record<string, unknown> = {
+      userId,
+      AND: [searchConditions],
+    };
+
+    // Add status filter if provided
+    if (status) {
+      whereConditions.status = status;
+    }
+
+    // Get total count
+    const totalCount = await prisma.lead.count({
+      where: whereConditions,
+    });
+
+    // Get paginated results
+    const rawLeads = await prisma.lead.findMany({
+      where: whereConditions,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: pageSize,
+    });
+
+    const hasNextPage = skip + pageSize < totalCount;
+
+    // Enrich leads with display fields
+    const enrichedLeads = rawLeads.map((lead) =>
+      LeadUtils.enrichLeadWithDisplayFields(lead)
+    );
+
+    return {
+      leads: enrichedLeads,
+      hasNextPage,
+      totalCount,
+    };
+  }
+
+  /**
    * Get lead statistics for a user
    */
   static async getLeadStats(userId: string) {

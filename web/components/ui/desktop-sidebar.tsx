@@ -4,7 +4,6 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
 import {
-  Home,
   MessageSquare,
   Settings,
   Menu,
@@ -22,7 +21,6 @@ export interface DesktopSidebarProps
 }
 
 const navigationItems = [
-  { icon: Home, label: "Dashboard", href: "/protected", badge: undefined },
   {
     icon: Phone,
     label: "Follow ups",

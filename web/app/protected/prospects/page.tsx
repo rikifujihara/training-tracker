@@ -8,6 +8,7 @@ import {
   useLeadStats,
   useProspectFilterCounts,
   usePrefetchLeadsFilters,
+  useSearchLeads,
 } from "@/lib/hooks/use-leads";
 import { useTasks } from "@/lib/hooks/use-tasks";
 import { Button } from "@/components/ui/button";
@@ -15,15 +16,20 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Lead, LeadStatus } from "@/lib/types/lead";
 import { NotebookPen } from "lucide-react";
+import { ProspectSearchBar } from "@/components/prospects/prospect-search-bar";
 
 type ProspectFilter = "today" | "overdue" | "upcoming" | "all";
 
 export default function ProspectsPage() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [activeFilter, setActiveFilter] = useState<ProspectFilter>("today");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Initialize prefetching
   const { prefetchAllFilters } = usePrefetchLeadsFilters(10);
+
+  // Use different queries based on whether we're searching or filtering
+  const isSearching = activeFilter === "all" && searchQuery.trim().length > 0;
 
   const {
     data: leadsData,
@@ -33,6 +39,15 @@ export default function ProspectsPage() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteLeads(activeFilter, 10, LeadStatus.PROSPECT);
+
+  const {
+    data: searchData,
+    isLoading: searchLoading,
+    error: searchError,
+    fetchNextPage: fetchSearchNextPage,
+    hasNextPage: searchHasNextPage,
+    isFetchingNextPage: searchIsFetchingNextPage,
+  } = useSearchLeads(searchQuery, 10, LeadStatus.PROSPECT, isSearching);
 
   const { isLoading: statsLoading } = useLeadStats();
 
@@ -53,11 +68,21 @@ export default function ProspectsPage() {
 
   // Flatten all leads from all pages
   const allLeads = useMemo(() => {
+    if (isSearching) {
+      return searchData?.pages.flatMap((page) => page.leads) || [];
+    }
     return leadsData?.pages.flatMap((page) => page.leads) || [];
-  }, [leadsData]);
+  }, [leadsData, searchData, isSearching]);
 
   // Since filtering is now done server-side, we just use the leads directly
   const filteredProspects = allLeads;
+
+  // Determine which loading state and pagination to use
+  const currentLoading = isSearching ? searchLoading : leadsLoading;
+  const currentError = isSearching ? searchError : leadsError;
+  const currentHasNextPage = isSearching ? searchHasNextPage : hasNextPage;
+  const currentIsFetchingNextPage = isSearching ? searchIsFetchingNextPage : isFetchingNextPage;
+  const currentFetchNextPage = isSearching ? fetchSearchNextPage : fetchNextPage;
 
   // Get filter counts from the dedicated filter counts query
   const getFilterCount = (filter: ProspectFilter): number => {
@@ -106,6 +131,24 @@ export default function ProspectsPage() {
     setSelectedLead(null);
   }, [activeFilter]);
 
+  // Reset search query when switching away from "all" filter
+  React.useEffect(() => {
+    if (activeFilter !== "all") {
+      setSearchQuery("");
+    }
+  }, [activeFilter]);
+
+  // Search handlers
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setSelectedLead(null);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setSelectedLead(null);
+  };
+
   // Intersection observer for infinite scroll
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -115,8 +158,8 @@ export default function ProspectsPage() {
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0];
-        if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
+        if (target.isIntersecting && currentHasNextPage && !currentIsFetchingNextPage) {
+          currentFetchNextPage();
         }
       },
       {
@@ -130,7 +173,7 @@ export default function ProspectsPage() {
     return () => {
       observer.disconnect();
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [currentHasNextPage, currentIsFetchingNextPage, currentFetchNextPage]);
 
   const handleShowNotes = (lead: Lead) => {
     setSelectedLead(lead);
@@ -154,12 +197,12 @@ export default function ProspectsPage() {
     );
   }
 
-  if (leadsError) {
+  if (currentError) {
     return (
       <Card>
         <CardContent className="pt-6">
           <div className="text-center text-red-600">
-            Error loading leads: {leadsError.message}
+            Error loading leads: {currentError.message}
           </div>
         </CardContent>
       </Card>
@@ -210,11 +253,23 @@ export default function ProspectsPage() {
               }
             )}
           </div>
+
+          {/* Search Bar - Only show when "Search" filter is active */}
+          {activeFilter === "all" && (
+            <div className="mt-4">
+              <ProspectSearchBar
+                onSearch={handleSearch}
+                onClear={handleClearSearch}
+                isLoading={currentLoading}
+                placeholder="Search prospects by name or phone number..."
+              />
+            </div>
+          )}
         </div>
       </div>
 
       {/* Prospects Content */}
-      {leadsLoading ? (
+      {currentLoading ? (
         // Show loading skeletons for prospects content
         <div className="flex gap-6 max-sm:justify-center">
           <div className="space-y-4 flex-shrink-0">
@@ -260,21 +315,21 @@ export default function ProspectsPage() {
             ))}
 
             {/* Load More Button and Intersection Observer Target */}
-            {hasNextPage && (
+            {currentHasNextPage && (
               <div ref={loadMoreRef} className="flex justify-center pt-4">
                 <Button
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
+                  onClick={() => currentFetchNextPage()}
+                  disabled={currentIsFetchingNextPage}
                   variant="outline"
                   size="default"
                 >
-                  {isFetchingNextPage ? "Loading..." : "Load More"}
+                  {currentIsFetchingNextPage ? "Loading..." : "Load More"}
                 </Button>
               </div>
             )}
 
             {/* Loading indicator for auto-loading */}
-            {isFetchingNextPage && (
+            {currentIsFetchingNextPage && (
               <div className="flex justify-center py-4">
                 <div className="text-text-disabled">
                   Loading more prospects...
@@ -306,7 +361,11 @@ export default function ProspectsPage() {
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <h3 className="text-text-headings text-[18px] leading-[22px] font-semibold mb-2">
-                No {getFilterLabel(activeFilter).toLowerCase()} prospects
+                {activeFilter === "all" && isSearching
+                  ? "No search results"
+                  : activeFilter === "all" && !isSearching
+                  ? "Search prospects"
+                  : `No ${getFilterLabel(activeFilter).toLowerCase()} prospects`}
               </h3>
               <p className="text-text-disabled text-[16px] leading-[24px]">
                 {activeFilter === "today" ? (
@@ -315,6 +374,10 @@ export default function ProspectsPage() {
                   "Great! No overdue tasks for prospects."
                 ) : activeFilter === "upcoming" ? (
                   "No prospects have upcoming tasks."
+                ) : activeFilter === "all" && isSearching ? (
+                  `No prospects found matching "${searchQuery}". Try a different search term.`
+                ) : activeFilter === "all" && !isSearching ? (
+                  "Use the search bar above to find prospects by name or phone number."
                 ) : allLeads && allLeads.length === 0 ? (
                   <>
                     No leads yet.{" "}

@@ -48,6 +48,17 @@ interface PaginatedLeadsResponse {
   error?: string;
 }
 
+interface SearchLeadsResponse {
+  success: boolean;
+  data: {
+    leads: Lead[];
+    hasNextPage: boolean;
+    totalCount: number;
+    searchQuery: string;
+  };
+  error?: string;
+}
+
 interface FilterCountsResponse {
   success: boolean;
   data: {
@@ -125,11 +136,42 @@ const fetchFilterCounts = async (status?: LeadStatus): Promise<FilterCountsRespo
     params.append('status', status);
   }
 
-  const url = params.toString() 
-    ? `/api/leads/filter-counts?${params}` 
+  const url = params.toString()
+    ? `/api/leads/filter-counts?${params}`
     : '/api/leads/filter-counts';
 
   const response = await fetch(url);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
+const searchLeadsPaginated = async ({
+  pageParam = 0,
+  searchQuery,
+  pageSize = 10,
+  status,
+}: {
+  pageParam?: number;
+  searchQuery: string;
+  pageSize?: number;
+  status?: LeadStatus;
+}): Promise<SearchLeadsResponse> => {
+  const params = new URLSearchParams({
+    q: searchQuery,
+    page: pageParam.toString(),
+    pageSize: pageSize.toString(),
+  });
+
+  if (status) {
+    params.append('status', status);
+  }
+
+  const response = await fetch(`/api/leads/search?${params}`);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -161,6 +203,7 @@ const leadKeys = {
   all: ['leads'] as const,
   lists: () => [...leadKeys.all, 'list'] as const,
   infinite: (filter: string) => [...leadKeys.all, 'infinite', { filter }] as const,
+  search: (query: string) => [...leadKeys.all, 'search', { query }] as const,
   stats: () => [...leadKeys.all, 'stats'] as const,
   filterCounts: () => [...leadKeys.all, 'filter-counts'] as const,
 } as const;
@@ -187,6 +230,28 @@ export const useInfiniteLeads = (
       return hasNextPage ? allPages.length : undefined;
     },
     initialPageParam: 0,
+    select: (data) => ({
+      pages: data.pages.map(page => page.data),
+      pageParams: data.pageParams,
+    }),
+  });
+};
+
+export const useSearchLeads = (
+  searchQuery: string,
+  pageSize: number = 10,
+  status?: LeadStatus,
+  enabled: boolean = true
+) => {
+  return useInfiniteQuery({
+    queryKey: [...leadKeys.search(searchQuery), { status }],
+    queryFn: ({ pageParam }) => searchLeadsPaginated({ pageParam, searchQuery, pageSize, status }),
+    getNextPageParam: (lastPage, allPages) => {
+      const { hasNextPage } = lastPage.data;
+      return hasNextPage ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
+    enabled: enabled && searchQuery.trim().length > 0,
     select: (data) => ({
       pages: data.pages.map(page => page.data),
       pageParams: data.pageParams,

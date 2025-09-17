@@ -10,7 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
-import { Home, MessageSquare, Settings, X, Phone } from "lucide-react";
+import { MessageSquare, Settings, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface MobileSideMenuProps {
@@ -19,7 +19,6 @@ export interface MobileSideMenuProps {
 }
 
 const navigationItems = [
-  { icon: Home, label: "Dashboard", href: "/protected" },
   { icon: Phone, label: "Follow ups", href: "/protected/prospects" },
   { icon: MessageSquare, label: "Templates", href: "/protected/templates" },
 ];

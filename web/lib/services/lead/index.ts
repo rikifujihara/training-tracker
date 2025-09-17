@@ -22,6 +22,7 @@ export class LeadService {
   static getProspectFilterCounts = LeadQueries.getProspectFilterCounts;
   static getLeadById = LeadQueries.getLeadById;
   static getLeadStats = LeadQueries.getLeadStats;
+  static searchLeads = LeadQueries.searchLeads;
 
   // Mutation operations
   static createLeads = LeadMutations.createLeads;
