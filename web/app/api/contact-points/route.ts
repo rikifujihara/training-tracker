@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
       contactDate: new Date(body.contactDate),
       outcome: body.outcome,
       notes: body.notes,
+      messageTemplateId: body.messageTemplateId,
     };
 
     // Validate required fields

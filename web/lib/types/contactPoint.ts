@@ -10,6 +10,7 @@ export type CreateContactPointInput = {
   contactDate: Date;
   outcome?: ContactPointOutcome;
   notes?: string;
+  messageTemplateId?: string;
 };
 
 export type RawContactPoint = {
@@ -20,8 +21,16 @@ export type RawContactPoint = {
   outcome: ContactPointOutcome | null;
   notes: string | null;
   contactDate: Date;
+  messageTemplateId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type ContactPoint = RawContactPoint;
+
+export type ContactPointWithTemplate = ContactPoint & {
+  messageTemplate?: {
+    id: string;
+    name: string;
+  } | null;
+};

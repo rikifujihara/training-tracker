@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ContactPoint, CreateContactPointInput, ContactType, ContactPointOutcome } from '@/lib/types/contactPoint';
+import { ContactPoint, ContactPointWithTemplate, CreateContactPointInput, ContactType, ContactPointOutcome } from '@/lib/types/contactPoint';
 
 // Types for API responses
 interface ContactPointResponse {
@@ -12,6 +12,14 @@ interface ContactPointsResponse {
   success: boolean;
   data: {
     contactPoints: ContactPoint[];
+  };
+  error?: string;
+}
+
+interface ContactPointsWithTemplateResponse {
+  success: boolean;
+  data: {
+    contactPoints: ContactPointWithTemplate[];
   };
   error?: string;
 }
@@ -72,7 +80,7 @@ const fetchContactPoints = async (): Promise<ContactPointsResponse> => {
   return response.json();
 };
 
-const fetchContactPointsByLeadId = async (leadId: string): Promise<ContactPointsResponse> => {
+const fetchContactPointsByLeadId = async (leadId: string): Promise<ContactPointsWithTemplateResponse> => {
   const response = await fetch(`/api/contact-points?leadId=${encodeURIComponent(leadId)}`);
 
   if (!response.ok) {

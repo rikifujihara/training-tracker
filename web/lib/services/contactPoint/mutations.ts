@@ -30,6 +30,7 @@ export class ContactPointMutations {
         contactDate: data.contactDate,
         outcome: data.outcome || null,
         notes: data.notes?.trim() || null,
+        messageTemplateId: data.messageTemplateId || null,
       },
     });
 
@@ -72,6 +73,7 @@ export class ContactPointMutations {
         ...(data.contactDate && { contactDate: data.contactDate }),
         ...(data.outcome !== undefined && { outcome: data.outcome }),
         ...(data.notes !== undefined && { notes: data.notes?.trim() || null }),
+        ...(data.messageTemplateId !== undefined && { messageTemplateId: data.messageTemplateId || null }),
       },
     });
   }

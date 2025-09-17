@@ -17,6 +17,10 @@ export interface ContactHistoryCardProps
   outcome?: ContactPointOutcome | null;
   contactDate: Date | string;
   notes?: string | null;
+  messageTemplate?: {
+    id: string;
+    name: string;
+  } | null;
   showNotes?: boolean;
   showOutcomeBadge?: boolean;
   onDelete?: () => void;
@@ -77,6 +81,7 @@ export function ContactHistoryCard({
   outcome,
   contactDate,
   notes,
+  messageTemplate,
   showNotes = true,
   showOutcomeBadge = true,
   onDelete,
@@ -124,15 +129,22 @@ export function ContactHistoryCard({
             {typeConfig.label}
           </Badge>
 
-          {/* Outcome badge */}
-          {showOutcomeBadge && outcome && (
+          {/* Outcome badge or Template badge */}
+          {showOutcomeBadge && contactType === ContactType.TEXT && messageTemplate ? (
+            <Badge
+              variant="default"
+              className="bg-surface-action"
+            >
+              {messageTemplate.name}
+            </Badge>
+          ) : showOutcomeBadge && contactType === ContactType.PHONE && outcome ? (
             <Badge
               variant="default"
               className={cn(outcomeConfig[outcome].bgColor)}
             >
               {outcomeConfig[outcome].label}
             </Badge>
-          )}
+          ) : null}
         </div>
 
         {/* Date */}

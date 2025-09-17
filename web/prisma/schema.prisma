@@ -95,14 +95,16 @@ model ContactPoint {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Contact fields
-  contactType ContactType          @map("contact_type")
-  outcome     ContactPointOutcome? @map("outcome")
-  notes       String?
-  contactDate DateTime             @map("contact_date")
+  contactType       ContactType          @map("contact_type")
+  outcome           ContactPointOutcome? @map("outcome")
+  notes             String?
+  contactDate       DateTime             @map("contact_date")
+  messageTemplateId String?              @map("message_template_id")
 
   // Relationships
-  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lead            Lead             @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messageTemplate MessageTemplate? @relation(fields: [messageTemplateId], references: [id])
 
   // Indexes
   @@index([leadId])
@@ -153,6 +155,7 @@ model MessageTemplate {
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks         Task[]
   consultations Consultation[]
+  contactPoints ContactPoint[]
 
   // Indexes
   @@index([userId])

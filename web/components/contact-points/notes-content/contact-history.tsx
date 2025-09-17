@@ -1,12 +1,12 @@
 import * as React from "react";
 import { ContactHistoryCard } from "../contact-history-card";
-import { ContactPoint } from "@/lib/types/contactPoint";
+import { ContactPointWithTemplate } from "@/lib/types/contactPoint";
 import { Consultation } from "@/lib/types/consultation";
 import { formatDateAustralian } from "@/lib/utils/date";
 
 interface ContactHistoryProps {
   variant: "modal" | "sidepane";
-  contactPoints: ContactPoint[];
+  contactPoints: ContactPointWithTemplate[];
   consultations?: Consultation[];
   contactPointsLoading: boolean;
   consultationsLoading: boolean;
@@ -28,7 +28,7 @@ export function ContactHistory({
   const allHistoryItems = React.useMemo(() => {
     const items: Array<{
       type: "contact" | "consultation";
-      data: ContactPoint | Consultation;
+      data: ContactPointWithTemplate | Consultation;
       date: Date;
     }> = [];
 
@@ -83,7 +83,7 @@ export function ContactHistory({
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {allHistoryItems.map((item) => {
             if (item.type === "contact") {
-              const contactPoint = item.data as ContactPoint;
+              const contactPoint = item.data as ContactPointWithTemplate;
               return (
                 <ContactHistoryCard
                   key={`contact-${contactPoint.id}`}
@@ -92,6 +92,7 @@ export function ContactHistory({
                   outcome={contactPoint.outcome}
                   contactDate={contactPoint.createdAt}
                   notes={contactPoint.notes}
+                  messageTemplate={contactPoint.messageTemplate}
                   showNotes={true}
                   showOutcomeBadge={true}
                 />

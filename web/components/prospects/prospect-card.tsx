@@ -67,6 +67,7 @@ export function ProspectCard({
       contactDate: data.contactDate,
       outcome: data.outcome,
       notes: data.notes,
+      messageTemplateId: data.messageTemplateId,
     });
   };
 
@@ -152,6 +153,7 @@ export function ProspectCard({
                 onClick={(e) => {
                   e.stopPropagation();
                   resetContactPointState();
+                  setLogModalOpen(true);
                 }}
               >
                 <Phone className="w-6 h-6" />

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { ContactPoint, ContactPointOutcome, ContactType } from "@/lib/types/contactPoint";
+import { ContactPoint, ContactPointWithTemplate, ContactPointOutcome, ContactType } from "@/lib/types/contactPoint";
 
 export class ContactPointQueries {
   /**
@@ -15,7 +15,7 @@ export class ContactPointQueries {
   /**
    * Get all contact points for a specific lead
    */
-  static async getContactPointsByLeadId(leadId: string, userId: string): Promise<ContactPoint[]> {
+  static async getContactPointsByLeadId(leadId: string, userId: string): Promise<ContactPointWithTemplate[]> {
     // Verify the lead belongs to the user
     const lead = await prisma.lead.findFirst({
       where: {
@@ -30,6 +30,14 @@ export class ContactPointQueries {
 
     return prisma.contactPoint.findMany({
       where: { leadId },
+      include: {
+        messageTemplate: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       orderBy: { contactDate: 'desc' },
     });
   }
