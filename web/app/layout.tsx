@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { ReactQueryProvider } from "@/lib/react-query";
-import { MobileBottomNav } from "@/components/navigation/mobile-bottom-nav";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
