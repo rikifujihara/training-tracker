@@ -226,3 +226,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* PWA and safe area support for mobile navigation */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pb-safe-plus-4 {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+  }
+
+  .h-safe-nav {
+    height: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  .h-safe-nav-extended {
+    height: calc(100px + env(safe-area-inset-bottom));
+  }
+}
