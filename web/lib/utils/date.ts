@@ -115,26 +115,30 @@ export function formatDateTimeAustralian(
     return "Invalid date";
   }
 
-  // If moreReadable is true, check for today/tomorrow
   if (moreReadable) {
-    const timeFormat = new Intl.DateTimeFormat("en-AU", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    }).format(dateObj);
-
-    if (isToday(dateObj)) {
-      return `Today, ${timeFormat}`;
-    }
-
-    if (isTomorrow(dateObj)) {
-      return `Tomorrow, ${timeFormat}`;
-    }
-
-    if (isYesterday(dateObj)) {
-      return `Yesterday, ${timeFormat}`;
-    }
+    console.log("more readable");
   }
+
+  // If moreReadable is true, check for today/tomorrow
+  // if (moreReadable) {
+  //   const timeFormat = new Intl.DateTimeFormat("en-AU", {
+  //     hour: "numeric",
+  //     minute: "2-digit",
+  //     hour12: true,
+  //   }).format(dateObj);
+
+  //   if (isToday(dateObj)) {
+  //     return `Today, ${timeFormat}`;
+  //   }
+
+  //   if (isTomorrow(dateObj)) {
+  //     return `Tomorrow, ${timeFormat}`;
+  //   }
+
+  //   if (isYesterday(dateObj)) {
+  //     return `Yesterday, ${timeFormat}`;
+  //   }
+  // }
 
   // Default format
   return new Intl.DateTimeFormat("en-AU", {
