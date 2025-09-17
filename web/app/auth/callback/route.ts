@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   // if "next" is in param, use it as the redirect URL
-  let next = searchParams.get("next") ?? "/protected";
+  let next = searchParams.get("next") ?? "/protected/prospects";
   if (!next.startsWith("/")) {
     // if "next" is not a relative URL, use the default
     next = "/";
