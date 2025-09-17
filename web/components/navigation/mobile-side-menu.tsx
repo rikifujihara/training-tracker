@@ -10,7 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { SidebarNavItem } from "@/components/ui/sidebar-nav-item";
-import { MessageSquare, Settings, X, Phone } from "lucide-react";
+import { MessageSquare, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface MobileSideMenuProps {
@@ -90,7 +90,7 @@ export function MobileSideMenu({ open, onOpenChange }: MobileSideMenuProps) {
             <div className="w-full h-px bg-[#d9d9d9] my-4" />
 
             {/* Settings */}
-            <div onClick={handleNavigation}>
+            {/* <div onClick={handleNavigation}>
               <SidebarNavItem
                 icon={<Settings size={24} />}
                 label="Settings"
@@ -98,13 +98,13 @@ export function MobileSideMenu({ open, onOpenChange }: MobileSideMenuProps) {
                 href="/protected/settings"
                 className="w-full"
               />
-            </div>
+            </div> */}
           </div>
 
           {/* Footer */}
           <div className="p-4 border-t border-[#d9d9d9]">
             <div className="text-sm text-text-disabled text-center">
-              Training Tracker v1.0
+              Trainerbase v1.0
             </div>
           </div>
         </div>
