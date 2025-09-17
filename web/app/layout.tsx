@@ -90,9 +90,7 @@ export default function RootLayout({
           disableTransitionOnChange
           forcedTheme="light"
         >
-          <ReactQueryProvider>
-            <AuthRedirect>{children}</AuthRedirect>
-          </ReactQueryProvider>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>

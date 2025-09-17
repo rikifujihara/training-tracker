@@ -13,8 +13,8 @@ export function AuthRedirect({ children }: { children: React.ReactNode }) {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
 
-      // If user is not authenticated and not on an auth page, redirect to login
-      if (!user && !pathname.startsWith("/auth")) {
+      // If user is not authenticated and not on an auth page or home page, redirect to login
+      if (!user && !pathname.startsWith("/auth") && pathname !== "/") {
         router.push("/auth/login");
       }
     };
@@ -23,7 +23,7 @@ export function AuthRedirect({ children }: { children: React.ReactNode }) {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT' && !pathname.startsWith("/auth")) {
+      if (event === 'SIGNED_OUT' && !pathname.startsWith("/auth") && pathname !== "/") {
         router.push("/auth/login");
       }
     });
