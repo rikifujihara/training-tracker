@@ -93,6 +93,32 @@ export function ContactHistoryCard({
   const typeConfig = contactTypeConfig[contactType];
   const TypeIcon = typeConfig.icon;
 
+  // Helper function to render the second badge (outcome or template)
+  const renderSecondBadge = () => {
+    if (!showOutcomeBadge) return null;
+
+    // For TEXT contacts, show message template badge if available
+    if (contactType === ContactType.TEXT && messageTemplate) {
+      return (
+        <Badge variant="default" className="bg-surface-action">
+          {messageTemplate.name}
+        </Badge>
+      );
+    }
+
+    // For PHONE contacts, show outcome badge if available
+    if (contactType === ContactType.PHONE && outcome) {
+      return (
+        <Badge variant="default" className={cn(outcomeConfig[outcome].bgColor)}>
+          {outcomeConfig[outcome].label}
+        </Badge>
+      );
+    }
+
+    // No badge to show
+    return null;
+  };
+
   const handleDelete = () => {
     deleteContactPoint.mutate(id, {
       onSuccess: () => {
@@ -130,21 +156,7 @@ export function ContactHistoryCard({
           </Badge>
 
           {/* Outcome badge or Template badge */}
-          {showOutcomeBadge && contactType === ContactType.TEXT && messageTemplate ? (
-            <Badge
-              variant="default"
-              className="bg-surface-action"
-            >
-              {messageTemplate.name}
-            </Badge>
-          ) : showOutcomeBadge && contactType === ContactType.PHONE && outcome ? (
-            <Badge
-              variant="default"
-              className={cn(outcomeConfig[outcome].bgColor)}
-            >
-              {outcomeConfig[outcome].label}
-            </Badge>
-          ) : null}
+          {renderSecondBadge()}
         </div>
 
         {/* Date */}
