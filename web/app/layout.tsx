@@ -12,7 +12,26 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Trainer Base",
   description: "All in one PT management platform",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Trainer Base",
+  },
+  icons: {
+    apple: "/icon-192x192.svg",
+  },
 };
+
+export function generateViewport() {
+  return {
+    themeColor: "#ffffff",
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  };
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
