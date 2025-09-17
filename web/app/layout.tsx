@@ -90,10 +90,7 @@ export default function RootLayout({
           disableTransitionOnChange
           forcedTheme="light"
         >
-          <ReactQueryProvider>
-            {children}
-            <MobileBottomNav />
-          </ReactQueryProvider>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>

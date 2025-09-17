@@ -26,7 +26,7 @@ export function MobileBottomNav({ onMenuClick }: MobileBottomNavProps) {
 
   // Calculate dynamic styling based on device and PWA status
   const getNavStyles = () => {
-    let containerClasses =
+    const containerClasses =
       "fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border-primary md:hidden";
     let heightClasses = "h-22";
     let paddingClasses = "px-0 py-0";
@@ -101,9 +101,7 @@ export function MobileBottomNav({ onMenuClick }: MobileBottomNavProps) {
             onClick={onMenuClick}
             className={cn(
               "flex flex-col items-center justify-center w-12 h-12",
-              "transition-colors duration-200",
-              // Add subtle visual adjustment for PWA mode
-              isPWA && "transform translate-y-[-2px]"
+              "transition-colors duration-200"
             )}
           >
             <Menu className="w-6 h-6 mb-0.5 text-text-disabled" />
