@@ -93,6 +93,15 @@ export function isTomorrow(date: Date): boolean {
 }
 
 /**
+ * Checks if a date is tomorrow
+ */
+export function isYesterday(date: Date): boolean {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return formatDateForInput(date) === formatDateForInput(yesterday);
+}
+
+/**
  * Formats a date and time in Australian format with time
  */
 export function formatDateTimeAustralian(
@@ -120,6 +129,10 @@ export function formatDateTimeAustralian(
 
     if (isTomorrow(dateObj)) {
       return `Tomorrow, ${timeFormat}`;
+    }
+
+    if (isYesterday(dateObj)) {
+      return `Yesterday, ${timeFormat}`;
     }
   }
 
