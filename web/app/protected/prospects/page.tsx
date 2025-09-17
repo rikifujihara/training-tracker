@@ -81,8 +81,12 @@ export default function ProspectsPage() {
   const currentLoading = isSearching ? searchLoading : leadsLoading;
   const currentError = isSearching ? searchError : leadsError;
   const currentHasNextPage = isSearching ? searchHasNextPage : hasNextPage;
-  const currentIsFetchingNextPage = isSearching ? searchIsFetchingNextPage : isFetchingNextPage;
-  const currentFetchNextPage = isSearching ? fetchSearchNextPage : fetchNextPage;
+  const currentIsFetchingNextPage = isSearching
+    ? searchIsFetchingNextPage
+    : isFetchingNextPage;
+  const currentFetchNextPage = isSearching
+    ? fetchSearchNextPage
+    : fetchNextPage;
 
   // Get filter counts from the dedicated filter counts query
   const getFilterCount = (filter: ProspectFilter): number => {
@@ -158,7 +162,11 @@ export default function ProspectsPage() {
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0];
-        if (target.isIntersecting && currentHasNextPage && !currentIsFetchingNextPage) {
+        if (
+          target.isIntersecting &&
+          currentHasNextPage &&
+          !currentIsFetchingNextPage
+        ) {
           currentFetchNextPage();
         }
       },
@@ -261,7 +269,7 @@ export default function ProspectsPage() {
                 onSearch={handleSearch}
                 onClear={handleClearSearch}
                 isLoading={currentLoading}
-                placeholder="Search prospects by name or phone number..."
+                placeholder="Search by name or mobile"
               />
             </div>
           )}
@@ -365,7 +373,9 @@ export default function ProspectsPage() {
                   ? "No search results"
                   : activeFilter === "all" && !isSearching
                   ? "Search prospects"
-                  : `No ${getFilterLabel(activeFilter).toLowerCase()} prospects`}
+                  : `No ${getFilterLabel(
+                      activeFilter
+                    ).toLowerCase()} prospects`}
               </h3>
               <p className="text-text-disabled text-[16px] leading-[24px]">
                 {activeFilter === "today" ? (

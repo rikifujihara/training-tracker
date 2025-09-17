@@ -14,7 +14,7 @@ interface ProspectSearchBarProps {
 export function ProspectSearchBar({
   onSearch,
   onClear,
-  placeholder = "Search by name or phone number...",
+  placeholder = "Search by name or mobile",
   isLoading = false,
 }: ProspectSearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
