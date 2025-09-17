@@ -42,8 +42,6 @@ export function ProspectCard({
     React.useState(false);
   const [mobileMessageModalOpen, setMobileMessageModalOpen] =
     React.useState(false);
-  const [wasMessageTemplateSelected, setWasMessageTemplateSelected] =
-    React.useState(false);
   const [notInterestedModalOpen, setNotInterestedModalOpen] =
     React.useState(false);
   const createContactPointMutation = useCreateContactPoint();
@@ -84,6 +82,13 @@ export function ProspectCard({
   const handleMarkNotInterested = () => {
     markNotInterestedMutation.mutate(lead.id);
     setNotInterestedModalOpen(false);
+  };
+
+  // convenience function for resetting the contact point state
+  const resetContactPointState = () => {
+    setNotes("");
+    setOutcome(undefined);
+    setMessageTemplateId("");
   };
 
   return (
@@ -146,10 +151,7 @@ export function ProspectCard({
                 size="default"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setNotes("");
-                  setContactType(ContactType.PHONE);
-                  setOutcome(undefined);
-                  setLogModalOpen(true);
+                  resetContactPointState();
                 }}
               >
                 <Phone className="w-6 h-6" />
@@ -205,7 +207,7 @@ export function ProspectCard({
               className="justify-center"
               onClick={(e) => {
                 e.stopPropagation();
-                setWasMessageTemplateSelected(false);
+                setMessageTemplateId("");
                 setNotes("");
                 setContactType(ContactType.PHONE);
                 setOutcome(undefined);
@@ -262,7 +264,6 @@ export function ProspectCard({
         lead={lead}
         onSave={handleLogContactPoint}
         isLoading={createContactPointMutation.isPending}
-        wasMessageTemplateSelected={wasMessageTemplateSelected}
         setMessageTemplateId={setMessageTemplateId}
         messageTemplateId={messageTemplateId}
         setOutcome={setOutcome}
@@ -283,10 +284,11 @@ export function ProspectCard({
 
       <MobileMessageModal
         open={mobileMessageModalOpen}
-        setWasMessageTemplateSelected={setWasMessageTemplateSelected}
         setMessageTemplateId={setMessageTemplateId}
         onOpenChange={setMobileMessageModalOpen}
+        setOutcome={setOutcome}
         setLogModalOpen={setLogModalOpen}
+        setContactType={setContactType}
         lead={lead}
       />
 

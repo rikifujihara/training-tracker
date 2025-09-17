@@ -13,23 +13,25 @@ import {
 import { MessageSquare, X } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
+import { ContactPointOutcome, ContactType } from "@/lib/types/contactPoint";
 
 export interface MobileMessageModalProps {
   open: boolean;
-  // this is so we know whether to default to 'sent message'
-  setWasMessageTemplateSelected: (open: boolean) => void;
   setMessageTemplateId: (data: string) => void;
   onOpenChange: (open: boolean) => void;
   setLogModalOpen: (open: boolean) => void;
+  setContactType: (contactType: ContactType) => void;
+  setOutcome: (outcome: ContactPointOutcome) => void;
   lead: Lead;
 }
 
 export function MobileMessageModal({
   open,
-  setWasMessageTemplateSelected,
   setMessageTemplateId,
   onOpenChange,
   setLogModalOpen,
+  setContactType,
+  setOutcome,
   lead,
 }: MobileMessageModalProps) {
   const { data: messageTemplates, isLoading: templatesLoading } =
@@ -63,8 +65,8 @@ export function MobileMessageModal({
     // Close modal
     onOpenChange(false);
     // Open log contact point modal
+    setOutcome(ContactPointOutcome.SENT_MESSAGE);
     setLogModalOpen(true);
-    setWasMessageTemplateSelected(true);
   };
 
   return (
@@ -127,7 +129,11 @@ export function MobileMessageModal({
                   <Button
                     variant="outline"
                     className="w-full h-auto justify-start text-left p-4"
-                    onClick={() => handleSendSMS()}
+                    onClick={() => {
+                      setMessageTemplateId("");
+                      setContactType(ContactType.TEXT);
+                      handleSendSMS();
+                    }}
                   >
                     <div className="flex flex-col items-start w-full">
                       <span className="font-semibold text-[16px] leading-[24px]">
@@ -145,6 +151,7 @@ export function MobileMessageModal({
                       className="w-full h-auto p-4 justify-start text-left"
                       onClick={() => {
                         setMessageTemplateId(template.id);
+                        setContactType(ContactType.TEXT);
                         handleSendSMS(template.content);
                       }}
                     >

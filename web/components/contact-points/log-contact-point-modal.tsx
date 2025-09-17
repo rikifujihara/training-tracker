@@ -59,7 +59,6 @@ export interface LogContactPointModalProps {
   lead: Lead;
   onSave?: (data: LogContactPointData) => void;
   isLoading?: boolean;
-  wasMessageTemplateSelected: boolean;
   messageTemplateId: string;
   setMessageTemplateId: (data: string) => void;
   setOutcome: (data: ContactPointOutcome) => void;
@@ -76,7 +75,6 @@ export function LogContactPointModal({
   lead,
   onSave,
   isLoading = false,
-  wasMessageTemplateSelected,
   messageTemplateId,
   setMessageTemplateId,
   setOutcome,
@@ -91,22 +89,6 @@ export function LogContactPointModal({
   // Fetch message templates
   const { data: messageTemplates, isLoading: templatesLoading } =
     useMessageTemplates();
-
-  React.useEffect(() => {
-    if (wasMessageTemplateSelected) {
-      setOutcome(ContactPointOutcome.SENT_MESSAGE);
-    }
-  }, [wasMessageTemplateSelected, setOutcome]);
-
-  // Set the contact type based on outcome
-  React.useEffect(() => {
-    if (outcome === ContactPointOutcome.SENT_MESSAGE) {
-      setContactType(ContactType.TEXT);
-    } else {
-      setContactType(ContactType.PHONE);
-      setMessageTemplateId("");
-    }
-  }, [outcome, setContactType, setMessageTemplateId]);
 
   // Auto-populate notes with template content when template is selected
   React.useEffect(() => {
@@ -205,9 +187,14 @@ export function LogContactPointModal({
               <Label htmlFor="outcome">Outcome</Label>
               <Select
                 value={outcome}
-                onValueChange={(value) =>
-                  setOutcome(value as ContactPointOutcome)
-                }
+                onValueChange={(value) => {
+                  setOutcome(value as ContactPointOutcome);
+                  if (value == ContactPointOutcome.SENT_MESSAGE) {
+                    setContactType(ContactType.TEXT);
+                  } else {
+                    setContactType(ContactType.PHONE);
+                  }
+                }}
               >
                 <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary">
                   <SelectValue
