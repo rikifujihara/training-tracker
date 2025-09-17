@@ -223,7 +223,7 @@ export function ProspectCard({
             {/* Message and Call buttons */}
             <div className="grid grid-cols-2 gap-2.5 w-full">
               <Button
-                className="justify-center bg-[#4ABC40] gap-3 px-6 py-3 h-12 rounded-[50px]"
+                className="justify-center bg-[#4ABC40] active:bg-[#C3E9BF] gap-3 px-6 py-3 h-12 rounded-[50px]"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleSendMessage();
@@ -234,7 +234,7 @@ export function ProspectCard({
 
               <a href={`tel:${lead.phoneNumber || ""}`} className="w-full">
                 <Button
-                  className="w-full justify-center bg-[#4ABC40] gap-3 px-6 py-3 h-12 rounded-[50px]"
+                  className="w-full justify-center bg-[#4ABC40] active:bg-[#C3E9BF] gap-3 px-6 py-3 h-12 rounded-[50px]"
                   onClick={(e) => {
                     e.stopPropagation();
                     setContactType(ContactType.PHONE);
