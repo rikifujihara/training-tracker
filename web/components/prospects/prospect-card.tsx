@@ -221,22 +221,20 @@ export function ProspectCard({
             </Button>
 
             {/* Message and Call buttons */}
-            <div className="flex gap-2.5 w-full">
+            <div className="grid grid-cols-2 gap-2.5 w-full">
               <Button
-                variant="secondary"
-                className="flex-1 w-full justify-center gap-3 px-6 py-3 h-12"
+                className="justify-center bg-[#4ABC40] gap-3 px-6 py-3 h-12 rounded-[50px]"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleSendMessage();
                 }}
               >
                 <MessageSquare className="w-6 h-6" />
-                Message
               </Button>
-              <a href={`tel:${lead.phoneNumber || ""}`} className="flex-1">
+
+              <a href={`tel:${lead.phoneNumber || ""}`} className="w-full">
                 <Button
-                  variant="secondary"
-                  className="w-full justify-center gap-3 px-6 py-3 h-12"
+                  className="w-full justify-center bg-[#4ABC40] gap-3 px-6 py-3 h-12 rounded-[50px]"
                   onClick={(e) => {
                     e.stopPropagation();
                     setContactType(ContactType.PHONE);
@@ -247,7 +245,6 @@ export function ProspectCard({
                   }}
                 >
                   <Phone className="w-6 h-6" />
-                  Call
                 </Button>
               </a>
             </div>

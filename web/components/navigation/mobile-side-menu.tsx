@@ -19,7 +19,7 @@ export interface MobileSideMenuProps {
 }
 
 const navigationItems = [
-  { icon: Phone, label: "Follow ups", href: "/protected/prospects" },
+  { icon: Phone, label: "Prospects", href: "/protected/prospects" },
   { icon: MessageSquare, label: "Templates", href: "/protected/templates" },
 ];
 

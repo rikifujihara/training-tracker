@@ -23,7 +23,7 @@ export interface DesktopSidebarProps
 const navigationItems = [
   {
     icon: Phone,
-    label: "Follow ups",
+    label: "Prospects",
     href: "/protected/prospects",
     badge: undefined,
   },

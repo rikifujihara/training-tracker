@@ -225,8 +225,8 @@ export default function ProspectsPage() {
           <h2 className="text-text-headings text-[20px] leading-[24px] font-semibold">
             Follow ups
           </h2>
-          <div className="flex flex-wrap gap-3 max-sm:flex-col-reverse">
-            {(["today", "overdue", "upcoming", "all"] as ProspectFilter[]).map(
+          <div className="flex flex-wrap gap-3 max-sm:flex-col">
+            {(["today", "upcoming", "overdue", "all"] as ProspectFilter[]).map(
               (filter) => {
                 const count = getFilterCount(filter);
                 const isActive = activeFilter === filter;
@@ -264,7 +264,7 @@ export default function ProspectsPage() {
 
           {/* Search Bar - Only show when "Search" filter is active */}
           {activeFilter === "all" && (
-            <div className="mt-4">
+            <div>
               <ProspectSearchBar
                 onSearch={handleSearch}
                 onClear={handleClearSearch}
