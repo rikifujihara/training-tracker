@@ -98,49 +98,59 @@ export class TaskQueries {
   }
 
   /**
-   * Get task statistics for a user
+   * Get task statistics for a user using client-provided date ranges
    */
-  static async getTaskStats(userId: string) {
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-
-    // Get all tasks for the user
-    const tasks = await prisma.task.findMany({
+  static async getTaskStats(
+    userId: string,
+    dateRanges: {
+      today: { startDate: Date; endDate: Date };
+      overdue: { startDate?: Date; endDate: Date };
+      upcoming: { startDate: Date; endDate?: Date };
+    }
+  ) {
+    // Get total and completed task counts
+    const totalTasks = await prisma.task.count({
       where: { userId },
-      select: {
-        id: true,
-        status: true,
-        dueDate: true,
-        completedAt: true,
+    });
+
+    const completedTasks = await prisma.task.count({
+      where: { userId, status: 'COMPLETED' },
+    });
+
+    const pendingTasks = await prisma.task.count({
+      where: { userId, status: 'PENDING' },
+    });
+
+    // Count tasks by date ranges
+    const todayTasks = await prisma.task.count({
+      where: {
+        userId,
+        status: 'PENDING',
+        dueDate: {
+          gte: dateRanges.today.startDate,
+          lte: dateRanges.today.endDate,
+        },
       },
     });
 
-    let totalTasks = 0;
-    let completedTasks = 0;
-    let pendingTasks = 0;
-    let overdueTasks = 0;
-    let todayTasks = 0;
-    let upcomingTasks = 0;
+    const overdueTasks = await prisma.task.count({
+      where: {
+        userId,
+        status: 'PENDING',
+        dueDate: {
+          lt: dateRanges.overdue.endDate,
+        },
+      },
+    });
 
-    tasks.forEach(task => {
-      totalTasks++;
-
-      if (task.status === 'COMPLETED') {
-        completedTasks++;
-      } else {
-        pendingTasks++;
-
-        const taskDueDate = new Date(task.dueDate);
-
-        if (taskDueDate < todayStart) {
-          overdueTasks++;
-        } else if (taskDueDate >= todayStart && taskDueDate < todayEnd) {
-          todayTasks++;
-        } else {
-          upcomingTasks++;
-        }
-      }
+    const upcomingTasks = await prisma.task.count({
+      where: {
+        userId,
+        status: 'PENDING',
+        dueDate: {
+          gte: dateRanges.upcoming.startDate,
+        },
+      },
     });
 
     return {
@@ -154,19 +164,19 @@ export class TaskQueries {
   }
 
   /**
-   * Get upcoming tasks for a user within specified days
+   * Get upcoming tasks for a user within a date range
    */
-  static async getUpcomingTasks(userId: string, days: number = 7): Promise<TaskWithRelations[]> {
-    const now = new Date();
-    const futureDate = new Date(now.getTime() + (days * 24 * 60 * 60 * 1000));
-
+  static async getUpcomingTasks(
+    userId: string,
+    dateRange: { startDate: Date; endDate: Date }
+  ): Promise<TaskWithRelations[]> {
     return await prisma.task.findMany({
       where: {
         userId,
         status: 'PENDING',
         dueDate: {
-          gte: now,
-          lte: futureDate,
+          gte: dateRange.startDate,
+          lte: dateRange.endDate,
         },
       },
       include: {
@@ -192,17 +202,18 @@ export class TaskQueries {
   }
 
   /**
-   * Get overdue tasks for a user
+   * Get overdue tasks for a user (before a specific date)
    */
-  static async getOverdueTasks(userId: string): Promise<TaskWithRelations[]> {
-    const now = new Date();
-
+  static async getOverdueTasks(
+    userId: string,
+    beforeDate: Date
+  ): Promise<TaskWithRelations[]> {
     return await prisma.task.findMany({
       where: {
         userId,
         status: 'PENDING',
         dueDate: {
-          lt: now,
+          lt: beforeDate,
         },
       },
       include: {

@@ -9,10 +9,23 @@ export async function GET(request: NextRequest) {
     const user = await requireAuth();
 
     const { searchParams } = new URL(request.url);
-    const days = parseInt(searchParams.get('days') || '7');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
+    if (!startDate || !endDate) {
+      return NextResponse.json(
+        { error: "Missing required date range parameters: startDate, endDate" },
+        { status: 400 }
+      );
+    }
+
+    const dateRange = {
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+    };
 
     // Get upcoming tasks
-    const tasks = await TaskService.getUpcomingTasks(user.id, days);
+    const tasks = await TaskService.getUpcomingTasks(user.id, dateRange);
 
     return NextResponse.json({
       success: true,

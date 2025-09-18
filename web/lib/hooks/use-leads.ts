@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { CreateLeadInput, UpdateLeadInput, Lead, LeadStatus } from '@/lib/types/lead';
+import { getTodayBoundariesUTC, getOverdueBoundariesUTC, getUpcomingBoundariesUTC } from '@/lib/utils/date';
 
 // Types for API responses
 interface LeadUploadResponse {
@@ -113,11 +114,30 @@ const fetchLeadsPaginated = async ({
   const params = new URLSearchParams({
     page: pageParam.toString(),
     pageSize: pageSize.toString(),
-    filter,
   });
 
   if (status) {
     params.append('status', status);
+  }
+
+  // Calculate date ranges client-side based on filter
+  if (filter !== 'all') {
+    let dateRange;
+    switch (filter) {
+      case 'today':
+        dateRange = getTodayBoundariesUTC();
+        params.append('startDate', dateRange.startUTC.toISOString());
+        params.append('endDate', dateRange.endUTC.toISOString());
+        break;
+      case 'overdue':
+        dateRange = getOverdueBoundariesUTC();
+        params.append('endDate', dateRange.endUTC.toISOString());
+        break;
+      case 'upcoming':
+        dateRange = getUpcomingBoundariesUTC();
+        params.append('startDate', dateRange.startUTC.toISOString());
+        break;
+    }
   }
 
   const response = await fetch(`/api/leads?${params}`);
@@ -131,16 +151,23 @@ const fetchLeadsPaginated = async ({
 };
 
 const fetchFilterCounts = async (status?: LeadStatus): Promise<FilterCountsResponse> => {
-  const params = new URLSearchParams();
+  // Calculate all date boundaries client-side
+  const todayBoundaries = getTodayBoundariesUTC();
+  const overdueBoundaries = getOverdueBoundariesUTC();
+  const upcomingBoundaries = getUpcomingBoundariesUTC();
+
+  const params = new URLSearchParams({
+    todayStart: todayBoundaries.startUTC.toISOString(),
+    todayEnd: todayBoundaries.endUTC.toISOString(),
+    overdueEnd: overdueBoundaries.endUTC.toISOString(),
+    upcomingStart: upcomingBoundaries.startUTC.toISOString(),
+  });
+
   if (status) {
     params.append('status', status);
   }
 
-  const url = params.toString()
-    ? `/api/leads/filter-counts?${params}`
-    : '/api/leads/filter-counts';
-
-  const response = await fetch(url);
+  const response = await fetch(`/api/leads/filter-counts?${params}`);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));

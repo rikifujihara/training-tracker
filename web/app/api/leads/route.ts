@@ -13,14 +13,28 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '0');
     const pageSize = parseInt(searchParams.get('pageSize') || '10');
-    const filter = searchParams.get('filter') as 'today' | 'overdue' | 'upcoming' | 'all' | null;
     const status = searchParams.get('status') as LeadStatus | null;
 
-    // Get leads for the user with pagination and filtering
+    // Parse date range parameters (ISO strings from client)
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+
+    let dateRange: { startDate?: Date; endDate?: Date } | undefined;
+    if (startDateParam || endDateParam) {
+      dateRange = {};
+      if (startDateParam) {
+        dateRange.startDate = new Date(startDateParam);
+      }
+      if (endDateParam) {
+        dateRange.endDate = new Date(endDateParam);
+      }
+    }
+
+    // Get leads for the user with pagination and date range filtering
     const result = await LeadService.getLeadsByUserIdPaginated(user.id, {
       page,
       pageSize,
-      filter: filter || 'all',
+      dateRange,
       ...(status && { status }),
     });
 

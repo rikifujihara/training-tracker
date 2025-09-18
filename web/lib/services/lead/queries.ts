@@ -20,14 +20,17 @@ export class LeadQueries {
 
   /**
    * Get leads for a user with pagination and filtering based on task due dates
-   * Uses pure Prisma queries with post-processing for optimal maintainability
+   * Uses UTC date ranges provided by client for timezone-aware filtering
    */
   static async getLeadsByUserIdPaginated(
     userId: string,
     options: {
       page: number;
       pageSize: number;
-      filter: 'today' | 'overdue' | 'upcoming' | 'all';
+      dateRange?: {
+        startDate?: Date;
+        endDate?: Date;
+      };
       status?: LeadStatus;
     }
   ): Promise<{
@@ -35,7 +38,7 @@ export class LeadQueries {
     hasNextPage: boolean;
     totalCount: number;
   }> {
-    const { page, pageSize, filter, status } = options;
+    const { page, pageSize, dateRange, status } = options;
     const skip = page * pageSize;
 
     // Base query conditions
@@ -46,14 +49,28 @@ export class LeadQueries {
       whereConditions.status = status;
     }
 
-    // Get all matching leads first with their next pending task
+    // Build task filtering conditions based on date range
+    const taskWhereConditions: Record<string, unknown> = {
+      status: 'PENDING'
+    };
+
+    if (dateRange?.startDate || dateRange?.endDate) {
+      const dueDateCondition: Record<string, unknown> = {};
+      if (dateRange.startDate) {
+        dueDateCondition.gte = dateRange.startDate;
+      }
+      if (dateRange.endDate) {
+        dueDateCondition.lte = dateRange.endDate;
+      }
+      taskWhereConditions.dueDate = dueDateCondition;
+    }
+
+    // Get all matching leads with their next pending task (filtered by date range if provided)
     const allLeads = await prisma.lead.findMany({
       where: whereConditions,
       include: {
         tasks: {
-          where: {
-            status: 'PENDING'
-          },
+          where: taskWhereConditions,
           orderBy: {
             dueDate: 'asc'
           },
@@ -63,31 +80,13 @@ export class LeadQueries {
       orderBy: { createdAt: "desc" },
     });
 
-    // Apply task-based filtering in memory for simplicity
+    // When using date range filtering, only show leads that have tasks in the range
+    // When no date range is provided, show all leads
     let filteredLeads = allLeads;
 
-    if (filter !== 'all') {
-      const now = new Date();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-
-      filteredLeads = allLeads.filter(lead => {
-        const nextTask = lead.tasks[0];
-        if (!nextTask) return filter === 'upcoming'; // Leads without tasks only show in upcoming
-
-        const taskDueDate = new Date(nextTask.dueDate);
-
-        switch (filter) {
-          case 'today':
-            return taskDueDate >= todayStart && taskDueDate < todayEnd;
-          case 'overdue':
-            return taskDueDate < todayStart;
-          case 'upcoming':
-            return taskDueDate >= todayEnd;
-          default:
-            return true;
-        }
-      });
+    if (dateRange?.startDate || dateRange?.endDate) {
+      // Only include leads that have at least one task in the date range
+      filteredLeads = allLeads.filter(lead => lead.tasks.length > 0);
     }
 
     // Apply pagination
@@ -109,58 +108,75 @@ export class LeadQueries {
   }
 
   /**
-   * Get filter counts for prospects (leads with status PROSPECT)
+   * Get filter counts for prospects using client-provided date ranges
    */
-  static async getProspectFilterCounts(userId: string) {
-    // Get all prospects with their next pending task
-    const prospects = await prisma.lead.findMany({
+  static async getProspectFilterCounts(
+    userId: string,
+    dateRanges: {
+      today: { startDate: Date; endDate: Date };
+      overdue: { startDate?: Date; endDate: Date };
+      upcoming: { startDate: Date; endDate?: Date };
+    }
+  ) {
+    // Get total count of prospects
+    const totalProspects = await prisma.lead.count({
       where: {
         userId,
         status: LeadStatus.PROSPECT,
       },
-      include: {
+    });
+
+    // Count prospects with tasks due today
+    const todayCount = await prisma.lead.count({
+      where: {
+        userId,
+        status: LeadStatus.PROSPECT,
         tasks: {
-          where: {
-            status: 'PENDING'
+          some: {
+            status: 'PENDING',
+            dueDate: {
+              gte: dateRanges.today.startDate,
+              lte: dateRanges.today.endDate,
+            },
           },
-          orderBy: {
-            dueDate: 'asc'
-          },
-          take: 1,
         },
       },
     });
 
-    // Calculate date boundaries
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+    // Count prospects with overdue tasks
+    const overdueCount = await prisma.lead.count({
+      where: {
+        userId,
+        status: LeadStatus.PROSPECT,
+        tasks: {
+          some: {
+            status: 'PENDING',
+            dueDate: {
+              lt: dateRanges.overdue.endDate,
+            },
+          },
+        },
+      },
+    });
 
-    // Count prospects by filter category
-    let todayCount = 0;
-    let overdueCount = 0;
-    let upcomingCount = 0;
-
-    prospects.forEach(prospect => {
-      const nextTask = prospect.tasks[0];
-      if (!nextTask) {
-        upcomingCount++; // Prospects without tasks count as upcoming
-        return;
-      }
-
-      const taskDueDate = new Date(nextTask.dueDate);
-
-      if (taskDueDate >= todayStart && taskDueDate < todayEnd) {
-        todayCount++;
-      } else if (taskDueDate < todayStart) {
-        overdueCount++;
-      } else {
-        upcomingCount++;
-      }
+    // Count prospects with upcoming tasks
+    const upcomingCount = await prisma.lead.count({
+      where: {
+        userId,
+        status: LeadStatus.PROSPECT,
+        tasks: {
+          some: {
+            status: 'PENDING',
+            dueDate: {
+              gte: dateRanges.upcoming.startDate,
+            },
+          },
+        },
+      },
     });
 
     return {
-      all: prospects.length,
+      all: totalProspects,
       today: todayCount,
       overdue: overdueCount,
       upcoming: upcomingCount,

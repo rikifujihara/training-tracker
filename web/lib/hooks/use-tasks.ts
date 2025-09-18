@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Task, TaskWithRelations, CreateTaskInput, UpdateTaskInput } from "@/lib/types/task";
+import { getTodayBoundariesUTC, getOverdueBoundariesUTC, getUpcomingBoundariesUTC } from "@/lib/utils/date";
 
 // Import leadKeys to invalidate leads queries when tasks change
 const leadKeys = {
@@ -76,7 +77,19 @@ const fetchTask = async (taskId: string, includeRelations?: boolean): Promise<Ta
 };
 
 const fetchTaskStats = async (): Promise<TaskStatsResponse> => {
-  const response = await fetch('/api/tasks/stats');
+  // Calculate all date boundaries client-side
+  const todayBoundaries = getTodayBoundariesUTC();
+  const overdueBoundaries = getOverdueBoundariesUTC();
+  const upcomingBoundaries = getUpcomingBoundariesUTC();
+
+  const params = new URLSearchParams({
+    todayStart: todayBoundaries.startUTC.toISOString(),
+    todayEnd: todayBoundaries.endUTC.toISOString(),
+    overdueEnd: overdueBoundaries.endUTC.toISOString(),
+    upcomingStart: upcomingBoundaries.startUTC.toISOString(),
+  });
+
+  const response = await fetch(`/api/tasks/stats?${params}`);
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
@@ -85,7 +98,17 @@ const fetchTaskStats = async (): Promise<TaskStatsResponse> => {
 };
 
 const fetchUpcomingTasks = async (days: number = 7): Promise<TasksResponse> => {
-  const response = await fetch(`/api/tasks/upcoming?days=${days}`);
+  // Calculate date range for upcoming tasks (now + days)
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + days);
+
+  const params = new URLSearchParams({
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
+  });
+
+  const response = await fetch(`/api/tasks/upcoming?${params}`);
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
@@ -94,7 +117,14 @@ const fetchUpcomingTasks = async (days: number = 7): Promise<TasksResponse> => {
 };
 
 const fetchOverdueTasks = async (): Promise<TasksResponse> => {
-  const response = await fetch('/api/tasks/overdue');
+  // Calculate today's start as the cutoff for overdue tasks
+  const todayBoundaries = getTodayBoundariesUTC();
+
+  const params = new URLSearchParams({
+    beforeDate: todayBoundaries.startUTC.toISOString(),
+  });
+
+  const response = await fetch(`/api/tasks/overdue?${params}`);
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
