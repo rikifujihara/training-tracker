@@ -82,7 +82,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.className} antialiased pt-[env(safe-area-inset-top)] bg-surface-page`}
+        className={`${geistSans.className} antialiased mt-[env(safe-area-inset-top)] bg-surface-page`}
       >
         <ThemeProvider
           attribute="class"
