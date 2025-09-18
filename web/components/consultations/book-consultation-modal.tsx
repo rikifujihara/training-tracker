@@ -23,6 +23,7 @@ import { Lead } from "@/lib/types/lead";
 import { CreateConsultationInput } from "@/lib/types/consultation";
 import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
 import { Checkbox } from "@/components/ui/checkbox";
+import { formatDateTimeLocalInput, getTomorrowWithTime, isToday, isTomorrow } from "@/lib/utils/date";
 
 export interface BookConsultationModalProps {
   open: boolean;
@@ -57,11 +58,7 @@ export function BookConsultationModal({
   React.useEffect(() => {
     if (open) {
       // Reset form when modal opens
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(10, 0, 0, 0); // Default to 10 AM tomorrow
-
-      setScheduledTime(tomorrow);
+      setScheduledTime(getTomorrowWithTime(10, 0)); // Default to 10 AM tomorrow
       setDurationMinutes(60); // Default to 60 minutes
       setNotes("");
       setMessageTemplateId(undefined);
@@ -94,15 +91,6 @@ export function BookConsultationModal({
     onOpenChange(false);
   };
 
-  // Format date for datetime-local input
-  const formatDateTimeLocal = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
 
   const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -111,45 +99,6 @@ export function BookConsultationModal({
     }
   };
 
-  // Helper function to get today's date with time
-  const getTodayDateTime = (): Date => {
-    const today = new Date();
-    today.setHours(10, 0, 0, 0); // Default to 10 AM
-    return today;
-  };
-
-  // Helper function to get tomorrow's date with time
-  const getTomorrowDateTime = (): Date => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(10, 0, 0, 0); // Default to 10 AM
-    return tomorrow;
-  };
-
-  // Check if selected date is today
-  const isSelectedDateToday = (): boolean => {
-    const today = new Date();
-    const scheduledDate = new Date(scheduledTime);
-
-    return (
-      scheduledDate.getFullYear() === today.getFullYear() &&
-      scheduledDate.getMonth() === today.getMonth() &&
-      scheduledDate.getDate() === today.getDate()
-    );
-  };
-
-  // Check if selected date is tomorrow
-  const isSelectedDateTomorrow = (): boolean => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const scheduledDate = new Date(scheduledTime);
-
-    return (
-      scheduledDate.getFullYear() === tomorrow.getFullYear() &&
-      scheduledDate.getMonth() === tomorrow.getMonth() &&
-      scheduledDate.getDate() === tomorrow.getDate()
-    );
-  };
 
   const selectedTemplate = messageTemplates?.find(
     (t) => t.id === messageTemplateId
@@ -199,7 +148,7 @@ export function BookConsultationModal({
               <input
                 id="scheduledTime"
                 type="datetime-local"
-                value={formatDateTimeLocal(scheduledTime)}
+                value={formatDateTimeLocalInput(scheduledTime)}
                 onChange={handleDateTimeChange}
                 className="w-full h-12 p-3 bg-surface-primary border border-border-primary rounded text-[16px] leading-[24px] text-text-body"
               />
@@ -209,9 +158,12 @@ export function BookConsultationModal({
                 <Button
                   type="button"
                   size="sm"
-                  variant={isSelectedDateToday() ? "default" : "outline"}
+                  variant={isToday(scheduledTime) ? "default" : "outline"}
                   onClick={() => {
-                    setScheduledTime(getTodayDateTime());
+                    const todayTime = new Date(scheduledTime);
+                    const today = new Date();
+                    today.setHours(todayTime.getHours(), todayTime.getMinutes(), 0, 0);
+                    setScheduledTime(today);
                   }}
                 >
                   Today
@@ -219,9 +171,10 @@ export function BookConsultationModal({
                 <Button
                   type="button"
                   size="sm"
-                  variant={isSelectedDateTomorrow() ? "default" : "outline"}
+                  variant={isTomorrow(scheduledTime) ? "default" : "outline"}
                   onClick={() => {
-                    setScheduledTime(getTomorrowDateTime());
+                    const currentTime = new Date(scheduledTime);
+                    setScheduledTime(getTomorrowWithTime(currentTime.getHours(), currentTime.getMinutes()));
                   }}
                 >
                   Tomorrow

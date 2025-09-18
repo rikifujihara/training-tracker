@@ -235,3 +235,47 @@ export function getUpcomingBoundariesUTC(): { startUTC: Date; endUTC: null } {
     endUTC: null
   };
 }
+
+// =============================================================================
+// HTML INPUT UTILITIES
+// =============================================================================
+
+/**
+ * Formats a Date object for HTML datetime-local input (YYYY-MM-DDTHH:MM format)
+ * Uses local timezone representation
+ */
+export function formatDateTimeLocalInput(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+// =============================================================================
+// DATE WITH TIME UTILITIES
+// =============================================================================
+
+/**
+ * Gets today's date with a specific time (local timezone)
+ * @param hours - Hour (0-23), defaults to 10
+ * @param minutes - Minutes (0-59), defaults to 0
+ */
+export function getTodayWithTime(hours: number = 10, minutes: number = 0): Date {
+  const today = new Date();
+  today.setHours(hours, minutes, 0, 0);
+  return today;
+}
+
+/**
+ * Gets tomorrow's date with a specific time (local timezone)
+ * @param hours - Hour (0-23), defaults to 10
+ * @param minutes - Minutes (0-59), defaults to 0
+ */
+export function getTomorrowWithTime(hours: number = 10, minutes: number = 0): Date {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(hours, minutes, 0, 0);
+  return tomorrow;
+}
