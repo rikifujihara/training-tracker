@@ -42,7 +42,6 @@ export function BookConsultationModal({
   const [durationMinutes, setDurationMinutes] = React.useState<number>(60);
   const [notes, setNotes] = React.useState("");
 
-
   React.useEffect(() => {
     if (open) {
       // Reset form when modal opens
@@ -52,7 +51,6 @@ export function BookConsultationModal({
       setNotes("");
     }
   }, [open]);
-
 
   const handleSave = () => {
     if (!scheduledDate || !scheduledTime) return;
@@ -71,7 +69,6 @@ export function BookConsultationModal({
   // Helper functions for date comparisons
   const isSelectedDateToday = scheduledDate === getTodayFormatted();
   const isSelectedDateTomorrow = scheduledDate === getTomorrowFormatted();
-
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -119,7 +116,7 @@ export function BookConsultationModal({
                 type="date"
                 value={scheduledDate}
                 onChange={(e) => setScheduledDate(e.target.value)}
-                className="text-[16px] h-12"
+                className="text-[16px] h-12 bg-surface-primary"
               />
 
               {/* Quick Date Selection Buttons */}
@@ -166,24 +163,13 @@ export function BookConsultationModal({
                 type="time"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
-                className="text-[16px] h-12"
+                className="text-[16px] h-12 bg-surface-primary w-full"
               />
             </div>
 
             {/* Duration */}
             <div className="space-y-2">
               <Label htmlFor="duration">Duration</Label>
-              {/* <input
-                id="duration"
-                type="number"
-                min="15"
-                max="240"
-                value={durationMinutes}
-                onChange={(e) =>
-                  setDurationMinutes(parseInt(e.target.value) || 60)
-                }
-                className="w-full h-12 p-3 bg-surface-primary border border-border-primary rounded text-[16px] leading-[24px] text-text-body"
-              /> */}
 
               {/* Quick Duration Selection Buttons */}
               <div className="flex gap-2">
