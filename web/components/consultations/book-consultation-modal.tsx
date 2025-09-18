@@ -10,20 +10,17 @@ import {
   DialogPortal,
   DialogOverlay,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Calendar, X, Save, Clock } from "lucide-react";
+import { Calendar, X, Save } from "lucide-react";
 import { Lead } from "@/lib/types/lead";
 import { CreateConsultationInput } from "@/lib/types/consultation";
-import { useMessageTemplates } from "@/lib/hooks/use-message-templates";
-import { Checkbox } from "@/components/ui/checkbox";
-import { formatDateTimeLocalInput, getTomorrowWithTime, isToday, isTomorrow } from "@/lib/utils/date";
+import {
+  formatDateForInput,
+  getTodayFormatted,
+  getTomorrowFormatted,
+  combineDateAndTime,
+} from "@/lib/utils/date";
+import { Input } from "@/components/ui/input";
 
 export interface BookConsultationModalProps {
   open: boolean;
@@ -40,69 +37,41 @@ export function BookConsultationModal({
   onSave,
   isLoading = false,
 }: BookConsultationModalProps) {
-  const [scheduledTime, setScheduledTime] = React.useState<Date>(new Date());
+  const [scheduledDate, setScheduledDate] = React.useState<string>("");
+  const [scheduledTime, setScheduledTime] = React.useState<string>("");
   const [durationMinutes, setDurationMinutes] = React.useState<number>(60);
   const [notes, setNotes] = React.useState("");
-  const [messageTemplateId, setMessageTemplateId] = React.useState<
-    string | undefined
-  >(undefined);
-  const [reminderEnabled, setReminderEnabled] = React.useState(false);
-  const [reminderTime, setReminderTime] = React.useState<Date | undefined>(
-    undefined
-  );
 
-  // Fetch message templates
-  const { data: messageTemplates, isLoading: templatesLoading } =
-    useMessageTemplates();
 
   React.useEffect(() => {
     if (open) {
       // Reset form when modal opens
-      setScheduledTime(getTomorrowWithTime(10, 0)); // Default to 10 AM tomorrow
+      setScheduledDate(getTomorrowFormatted()); // Default to tomorrow
+      setScheduledTime("10:00"); // Default to 10 AM
       setDurationMinutes(60); // Default to 60 minutes
       setNotes("");
-      setMessageTemplateId(undefined);
-      setReminderEnabled(false);
-      setReminderTime(undefined);
     }
   }, [open]);
 
-  React.useEffect(() => {
-    // Set reminder time to 30 minutes before scheduled time when enabled
-    if (reminderEnabled) {
-      const reminderDate = new Date(scheduledTime);
-      reminderDate.setMinutes(reminderDate.getMinutes() - 30);
-      setReminderTime(reminderDate);
-    } else {
-      setReminderTime(undefined);
-    }
-  }, [reminderEnabled, scheduledTime]);
 
   const handleSave = () => {
+    if (!scheduledDate || !scheduledTime) return;
+
+    const scheduledDateTime = combineDateAndTime(scheduledDate, scheduledTime);
     const data: CreateConsultationInput = {
       leadId: lead.id,
-      scheduledTime,
+      scheduledTime: scheduledDateTime,
       durationMinutes,
       notes: notes.trim() || undefined,
-      messageTemplateId: messageTemplateId || undefined,
-      reminderTime,
     };
     onSave?.(data);
     onOpenChange(false);
   };
 
+  // Helper functions for date comparisons
+  const isSelectedDateToday = scheduledDate === getTodayFormatted();
+  const isSelectedDateTomorrow = scheduledDate === getTomorrowFormatted();
 
-  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value) {
-      setScheduledTime(new Date(value));
-    }
-  };
-
-
-  const selectedTemplate = messageTemplates?.find(
-    (t) => t.id === messageTemplateId
-  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -142,15 +111,15 @@ export function BookConsultationModal({
               </h3>
             </div>
 
-            {/* Scheduled Time */}
+            {/* Date Selection */}
             <div className="space-y-2">
-              <Label htmlFor="scheduledTime">Scheduled Time</Label>
-              <input
-                id="scheduledTime"
-                type="datetime-local"
-                value={formatDateTimeLocalInput(scheduledTime)}
-                onChange={handleDateTimeChange}
-                className="w-full h-12 p-3 bg-surface-primary border border-border-primary rounded text-[16px] leading-[24px] text-text-body"
+              <Label htmlFor="scheduledDate">Date</Label>
+              <Input
+                id="scheduledDate"
+                type="date"
+                value={scheduledDate}
+                onChange={(e) => setScheduledDate(e.target.value)}
+                className="text-[16px] h-12"
               />
 
               {/* Quick Date Selection Buttons */}
@@ -158,24 +127,16 @@ export function BookConsultationModal({
                 <Button
                   type="button"
                   size="sm"
-                  variant={isToday(scheduledTime) ? "default" : "outline"}
-                  onClick={() => {
-                    const todayTime = new Date(scheduledTime);
-                    const today = new Date();
-                    today.setHours(todayTime.getHours(), todayTime.getMinutes(), 0, 0);
-                    setScheduledTime(today);
-                  }}
+                  variant={isSelectedDateToday ? "default" : "outline"}
+                  onClick={() => setScheduledDate(getTodayFormatted())}
                 >
                   Today
                 </Button>
                 <Button
                   type="button"
                   size="sm"
-                  variant={isTomorrow(scheduledTime) ? "default" : "outline"}
-                  onClick={() => {
-                    const currentTime = new Date(scheduledTime);
-                    setScheduledTime(getTomorrowWithTime(currentTime.getHours(), currentTime.getMinutes()));
-                  }}
+                  variant={isSelectedDateTomorrow ? "default" : "outline"}
+                  onClick={() => setScheduledDate(getTomorrowFormatted())}
                 >
                   Tomorrow
                 </Button>
@@ -184,20 +145,35 @@ export function BookConsultationModal({
                   size="sm"
                   variant="outline"
                   onClick={() => {
-                    const nextDay = new Date(scheduledTime);
-                    nextDay.setDate(nextDay.getDate() + 1);
-                    setScheduledTime(nextDay);
+                    if (scheduledDate) {
+                      const currentDate = new Date(scheduledDate);
+                      currentDate.setDate(currentDate.getDate() + 1);
+                      setScheduledDate(formatDateForInput(currentDate));
+                    }
                   }}
+                  disabled={!scheduledDate}
                 >
                   +1 Day
                 </Button>
               </div>
             </div>
 
+            {/* Time Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="scheduledTime">Time</Label>
+              <Input
+                id="scheduledTime"
+                type="time"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                className="text-[16px] h-12"
+              />
+            </div>
+
             {/* Duration */}
             <div className="space-y-2">
-              <Label htmlFor="duration">Duration (minutes)</Label>
-              <input
+              <Label htmlFor="duration">Duration</Label>
+              {/* <input
                 id="duration"
                 type="number"
                 min="15"
@@ -207,7 +183,7 @@ export function BookConsultationModal({
                   setDurationMinutes(parseInt(e.target.value) || 60)
                 }
                 className="w-full h-12 p-3 bg-surface-primary border border-border-primary rounded text-[16px] leading-[24px] text-text-body"
-              />
+              /> */}
 
               {/* Quick Duration Selection Buttons */}
               <div className="flex gap-2">
@@ -236,71 +212,6 @@ export function BookConsultationModal({
                   60 mins
                 </Button>
               </div>
-            </div>
-
-            {/* Message Template */}
-            <div className="space-y-2">
-              <Label htmlFor="messageTemplate">
-                Reminder Template (Optional)
-              </Label>
-              <Select
-                value={messageTemplateId}
-                onValueChange={(value) => setMessageTemplateId(value)}
-              >
-                <SelectTrigger className="w-full h-12 bg-surface-primary border-border-primary">
-                  <SelectValue
-                    displayText={
-                      selectedTemplate
-                        ? selectedTemplate.name
-                        : "Select a message template..."
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {templatesLoading ? (
-                    <SelectItem value="loading">
-                      Loading templates...
-                    </SelectItem>
-                  ) : messageTemplates?.length ? (
-                    messageTemplates.map((template) => (
-                      <SelectItem key={template.id} value={template.id}>
-                        {template.name}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="no-templates">
-                      No templates available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Reminder */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="reminderEnabled"
-                  checked={reminderEnabled}
-                  onCheckedChange={(checked) =>
-                    setReminderEnabled(checked === true)
-                  }
-                />
-                <Label
-                  htmlFor="reminderEnabled"
-                  className="text-[16px] leading-[24px] font-normal text-text-body cursor-pointer"
-                >
-                  Send reminder 30 minutes before
-                </Label>
-              </div>
-              {reminderEnabled && reminderTime && (
-                <div className="flex items-center gap-2 text-sm text-text-disabled">
-                  <Clock className="w-4 h-4" />
-                  <span>
-                    Reminder will be sent at {reminderTime.toLocaleString()}
-                  </span>
-                </div>
-              )}
             </div>
 
             {/* Notes */}
